@@ -5,7 +5,7 @@ from field_v2.wall import WallEmpty, WallConcrete
 class Cell:
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.neighbors = {
+        self.neighbours = {
             Directions.top: None,
             Directions.right: None,
             Directions.bottom: None,
@@ -16,11 +16,18 @@ class Cell:
             Directions.bottom: WallEmpty(),
             Directions.left: WallEmpty()}
 
+    def change_neighbours(self, neighbours):
+        self.neighbours = neighbours
+
     def __str__(self):
         return "Суша"
 
 
 class CellRiver(Cell):
-    def __init__(self, x, y, direction):
+    def __init__(self, x, y, direction=Directions.mouth):
         super().__init__(x, y)
         self.direction = direction
+        self.river = []
+
+    def __str__(self):
+        return "река"
