@@ -37,6 +37,24 @@ class WallOuter(WallConcrete):
         return True, False
 
 
+class WallExit(WallOuter):
+    def __init__(self):
+        super().__init__()
+
+    def handler(self):
+        print("выход")
+        return True, True
+
+
+class WallEntrance(WallExit):
+    def __init__(self):
+        super().__init__()
+
+    def handler(self):
+        print("вход")
+        return True, True
+
+
 class WallRubber(WallEmpty):
     def __init__(self):
         super().__init__()

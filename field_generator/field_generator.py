@@ -1,3 +1,5 @@
+from random import choice
+
 from field.cell import *
 from field.wall import *
 from enums import Directions
@@ -12,6 +14,8 @@ class FieldGenerator:
         self.generate_pattern()
         self.generate_field()
         self.generate_connections()
+        outers = self.generate_outer_walls()
+        self.create_exit(outers)
 
     def get_field(self):
         return self.field
@@ -32,11 +36,63 @@ class FieldGenerator:
             for col in range(0, self.cols):
                 if self.pattern[row][col]:
                     neighbours = {
-                       Directions.left: self.field[row][col - 1] if col - 1 in range(0, self.cols) and self.pattern[row][col - 1] else None,
-                       Directions.bottom: self.field[row + 1][col] if row + 1 in range(0, self.rows) and self.pattern[row+1][col] else None,
-                       Directions.right: self.field[row][col + 1] if col + 1 in range(0, self.cols) and self.pattern[row][col + 1] else None,
-                       Directions.top: self.field[row - 1][col] if row - 1 in range(0, self.rows) and self.pattern[row-1][col] else None}
+                        Directions.left: self.field[row][col - 1] if col - 1 in range(0, self.cols) and
+                                                                     self.pattern[row][col - 1] else None,
+                        Directions.bottom: self.field[row + 1][col] if row + 1 in range(0, self.rows) and
+                                                                       self.pattern[row + 1][col] else None,
+                        Directions.right: self.field[row][col + 1] if col + 1 in range(0, self.cols) and
+                                                                      self.pattern[row][col + 1] else None,
+                        Directions.top: self.field[row - 1][col] if row - 1 in range(0, self.rows) and
+                                                                    self.pattern[row - 1][col] else None}
                     self.field[row][col].change_neighbours(neighbours)
+
+    def generate_outer_walls(self):
+        outer_cells = set()
+        for row in range(0, self.rows):
+            for col in range(0, self.cols):
+                if self.pattern[row][col]:
+                    if self.field[row][col].neighbours[Directions.left] is None:
+                        self.field[row][col].add_wall(Directions.left, WallOuter())
+                        outer_cells.add(self.field[row][col])
+                    if self.field[row][col].neighbours[Directions.right] is None:
+                        self.field[row][col].add_wall(Directions.right, WallOuter())
+                        outer_cells.add(self.field[row][col])
+                    if self.field[row][col].neighbours[Directions.top] is None:
+                        self.field[row][col].add_wall(Directions.top, WallOuter())
+                        outer_cells.add(self.field[row][col])
+                    if self.field[row][col].neighbours[Directions.bottom] is None:
+                        self.field[row][col].add_wall(Directions.bottom, WallOuter())
+                        outer_cells.add(self.field[row][col])
+        return list(outer_cells)
+
+    def create_exit(self, outer_cells):
+        cell = choice(outer_cells)
+        dirs = []
+        if isinstance(cell.walls[Directions.top], WallOuter):
+            dirs.append(Directions.top)
+        if isinstance(cell.walls[Directions.bottom], WallOuter):
+            dirs.append(Directions.bottom)
+        if isinstance(cell.walls[Directions.left], WallOuter):
+            dirs.append(Directions.left)
+        if isinstance(cell.walls[Directions.right], WallOuter):
+            dirs.append(Directions.right)
+        direction = choice(dirs)
+        cell.add_wall(direction, WallExit())
+        x, y = cell.x, cell.y
+        side = Directions.mouth
+        if direction is Directions.top:
+            side = Directions.bottom
+            y -= 1
+        elif direction is Directions.bottom:
+            side = Directions.top
+            y += 1
+        elif direction is Directions.left:
+            side = Directions.right
+            x -= 1
+        elif direction is Directions.right:
+            side = Directions.left
+            x += 1
+        cell.neighbours.update({direction: CellExit(x, y, side, cell)})
 
     def create_base_field(self):
         pass
@@ -91,8 +147,8 @@ def create_test_field():
     field[0][1].walls[Directions.right] = WallConcrete()
     field[0][2].walls[Directions.left] = WallConcrete()
 
-    field[0][0].walls[Directions.top] = WallOuter()
-    field[0][0].walls[Directions.left] = WallOuter()
+    # field[0][0].walls[Directions.top] = WallOuter()
+    # field[0][0].walls[Directions.left] = WallOuter()
 
     field[1][0].river = [field[1][0], field[1][1], field[1][2], field[0][2], field[0][3]]
     field[1][1].river = field[1][2].river = field[0][2].river = field[0][3].river = field[1][0].river

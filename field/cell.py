@@ -1,6 +1,7 @@
 from enums import Directions
-from wall import *
+from field.wall import *
 from entities.player import Player
+from field.wall import WallEmpty
 
 
 class Cell:
@@ -19,6 +20,9 @@ class Cell:
 
     def change_neighbours(self, neighbours):
         self.neighbours = neighbours
+
+    def add_wall(self, direction, wall):
+        self.walls[direction] = wall
 
     def idle(self, player: Player):
         """idle обработчик пустой клетки"""
@@ -65,3 +69,15 @@ class CellRiver(Cell):
                 player.cell = self.river[idx + 1]
             else:
                 player.cell = self
+
+
+class CellExit(Cell):
+    def __init__(self, x, y, direction, cell):
+        super().__init__(x, y)
+        self.neighbours[direction] = cell
+        self.walls = {
+            Directions.top: WallOuter(),
+            Directions.right: WallOuter(),
+            Directions.bottom: WallOuter(),
+            Directions.left: WallOuter()}
+        self.walls.update({direction: WallEntrance()})

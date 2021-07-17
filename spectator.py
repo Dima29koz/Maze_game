@@ -40,16 +40,27 @@ def convert_dirs(key):
     return False
 
 
-def get_color(cell):
+def get_cell_color(cell):
     if type(cell) is Cell:
         return 107, 98, 60
     if type(cell) is CellRiver:
         return 62, 105, 171
 
 
+def get_wall_color(wall):
+    if type(wall) is WallOuter:
+        return 60, 45, 15
+    if type(wall) is WallConcrete:
+        return 170, 105, 25
+    if type(wall) is WallExit:
+        return 54, 171, 28
+    else:
+        return 'darkslategray'
+
+
 def draw_cell(cell):
     x, y = cell.x * TILE, cell.y * TILE
-    pygame.draw.rect(sc, pygame.Color(get_color(cell)), (x + 2, y + 2, TILE - 2, TILE - 2))
+    pygame.draw.rect(sc, pygame.Color(get_cell_color(cell)), (x + 2, y + 2, TILE - 2, TILE - 2))
     if type(cell) == CellRiver:
         draw_river_dir(cell, x, y)
 
@@ -77,15 +88,13 @@ def draw_river_dir(cell, x, y):
 
 def draw_walls(cell: Cell):
     x, y = cell.x * TILE, cell.y * TILE
+    pygame.draw.line(sc, get_wall_color(cell.walls[Directions.top]), (x, y), (x + TILE, y), 3)
 
-    if isinstance(cell.walls[Directions.top], WallConcrete):
-        pygame.draw.line(sc, pygame.Color('darkorange'), (x, y), (x + TILE, y), 3)
-    if isinstance(cell.walls[Directions.right], WallConcrete):
-        pygame.draw.line(sc, pygame.Color('darkorange'), (x + TILE, y), (x + TILE, y + TILE), 3)
-    if isinstance(cell.walls[Directions.bottom], WallConcrete):
-        pygame.draw.line(sc, pygame.Color('darkorange'), (x + TILE, y + TILE), (x, y + TILE), 3)
-    if isinstance(cell.walls[Directions.left], WallConcrete):
-        pygame.draw.line(sc, pygame.Color('darkorange'), (x, y + TILE), (x, y), 3)
+    pygame.draw.line(sc, get_wall_color(cell.walls[Directions.right]), (x + TILE, y), (x + TILE, y + TILE), 3)
+
+    pygame.draw.line(sc, get_wall_color(cell.walls[Directions.bottom]), (x + TILE, y + TILE), (x, y + TILE), 3)
+
+    pygame.draw.line(sc, get_wall_color(cell.walls[Directions.left]), (x, y + TILE), (x, y), 3)
 
 
 direction = False

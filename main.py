@@ -8,5 +8,7 @@ from field_generator.field_generator import FieldGenerator
 
 # print(f.field[0][3].neighbours)
 
-arr = [1,2,3]
-print(1 in arr)
+dic = {"top": 1, "bot": 2}
+print(dic)
+dic.update({"top": 3})
+print(dic)
