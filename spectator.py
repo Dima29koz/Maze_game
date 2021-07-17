@@ -1,8 +1,10 @@
 import pygame
 from pygame.locals import *
-from cell import *
-from field import Field
-from player import Player
+from field.cell import *
+from field.wall import *
+from field.field import Field
+from entities.player import Player
+from enums import Directions, Actions
 
 RES = WIDTH, HEIGHT = 1202, 902
 TILE = 50
@@ -12,11 +14,10 @@ pygame.init()
 sc = pygame.display.set_mode(RES)
 clock = pygame.time.Clock()
 
-field = Field(rows, cols)
-grid_cells = field.get_grid()
-current_cell = grid_cells[0]
-# current_cell.remove_walls(grid_cells[1])
-player1 = Player(grid_cells[5])
+field = Field()
+grid_cells = field.get_field()
+
+player1 = Player(grid_cells[1][1])
 
 
 def draw_player(player):
@@ -24,21 +25,31 @@ def draw_player(player):
     pygame.draw.circle(sc, pygame.Color("red"), (x, y), TILE // 4)
 
 
-def convert_dirs(direction):
-    if direction:
-        if direction == K_UP:
-            return Directions.top
-        elif direction == K_DOWN:
-            return Directions.bottom
-        if direction == K_LEFT:
-            return Directions.left
-        elif direction == K_RIGHT:
-            return Directions.right
-    return Directions.mouth
+def convert_dirs(key):
+    if key:
+        if key == K_SPACE:
+            return Actions.skip, Directions.mouth
+        if key == K_UP:
+            return Actions.move, Directions.top
+        if key == K_DOWN:
+            return Actions.move, Directions.bottom
+        if key == K_LEFT:
+            return Actions.move, Directions.left
+        if key == K_RIGHT:
+            return Actions.move, Directions.right
+    return False
+
+
+def get_color(cell):
+    if type(cell) is Cell:
+        return 107, 98, 60
+    if type(cell) is CellRiver:
+        return 62, 105, 171
+
 
 def draw_cell(cell):
     x, y = cell.x * TILE, cell.y * TILE
-    pygame.draw.rect(sc, pygame.Color(cell.get_color()), (x + 2, y + 2, TILE - 2, TILE - 2))
+    pygame.draw.rect(sc, pygame.Color(get_color(cell)), (x + 2, y + 2, TILE - 2, TILE - 2))
     if type(cell) == CellRiver:
         draw_river_dir(cell, x, y)
 
@@ -89,20 +100,16 @@ while True:
         if event.type == KEYDOWN:
             direction = event.key
         if event.type == KEYUP:
-            if direction == K_SPACE:
-                direction = False
-
-            player1.set_direction(convert_dirs(direction))
-            field.move_calc(player1)
-
+            player1.state, player1.direction = convert_dirs(direction)
+            player1.action()
             direction = False
             break
 
-    for cell in grid_cells:
-        draw_cell(cell)
-        draw_walls(cell)
+    for row in grid_cells:
+        for cell in row:
+            draw_cell(cell)
+            draw_walls(cell)
     draw_player(player1)
-
 
     pygame.display.flip()
 
