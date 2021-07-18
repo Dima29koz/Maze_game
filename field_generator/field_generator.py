@@ -2,7 +2,8 @@ from random import choice
 
 from field.cell import *
 from field.wall import *
-from enums import Directions
+from enums import Directions, RiverDirections
+from entities.treasure import Treasure, TreasureTypes
 
 
 class FieldGenerator:
@@ -16,9 +17,13 @@ class FieldGenerator:
         self.generate_connections()
         outers = self.generate_outer_walls()
         self.create_exit(outers)
+        self.treasures = self.spawn_treasures(2)
 
     def get_field(self):
         return self.field
+
+    def get_treasures(self):
+        return self.treasures
 
     def generate_pattern(self):
         self.pattern = [[True] * self.cols for _ in range(self.rows)]
@@ -35,15 +40,14 @@ class FieldGenerator:
         for row in range(0, self.rows):
             for col in range(0, self.cols):
                 if self.pattern[row][col]:
-                    neighbours = {
-                        Directions.left: self.field[row][col - 1] if col - 1 in range(0, self.cols) and
-                                                                     self.pattern[row][col - 1] else None,
-                        Directions.bottom: self.field[row + 1][col] if row + 1 in range(0, self.rows) and
-                                                                       self.pattern[row + 1][col] else None,
-                        Directions.right: self.field[row][col + 1] if col + 1 in range(0, self.cols) and
-                                                                      self.pattern[row][col + 1] else None,
-                        Directions.top: self.field[row - 1][col] if row - 1 in range(0, self.rows) and
-                                                                    self.pattern[row - 1][col] else None}
+                    neighbours = {}
+                    for direction in Directions:
+                        x, y = direction.calc(col, row)
+                        if x in range(0, self.cols) and y in range(0, self.rows) and self.pattern[y][x]:
+                            neighbours.update({direction: self.field[y][x]})
+                        else:
+                            neighbours.update({direction: None})
+
                     self.field[row][col].change_neighbours(neighbours)
 
     def generate_outer_walls(self):
@@ -51,48 +55,43 @@ class FieldGenerator:
         for row in range(0, self.rows):
             for col in range(0, self.cols):
                 if self.pattern[row][col]:
-                    if self.field[row][col].neighbours[Directions.left] is None:
-                        self.field[row][col].add_wall(Directions.left, WallOuter())
-                        outer_cells.add(self.field[row][col])
-                    if self.field[row][col].neighbours[Directions.right] is None:
-                        self.field[row][col].add_wall(Directions.right, WallOuter())
-                        outer_cells.add(self.field[row][col])
-                    if self.field[row][col].neighbours[Directions.top] is None:
-                        self.field[row][col].add_wall(Directions.top, WallOuter())
-                        outer_cells.add(self.field[row][col])
-                    if self.field[row][col].neighbours[Directions.bottom] is None:
-                        self.field[row][col].add_wall(Directions.bottom, WallOuter())
-                        outer_cells.add(self.field[row][col])
+                    for direction in Directions:
+                        if self.field[row][col].neighbours[direction] is None:
+                            self.field[row][col].add_wall(direction, WallOuter())
+                            outer_cells.add(self.field[row][col])
+
         return list(outer_cells)
 
-    def create_exit(self, outer_cells):
+    @staticmethod
+    def create_exit(outer_cells):
         cell = choice(outer_cells)
         dirs = []
-        if isinstance(cell.walls[Directions.top], WallOuter):
-            dirs.append(Directions.top)
-        if isinstance(cell.walls[Directions.bottom], WallOuter):
-            dirs.append(Directions.bottom)
-        if isinstance(cell.walls[Directions.left], WallOuter):
-            dirs.append(Directions.left)
-        if isinstance(cell.walls[Directions.right], WallOuter):
-            dirs.append(Directions.right)
+        for direction in Directions:
+            if isinstance(cell.walls[direction], WallOuter):
+                dirs.append(direction)
         direction = choice(dirs)
         cell.add_wall(direction, WallExit())
-        x, y = cell.x, cell.y
-        side = Directions.mouth
-        if direction is Directions.top:
-            side = Directions.bottom
-            y -= 1
-        elif direction is Directions.bottom:
-            side = Directions.top
-            y += 1
-        elif direction is Directions.left:
-            side = Directions.right
-            x -= 1
-        elif direction is Directions.right:
-            side = Directions.left
-            x += 1
-        cell.neighbours.update({direction: CellExit(x, y, side, cell)})
+        cell.neighbours.update({direction: CellExit(*direction.calc(cell.x, cell.y), -direction, cell)})
+
+    def spawn_treasures(self, amount):
+        treasures = []
+        ground_cells = []
+        for row in range(0, self.rows):
+            for col in range(0, self.cols):
+                if self.pattern[row][col]:
+                    if type(self.field[row][col]) == Cell:
+                        ground_cells.append(self.field[row][col])
+
+        cell = choice(ground_cells)
+        ground_cells.remove(cell)
+        treasures.append(Treasure(TreasureTypes.very, cell))
+
+        for _ in range(amount-1):
+            cell = choice(ground_cells)
+            ground_cells.remove(cell)
+            treasures.append(Treasure(TreasureTypes.spurious, cell))
+
+        return treasures
 
     def create_base_field(self):
         pass
@@ -125,68 +124,43 @@ def create_test_field():
     field = [[] for _ in range(row)]
     field[0].append(Cell(0, 0))
     field[0].append(Cell(1, 0))
-    field[0].append(CellRiver(2, 0, Directions.right))
-    field[0].append(CellRiver(3, 0, Directions.mouth))
+    field[0].append(CellRiver(2, 0, RiverDirections.right))
+    field[0].append(CellRiver(3, 0, RiverDirections.mouth))
     field[0].append(Cell(4, 0))
-    field[1].append(CellRiver(0, 1, Directions.right))
-    field[1].append(CellRiver(1, 1, Directions.right))
-    field[1].append(CellRiver(2, 1, Directions.top))
+    field[1].append(CellRiver(0, 1, RiverDirections.right))
+    field[1].append(CellRiver(1, 1, RiverDirections.right))
+    field[1].append(CellRiver(2, 1, RiverDirections.top))
     field[1].append(Cell(3, 1))
     field[1].append(Cell(4, 1))
     field[2].append(Cell(0, 2))
     field[2].append(Cell(1, 2))
-    field[2].append(Cell(2, 2))
-    field[2].append(CellRiver(3, 2, Directions.mouth))
+    field[2].append(CellArmory(2, 2))
+    field[2].append(CellRiver(3, 2, RiverDirections.mouth))
     field[2].append(Cell(4, 2))
-    field[3].append(Cell(0, 3))
+    field[3].append(CellClinic(0, 3))
     field[3].append(Cell(1, 3))
-    field[3].append(CellRiver(2, 3, Directions.right))
-    field[3].append(CellRiver(3, 3, Directions.top))
+    field[3].append(CellRiver(2, 3, RiverDirections.right))
+    field[3].append(CellRiver(3, 3, RiverDirections.top))
     field[3].append(Cell(4, 3))
 
+    # field[0][1].add_wall(Directions.right, WallConcrete())
+    # field[0][2].add_wall(Directions.left, WallConcrete())
     field[0][1].walls[Directions.right] = WallConcrete()
     field[0][2].walls[Directions.left] = WallConcrete()
 
-    # field[0][0].walls[Directions.top] = WallOuter()
-    # field[0][0].walls[Directions.left] = WallOuter()
+    field[0][1].walls[Directions.bottom] = WallRubber()
+    field[1][1].walls[Directions.top] = WallRubber()
 
-    field[1][0].river = [field[1][0], field[1][1], field[1][2], field[0][2], field[0][3]]
-    field[1][1].river = field[1][2].river = field[0][2].river = field[0][3].river = field[1][0].river
+    river_list = [field[1][0], field[1][1], field[1][2], field[0][2], field[0][3]]
+    field[1][0].add_river_list(river_list)
+    field[1][1].add_river_list(river_list)
+    field[1][2].add_river_list(river_list)
+    field[0][2].add_river_list(river_list)
+    field[0][3].add_river_list(river_list)
 
-    field[3][2].river = [field[3][2], field[3][3], field[2][3]]
-    field[3][3].river = field[3][2].river
-    field[2][3].river = field[3][2].river
-    return field
-
-
-def create_test_field2():
-    row = 4
-    field = [[] for _ in range(row)]
-    field[0].append(Cell(0, 0))
-    field[0].append(Cell(1, 0))
-    field[0].append(CellRiver(2, 0, Directions.right))
-    field[0].append(CellRiver(3, 0, Directions.mouth))
-    field[0].append(CellRiver(4, 0, Directions.mouth))
-    field[1].append(CellRiver(0, 1, Directions.right))
-    field[1].append(CellRiver(1, 1, Directions.right))
-    field[1].append(CellRiver(2, 1, Directions.top))
-    field[1].append(CellRiver(3, 1, Directions.right))
-    field[1].append(CellRiver(4, 1, Directions.top))
-    field[2].append(CellRiver(0, 2, Directions.right))
-    field[2].append(CellRiver(1, 2, Directions.right))
-    field[2].append(CellRiver(2, 2, Directions.right))
-    field[2].append(CellRiver(3, 2, Directions.right))
-    field[2].append(CellRiver(4, 2, Directions.bottom))
-    field[3].append(CellRiver(0, 3, Directions.mouth))
-    field[3].append(CellRiver(1, 3, Directions.left))
-    field[3].append(CellRiver(2, 3, Directions.left))
-    field[3].append(CellRiver(3, 3, Directions.left))
-    field[3].append(CellRiver(4, 3, Directions.left))
-
-    field[0][1].walls[Directions.right] = WallConcrete()
-    field[0][2].walls[Directions.left] = WallConcrete()
-
-    field[0][0].walls[Directions.top] = WallOuter()
-    field[0][0].walls[Directions.left] = WallOuter()
+    river_list = [field[3][2], field[3][3], field[2][3]]
+    field[3][2].add_river_list(river_list)
+    field[3][3].add_river_list(river_list)
+    field[2][3].add_river_list(river_list)
 
     return field

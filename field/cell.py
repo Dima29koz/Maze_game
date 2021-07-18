@@ -1,6 +1,7 @@
-from enums import Directions
+from enums import Directions, RiverDirections, TreasureTypes
 from field.wall import *
 from entities.player import Player
+from entities.treasure import Treasure
 from field.wall import WallEmpty
 
 
@@ -24,15 +25,32 @@ class Cell:
     def add_wall(self, direction, wall):
         self.walls[direction] = wall
 
+    def break_wall(self, direction: Directions):
+        """
+        Уничтожает стену в заданном направлении если стена разрушима
+        :param direction:
+        :return: True if wall was destroyed else False
+        """
+        if self.walls[direction].breakable:
+            self.add_wall(direction, WallEmpty())
+            neighbour = self.neighbours[direction]
+            if neighbour and neighbour.walls[-direction].breakable:
+                neighbour.walls[-direction] = WallEmpty()
+            return True
+        return False
+
     def idle(self, player: Player):
         """idle обработчик пустой клетки"""
         print(f"idle ({self.x}, {self.y})")
         player.cell = self
 
-    def active(self, player):
+    def active(self, player: Player):
         """active обработчик пустой клетки"""
         print(f"active ({self.x}, {self.y})")
         player.cell = self
+
+    def treasure_movement(self, treasure: Treasure):
+        treasure.cell = self
 
     def check_wall(self, player):
         state, moved = self.walls[player.direction].handler()
@@ -47,19 +65,22 @@ class Cell:
 
 
 class CellRiver(Cell):
-    def __init__(self, x, y, direction=Directions.mouth):
+    def __init__(self, x, y, direction=RiverDirections.mouth):
         super().__init__(x, y)
-        self.direction = direction
+        self.direction = direction  # Todo удалить нафиг ибо нужно только для отрисовки
         self.river = []
 
-    def idle(self, player):
-        try:
-            player.cell = self.neighbours[self.direction]
-        except KeyError:
+    def idle(self, player: Player):
+
+        idx = self.river.index(self)
+
+        if idx + 1 < len(self.river):
+            player.cell = self.river[idx + 1]
+        else:
             player.cell = self
 
     def active(self, player: Player):
-        if isinstance(player.cell, CellRiver) and player.cell in self.river:
+        if isinstance(player.cell, CellRiver) and player.cell in self.river and player.cell is not self:
             player.cell = self
         else:
             idx = self.river.index(self)
@@ -69,6 +90,17 @@ class CellRiver(Cell):
                 player.cell = self.river[idx + 1]
             else:
                 player.cell = self
+
+    def treasure_movement(self, treasure: Treasure):
+        idx = self.river.index(self)
+
+        if idx + 1 < len(self.river):
+            treasure.cell = self.river[idx + 1]
+        else:
+            treasure.cell = self
+
+    def add_river_list(self, river):
+        self.river = river
 
 
 class CellExit(Cell):
@@ -81,3 +113,40 @@ class CellExit(Cell):
             Directions.bottom: WallOuter(),
             Directions.left: WallOuter()}
         self.walls.update({direction: WallEntrance()})
+
+    def active(self, player: Player):
+        super().active(player)
+        if player.treasure:
+            treasure = player.treasure
+            player.treasure = None
+            if treasure.t_type is TreasureTypes.very:
+                print("player wins")
+            else:
+                print(treasure.t_type)
+
+
+class CellClinic(Cell):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    def idle(self, player: Player):
+        player.cell = self
+        player.health = player.health_max
+        print("healed")
+
+    def active(self, player: Player):
+        self.idle(player)
+
+
+class CellArmory(Cell):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    def idle(self, player: Player):
+        player.cell = self
+        player.bombs = player.bombs_max
+        player.arrows = player.arrows_max
+        print("weapon restored")
+
+    def active(self, player: Player):
+        self.idle(player)

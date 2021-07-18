@@ -1,5 +1,3 @@
-from field.cell import *
-
 
 class WallEmpty:
     def __init__(self):
