@@ -1,11 +1,13 @@
-from random import choice, shuffle
-import random
+from random import choice
 from copy import deepcopy
+
 from field.cell import *
 from field.wall import *
 from enums import Directions, RiverDirections
 from entities.treasure import Treasure, TreasureTypes
-from level_pattern import PatternCell
+from field_generator.level_pattern import PatternCell
+from field_generator.river_generator import gen_river
+
 
 class FieldGenerator:
     def __init__(self, cols, rows):
@@ -15,10 +17,11 @@ class FieldGenerator:
         self.cols = cols
         self.generate_pattern()
         self.generate_field()
-        # self.generate_connections()
-        # outers = self.generate_outer_walls()
-        # self.create_exit(outers)
-        # self.treasures = self.spawn_treasures(2)
+        self.generate_river(5)
+        self.generate_connections()
+        outers = self.generate_outer_walls()
+        self.create_exit(outers)
+        self.treasures = self.spawn_treasures(2)
 
     def get_field(self):
         return self.field
@@ -29,12 +32,14 @@ class FieldGenerator:
     def generate_pattern(self):
         # self.pattern = [[True] * self.cols for _ in range(self.rows)]
         self.pattern = [[PatternCell(col, row) for col in range(self.cols)] for row in range(self.rows)]
-        for i in range(5):
-            self.pattern[0][i].is_not_none = False
-            self.pattern[1][i].is_not_none = False
+        # for i in range(5):
+        #     self.pattern[0][i].is_not_none = False
+        #     self.pattern[1][i].is_not_none = False
         self.pattern[3][0].is_not_none = False
         self.pattern[3][3].is_not_none = False
         self.pattern[3][4].is_not_none = False
+
+        self.pattern[1][2].is_not_none = False
 
     def generate_field(self):
         # self.field = create_test_field()
@@ -44,11 +49,11 @@ class FieldGenerator:
     def generate_connections(self):
         for row in range(0, self.rows):
             for col in range(0, self.cols):
-                if self.pattern[row][col]:
+                if self.pattern[row][col].is_not_none:
                     neighbours = {}
                     for direction in Directions:
                         x, y = direction.calc(col, row)
-                        if x in range(0, self.cols) and y in range(0, self.rows) and self.pattern[y][x]:
+                        if x in range(0, self.cols) and y in range(0, self.rows) and self.pattern[y][x].is_not_none:
                             neighbours.update({direction: self.field[y][x]})
                         else:
                             neighbours.update({direction: None})
@@ -59,7 +64,7 @@ class FieldGenerator:
         outer_cells = set()
         for row in range(0, self.rows):
             for col in range(0, self.cols):
-                if self.pattern[row][col]:
+                if self.pattern[row][col].is_not_none:
                     for direction in Directions:
                         if self.field[row][col].neighbours[direction] is None:
                             self.field[row][col].add_wall(direction, WallOuter())
@@ -101,64 +106,19 @@ class FieldGenerator:
     def create_base_field(self):
         pass
 
-    @staticmethod
-    def gen_river_source(allowed_sources):
-        if allowed_sources:
-            source = choice(allowed_sources)
-            allowed_sources.remove(source)
-            return source
-        else:
-            return False
-
-    def gen_river(self, length):
-        field = deepcopy(self.field)
-        pattern = deepcopy(self.pattern)
+    def generate_river(self, length):
         allowed_sources = []
+
         for row in range(self.rows):
             for col in range(self.cols):
                 if type(self.field[row][col]) == Cell:
                     allowed_sources.append(self.field[row][col])
+        river = gen_river(length, allowed_sources, deepcopy(self.pattern), self.cols, self.rows)
+        river = [CellRiver(riv_cell.x, riv_cell.y) for riv_cell in river]
+        for riv_cell in river:
+            riv_cell.add_river_list(river)
+            self.field[riv_cell.y][riv_cell.x] = riv_cell
 
-        start = self.gen_river_source(allowed_sources)
-        river = []
-        while start:
-            river = [start]
-            river = self.gen_next_river_cell(length-1, pattern, river)
-            if not river:
-                start = self.gen_river_source(allowed_sources)
-            else:
-                break
-
-        draw_field(field, self.rows, self.cols, river)
-
-    def check_directions(self, pattern: list[list[PatternCell]], current_cell):
-        empty_neighbours = []
-        for direction in Directions:
-            x, y = direction.calc(current_cell.x, current_cell.y)
-            if x in range(0, self.cols) and y in range(0, self.rows) and not pattern[y][x].visited and pattern[y][x].is_not_none:
-                empty_neighbours.append(pattern[y][x])
-        return empty_neighbours
-
-    def gen_next_river_cell(self, length, pattern, river):
-        if length == 0:
-            return river
-        else:
-            empty_neighbours = self.check_directions(pattern, river[-1])
-
-            while empty_neighbours:
-                next_cell = choice(empty_neighbours)
-                empty_neighbours.remove(next_cell)
-                pattern[river[-1].y][river[-1].x].visited = True
-                river.append(next_cell)
-                a = self.gen_next_river_cell(length - 1, pattern, river)
-                if a:
-                    return a
-            else:
-                last = river.pop()
-
-                pattern[last.y][last.x].visited = False
-
-                return False
 
 def create_test_field():
     row = 4
@@ -221,9 +181,8 @@ def draw_field(field, rows, cols, river):
         print(*res[row])
 
 
-
 if __name__ == "__main__":
     f = FieldGenerator(5, 4)
     # draw_field(f.field, f.rows, f.cols)
 
-    f.gen_river(6)
+    f.generate_river(7)

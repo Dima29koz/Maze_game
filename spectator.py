@@ -74,8 +74,9 @@ def get_wall_color(wall):
 def draw_field():
     for row in grid_cells:
         for cell in row:
-            draw_cell(cell)
-            draw_walls(cell)
+            if cell:
+                draw_cell(cell)
+                draw_walls(cell)
 
 
 def draw_cell(cell):
@@ -135,24 +136,29 @@ def draw_players():
 
 
 def draw_river_dir(cell, x, y):
-    if cell.direction == RiverDirections.right:
-        pygame.draw.polygon(sc, pygame.Color("blue"), [(x + 2, y + TILE // 3 + 2),
-                                                       (x + 2, y + TILE // 3 * 2 - 2),
-                                                       (x + TILE - 2, y + TILE // 2 - 1)])
-    if cell.direction == RiverDirections.top:
-        pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE // 3 + 2, y + TILE - 2),
-                                                       (x + TILE // 3 * 2 - 2, y + TILE - 2),
-                                                       (x + TILE // 2, y + 2)])
-    if cell.direction == RiverDirections.left:
-        pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE - 2, y + TILE // 3 + 2),
-                                                       (x + TILE - 2, y + TILE // 3 * 2 - 2),
-                                                       (x + 2, y + TILE // 2 - 1)])
-    if cell.direction == RiverDirections.bottom:
-        pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE // 3 + 2, y + 2),
-                                                       (x + TILE // 3 * 2 - 2, y + 2),
-                                                       (x + TILE // 2, y + TILE - 2)])
-    if cell.direction == RiverDirections.mouth:
-        pygame.draw.circle(sc, pygame.Color("blue"), (x + TILE // 2, y + TILE // 2), TILE // 4)
+    f1 = pygame.font.Font(None, TILE)
+    s = str(cell.river.index(cell))
+    text = f1.render(s, True, (180, 180, 180))
+    place = text.get_rect(center=(x + TILE // 2, y + TILE // 2))
+    sc.blit(text, place)
+    # if cell.direction == RiverDirections.right:
+    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + 2, y + TILE // 3 + 2),
+    #                                                    (x + 2, y + TILE // 3 * 2 - 2),
+    #                                                    (x + TILE - 2, y + TILE // 2 - 1)])
+    # if cell.direction == RiverDirections.top:
+    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE // 3 + 2, y + TILE - 2),
+    #                                                    (x + TILE // 3 * 2 - 2, y + TILE - 2),
+    #                                                    (x + TILE // 2, y + 2)])
+    # if cell.direction == RiverDirections.left:
+    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE - 2, y + TILE // 3 + 2),
+    #                                                    (x + TILE - 2, y + TILE // 3 * 2 - 2),
+    #                                                    (x + 2, y + TILE // 2 - 1)])
+    # if cell.direction == RiverDirections.bottom:
+    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE // 3 + 2, y + 2),
+    #                                                    (x + TILE // 3 * 2 - 2, y + 2),
+    #                                                    (x + TILE // 2, y + TILE - 2)])
+    # if cell.direction == RiverDirections.mouth:
+    #     pygame.draw.circle(sc, pygame.Color("blue"), (x + TILE // 2, y + TILE // 2), TILE // 4)
 
 
 def draw_walls(cell: Cell):

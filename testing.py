@@ -30,7 +30,7 @@ class Cell:
         if self.walls['right']:
             pygame.draw.line(sc, pygame.Color('darkorange'), (x + TILE, y), (x + TILE, y + TILE), 3)
         if self.walls['bottom']:
-            pygame.draw.line(sc, pygame.Color('darkorange'), (x + TILE, y + TILE), (x , y + TILE), 3)
+            pygame.draw.line(sc, pygame.Color('darkorange'), (x + TILE, y + TILE), (x, y + TILE), 3)
         if self.walls['left']:
             pygame.draw.line(sc, pygame.Color('darkorange'), (x, y + TILE), (x, y), 3)
 
@@ -90,7 +90,7 @@ while True:
     current_cell.visited = True
     current_cell.draw_current_cell()
     [pygame.draw.rect(sc, colors[i], (cell.x * TILE + 2, cell.y * TILE + 2,
-                                         TILE - 4, TILE - 4)) for i, cell in enumerate(stack)]
+                                      TILE - 4, TILE - 4)) for i, cell in enumerate(stack)]
 
     next_cell = current_cell.check_neighbors()
     if next_cell:

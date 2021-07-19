@@ -65,9 +65,8 @@ class Cell:
 
 
 class CellRiver(Cell):
-    def __init__(self, x, y, direction=RiverDirections.mouth):
+    def __init__(self, x, y):
         super().__init__(x, y)
-        self.direction = direction  # Todo удалить нафиг ибо нужно только для отрисовки
         self.river = []
 
     def idle(self, player: Player):
@@ -79,7 +78,7 @@ class CellRiver(Cell):
         else:
             player.cell = self
 
-    def active(self, player: Player):
+    def active(self, player: Player):  # Todo need to be fixed
         if isinstance(player.cell, CellRiver) and player.cell in self.river and player.cell is not self:
             player.cell = self
         else:
