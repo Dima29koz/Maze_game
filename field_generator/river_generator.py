@@ -1,44 +1,69 @@
-from random import choice
+from random import choice, shuffle
 from typing import Optional
-
 from field_generator.level_pattern import PatternCell
 from enums import Directions
+from field.cell import Cell, CellRiver
 
 
-def gen_river(length, allowed_sources, pattern, cols, rows) -> list[PatternCell]:
-    while allowed_sources:
-        source = choice(allowed_sources)
-        allowed_sources.remove(source)
-        river = gen_next_river_cell(length - 1, pattern, [source], cols, rows)
-        if river:
+class RiverGenerator:
+    def __init__(self, cols, rows,
+                 pattern: list[list[PatternCell]],
+                 field: list[list[Cell]],
+                 ground_cells: list[Cell]):
+        self.__cols, self.__rows = cols, rows
+        self.__pattern = pattern
+        self.__field = field
+        self.__ground_cells = ground_cells
+
+    def spawn_rivers(self, river_lengths):
+        for length in river_lengths:
+            self.generate_river(length)
+
+    def generate_river(self, length):
+        river = self.__gen_river(length)
+        if not river:
+            return False
+        river = [CellRiver(riv_cell.x, riv_cell.y) for riv_cell in river]
+        for riv_cell in river:
+            riv_cell.add_river_list(river)
+            self.__field[riv_cell.y][riv_cell.x] = riv_cell
+        return True
+
+    def __gen_river(self, length) -> Optional[list[Cell]]:
+        shuffle(self.__ground_cells)
+        for source in self.__ground_cells:
+            river = self.__gen_next_river_cell(length - 1, [source])
+            if river:
+                for cell in river:
+                    self.__ground_cells.remove(cell)
+                return river
+        return
+
+    def __check_directions(self, current_cell: Cell) -> Optional[list[Cell]]:
+        empty_neighbours = []
+        for direction in Directions:
+            x, y = direction.calc(current_cell.x, current_cell.y)
+            if x in range(self.__cols) and y in range(self.__rows) and \
+                    not self.__pattern[y][x].visited and type(self.__field[y][x]) == Cell:
+                empty_neighbours.append(self.__field[y][x])
+        return empty_neighbours
+
+    def __gen_next_river_cell(self, length, river: list[Cell]) -> Optional[list[Cell]]:
+        if length == 0:
+            self.__pattern[river[-1].y][river[-1].x].visited = True
             return river
-
-
-def check_directions(pattern: list[list[PatternCell]], current_cell, cols, rows):
-    empty_neighbours = []
-    for direction in Directions:
-        x, y = direction.calc(current_cell.x, current_cell.y)
-        if x in range(0, cols) and y in range(0, rows) and \
-                not pattern[y][x].visited and pattern[y][x].is_not_none:
-            empty_neighbours.append(pattern[y][x])
-    return empty_neighbours
-
-
-def gen_next_river_cell(length, pattern, river, cols, rows) -> Optional[list[PatternCell]]:
-    if length == 0:
-        return river
-    else:
-        empty_neighbours = check_directions(pattern, river[-1], cols, rows)
-
-        while empty_neighbours:
-            next_cell = choice(empty_neighbours)
-            empty_neighbours.remove(next_cell)
-            pattern[river[-1].y][river[-1].x].visited = True
-            river.append(next_cell)
-            a = gen_next_river_cell(length - 1, pattern, river, cols, rows)
-            if a:
-                return a
         else:
-            last = river.pop()
-            pattern[last.y][last.x].visited = False
-            return
+            empty_neighbours = self.__check_directions(river[-1])
+
+            while empty_neighbours:
+                next_cell = choice(empty_neighbours)
+                empty_neighbours.remove(next_cell)
+                self.__pattern[river[-1].y][river[-1].x].visited = True
+                river.append(next_cell)
+                a = self.__gen_next_river_cell(length - 1, river)
+                if a:
+                    return a
+            else:
+                last = river.pop()
+                self.__pattern[last.y][last.x].visited = False
+                return

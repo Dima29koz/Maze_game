@@ -4,7 +4,7 @@ from field.cell import *
 from field.wall import *
 from field.field import Field
 from entities.player import Player
-from enums import Directions, Actions, TreasureTypes, RiverDirections
+from enums import Directions, Actions, TreasureTypes
 
 RES = WIDTH, HEIGHT = 1202, 902
 TILE = 50
@@ -53,7 +53,7 @@ def get_cell_color(cell):
     if type(cell) is CellExit:
         return 55, 120, 20
     if type(cell) is CellRiver:
-        return 62, 105, 171
+        return 62, 105, len(cell.river)*30
     else:
         return 107, 98, 60
 
@@ -91,8 +91,10 @@ def draw_cell(cell):
 
 
 def draw_clinic(x, y):
-    pygame.draw.rect(sc, pygame.Color(255, 15, 15), (x + TILE // 3 + 2, y + 2, TILE // 3 - 2, TILE - 2), TILE // 10)
-    pygame.draw.rect(sc, pygame.Color(255, 15, 15), (x + 2, y + TILE // 3 + 2, TILE - 2, TILE // 3 - 2), TILE // 10)
+    f1 = pygame.font.Font(None, TILE)
+    text = f1.render('H', True, (155, 15, 15))
+    place = text.get_rect(center=(x + TILE // 2, y + TILE // 2))
+    sc.blit(text, place)
 
 
 def draw_armory(x, y):
@@ -136,29 +138,11 @@ def draw_players():
 
 
 def draw_river_dir(cell, x, y):
-    f1 = pygame.font.Font(None, TILE)
+    f1 = pygame.font.Font(None, TILE*2//3)
     s = str(cell.river.index(cell))
     text = f1.render(s, True, (180, 180, 180))
     place = text.get_rect(center=(x + TILE // 2, y + TILE // 2))
     sc.blit(text, place)
-    # if cell.direction == RiverDirections.right:
-    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + 2, y + TILE // 3 + 2),
-    #                                                    (x + 2, y + TILE // 3 * 2 - 2),
-    #                                                    (x + TILE - 2, y + TILE // 2 - 1)])
-    # if cell.direction == RiverDirections.top:
-    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE // 3 + 2, y + TILE - 2),
-    #                                                    (x + TILE // 3 * 2 - 2, y + TILE - 2),
-    #                                                    (x + TILE // 2, y + 2)])
-    # if cell.direction == RiverDirections.left:
-    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE - 2, y + TILE // 3 + 2),
-    #                                                    (x + TILE - 2, y + TILE // 3 * 2 - 2),
-    #                                                    (x + 2, y + TILE // 2 - 1)])
-    # if cell.direction == RiverDirections.bottom:
-    #     pygame.draw.polygon(sc, pygame.Color("blue"), [(x + TILE // 3 + 2, y + 2),
-    #                                                    (x + TILE // 3 * 2 - 2, y + 2),
-    #                                                    (x + TILE // 2, y + TILE - 2)])
-    # if cell.direction == RiverDirections.mouth:
-    #     pygame.draw.circle(sc, pygame.Color("blue"), (x + TILE // 2, y + TILE // 2), TILE // 4)
 
 
 def draw_walls(cell: Cell):

@@ -1,4 +1,4 @@
-from enums import Directions, RiverDirections, TreasureTypes
+from enums import Directions, TreasureTypes
 from field.wall import *
 from entities.player import Player
 from entities.treasure import Treasure
@@ -78,17 +78,13 @@ class CellRiver(Cell):
         else:
             player.cell = self
 
-    def active(self, player: Player):  # Todo need to be fixed
-        if isinstance(player.cell, CellRiver) and player.cell in self.river and player.cell is not self:
+    def active(self, player: Player):
+        if self.__is_same_river(player):
             player.cell = self
         else:
             idx = self.river.index(self)
-            if idx + 2 < len(self.river):
-                player.cell = self.river[idx + 2]
-            elif idx + 1 < len(self.river):
-                player.cell = self.river[idx + 1]
-            else:
-                player.cell = self
+            dif = len(self.river) - 1 - idx
+            player.cell = self.river[idx + 2] if dif > 2 else self.river[idx + dif]
 
     def treasure_movement(self, treasure: Treasure):
         idx = self.river.index(self)
@@ -97,6 +93,12 @@ class CellRiver(Cell):
             treasure.cell = self.river[idx + 1]
         else:
             treasure.cell = self
+
+    def __is_same_river(self, player: Player):
+        if isinstance(player.cell, CellRiver) and player.cell is not self:
+            if player.cell in self.river:
+                if abs(self.river.index(self) - self.river.index(player.cell)) == 1:
+                    return True
 
     def add_river_list(self, river):
         self.river = river
