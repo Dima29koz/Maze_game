@@ -21,7 +21,7 @@ class Field:
 
     def spawn_players(self):
         self.players.append(Player(self.field[1][1]))
-        # self.players.append(Player(self.field[0][0]))
+        # self.players.append(Player(self.field[1][0]))
 
     def get_players(self):
         return self.players
@@ -36,6 +36,16 @@ class Field:
             if player.cell == treasure.cell:
                 treasures.append(treasure)
         return treasures
+
+    def check_players(self, cell, active_player) -> list[Player]:
+        """
+        :return: список игроков на данной клетке
+        """
+        current_players = []
+        for player in self.players:
+            if player.cell == cell and player is not active_player:
+                current_players.append(player)
+        return current_players
 
     def swap_treasure(self, treasures: list[Treasure]):
         player = self.players[self.active_player]
@@ -59,8 +69,25 @@ class Field:
         elif action is Actions.hurted:
             if player.was_hit():
                 player.treasure.cell = player.cell
-                self.treasures.append(player.treasure)
-                player.treasure = None
+                self.treasures.append(player.drop_treasure())
+        elif action is Actions.shoot_bow:
+            if player.shoot_bow():
+                current_cell = player.cell
+                current_players = self.check_players(current_cell, player)
+                while not current_players:
+                    if current_cell.walls[direction].weapon_collision:
+                        break
+                    current_cell = current_cell.neighbours[direction]
+                    current_players = self.check_players(current_cell, player)
+                else:
+                    for other_player in current_players:
+                        if other_player.was_hit():
+                            other_player.treasure.cell = other_player.cell
+                            self.treasures.append(other_player.drop_treasure())
+
+            self.active_player = (self.active_player + 1) % len(self.players)
+            if self.active_player + 1 == len(self.players):
+                host_turn = True
         else:
             if player.action(action, direction):
                 self.active_player = (self.active_player + 1) % len(self.players)
@@ -69,4 +96,3 @@ class Field:
         if host_turn:
             for treasure in self.treasures:
                 treasure.idle()
-

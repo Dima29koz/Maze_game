@@ -28,12 +28,13 @@ class FieldGenerator:
         self.generate_pattern()
         self.generate_base_field()
         self.generate_rivers(river_rules=[5, 3])
-        self.generate_armory()
+        self.generate_armory(armory_rules=True)
         self.generate_clinic()
+        self.treasures = self.spawn_treasures(treasures_rules=[1, 1, 0])
         self.generate_connections()
+        self.generate_walls(wall_rules=None)
         outer_cells = self.generate_outer_walls()
         self.create_exit(outer_cells)
-        self.treasures = self.spawn_treasures(treasures_rules=[1, 1, 0])
 
     def generate_pattern(self):
         self.pattern = [[PatternCell(col, row) for col in range(self.cols)] for row in range(self.rows)]
@@ -61,10 +62,21 @@ class FieldGenerator:
         rg = RiverGenerator(self.cols, self.rows, self.pattern, self.field, self.ground_cells)
         rg.spawn_rivers(river_rules)
 
-    def generate_armory(self):
-        cell = choice(self.ground_cells)
-        self.field[cell.y][cell.x] = CellArmory(cell.x, cell.y)
-        self.ground_cells.remove(cell)
+    def generate_armory(self, armory_rules: bool):
+        """
+        :param armory_rules: True if needed 2 different types
+        """
+        if armory_rules:
+            cell = choice(self.ground_cells)
+            self.field[cell.y][cell.x] = CellArmoryWeapon(cell.x, cell.y)
+            self.ground_cells.remove(cell)
+            cell = choice(self.ground_cells)
+            self.field[cell.y][cell.x] = CellArmoryExplosive(cell.x, cell.y)
+            self.ground_cells.remove(cell)
+        else:
+            cell = choice(self.ground_cells)
+            self.field[cell.y][cell.x] = CellArmory(cell.x, cell.y)
+            self.ground_cells.remove(cell)
 
     def generate_clinic(self):
         cell = choice(self.ground_cells)
@@ -84,6 +96,9 @@ class FieldGenerator:
                             neighbours.update({direction: None})
 
                     self.field[row][col].change_neighbours(neighbours)
+
+    def generate_walls(self, wall_rules):
+        pass
 
     def generate_outer_walls(self):
         outer_cells = set()

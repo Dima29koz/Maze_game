@@ -46,6 +46,15 @@ def convert_keys(key):
         if key == K_d:
             return Actions.throw_bomb, Directions.right
 
+        if key == K_i:
+            return Actions.shoot_bow, Directions.top
+        if key == K_k:
+            return Actions.shoot_bow, Directions.bottom
+        if key == K_j:
+            return Actions.shoot_bow, Directions.left
+        if key == K_l:
+            return Actions.shoot_bow, Directions.right
+
     return
 
 
@@ -86,8 +95,8 @@ def draw_cell(cell):
         draw_river_dir(cell, x, y)
     if type(cell) == CellClinic:
         draw_clinic(x, y)
-    if type(cell) == CellArmory:
-        draw_armory(x, y)
+    if isinstance(cell, CellArmory):
+        draw_armory(cell, x, y)
 
 
 def draw_clinic(x, y):
@@ -97,9 +106,14 @@ def draw_clinic(x, y):
     sc.blit(text, place)
 
 
-def draw_armory(x, y):
-    f1 = pygame.font.Font(None, TILE)
-    text = f1.render('A', True, (180, 180, 180))
+def draw_armory(cell, x, y):
+    s = 'A'
+    if type(cell) == CellArmoryExplosive:
+        s += 'E'
+    if type(cell) == CellArmoryWeapon:
+        s += 'W'
+    f1 = pygame.font.Font(None, TILE*4//5)
+    text = f1.render(s, True, (180, 180, 180))
     place = text.get_rect(center=(x + TILE // 2, y + TILE // 2))
     sc.blit(text, place)
 

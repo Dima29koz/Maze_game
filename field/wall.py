@@ -2,6 +2,7 @@
 class WallEmpty:
     def __init__(self):
         self.breakable = True
+        self.weapon_collision = False
 
     def handler(self):
         """
@@ -19,6 +20,7 @@ class WallConcrete(WallEmpty):
     def __init__(self):
         super().__init__()
         self.breakable = True
+        self.weapon_collision = True
 
     def handler(self):
         print("каменная стена")
@@ -57,6 +59,7 @@ class WallRubber(WallEmpty):
     def __init__(self):
         super().__init__()
         self.breakable = True
+        self.weapon_collision = True
 
     def handler(self):
         print("резиновая стена")

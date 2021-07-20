@@ -1,3 +1,5 @@
+from typing import Optional
+
 from enums import Directions, TreasureTypes
 from field.wall import *
 from entities.player import Player
@@ -8,7 +10,7 @@ from field.wall import WallEmpty
 class Cell:
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.neighbours = {
+        self.neighbours: dict[Directions, Optional[Cell]] = {
             Directions.top: None,
             Directions.right: None,
             Directions.bottom: None,
@@ -147,7 +149,33 @@ class CellArmory(Cell):
         player.cell = self
         player.bombs = player.bombs_max
         player.arrows = player.arrows_max
+        print("ammunition restored")
+
+    def active(self, player: Player):
+        self.idle(player)
+
+
+class CellArmoryWeapon(CellArmory):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    def idle(self, player: Player):
+        player.cell = self
+        player.arrows = player.arrows_max
         print("weapon restored")
+
+    def active(self, player: Player):
+        self.idle(player)
+
+
+class CellArmoryExplosive(CellArmory):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    def idle(self, player: Player):
+        player.cell = self
+        player.bombs = player.bombs_max
+        print("Explosive restored")
 
     def active(self, player: Player):
         self.idle(player)

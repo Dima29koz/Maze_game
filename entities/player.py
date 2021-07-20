@@ -1,5 +1,6 @@
+from typing import Optional
+
 from enums import Actions, Directions
-from field.cell import *
 from entities.treasure import Treasure
 
 
@@ -13,7 +14,7 @@ class Player:
         self.bombs = self.bombs_max
         self.arrows_max = 3
         self.arrows = self.arrows_max
-        self.treasure = None
+        self.treasure: Optional[Treasure] = None
 
     def action(self, action: Actions, direction: Directions):
         """
@@ -26,8 +27,14 @@ class Player:
             self.cell.check_wall(self)
         if action is Actions.throw_bomb:
             self.throw_bomb()
-            return False
+        if action is Actions.shoot_bow:
+            self.shoot_bow()
         return True
+
+    def drop_treasure(self):
+        treasure = self.treasure
+        self.treasure = None
+        return treasure
 
     def can_take_treasure(self):
         if self.health == self.health_max:
@@ -57,3 +64,10 @@ class Player:
         else:
             print("нет бомб")
 
+    def shoot_bow(self):
+        if self.arrows:
+            self.arrows -= 1
+            return True
+        else:
+            print("нет стрел")
+            return False

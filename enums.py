@@ -16,8 +16,6 @@ class Directions(Enum):
             return Directions.right
         if self is Directions.right:
             return Directions.left
-        if self is Directions.mouth:
-            return Directions.mouth
 
     def calc(self, x, y):
         if self is Directions.top:
