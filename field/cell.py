@@ -42,9 +42,8 @@ class Cell:
         return False
 
     def idle(self, player: Player):
-        """idle обработчик пустой клетки"""
-        print(f"idle ({self.x}, {self.y})")
         player.cell = self
+        return {'info': ''}
 
     def active(self, player: Player):
         """active обработчик пустой клетки"""
@@ -72,13 +71,14 @@ class CellRiver(Cell):
         self.river = []
 
     def idle(self, player: Player):
-
         idx = self.river.index(self)
 
         if idx + 1 < len(self.river):
             player.cell = self.river[idx + 1]
+            return {'info': ''}
         else:
             player.cell = self
+            return {'info': 'устье'}
 
     def active(self, player: Player):
         if self.__is_same_river(player):
@@ -135,7 +135,7 @@ class CellClinic(Cell):
     def idle(self, player: Player):
         player.cell = self
         player.health = player.health_max
-        print("healed")
+        return {'info': 'здоровье восстановлено'}
 
     def active(self, player: Player):
         self.idle(player)
@@ -149,7 +149,7 @@ class CellArmory(Cell):
         player.cell = self
         player.bombs = player.bombs_max
         player.arrows = player.arrows_max
-        print("ammunition restored")
+        return {'info': 'боезапас восстановлен'}
 
     def active(self, player: Player):
         self.idle(player)
@@ -162,7 +162,7 @@ class CellArmoryWeapon(CellArmory):
     def idle(self, player: Player):
         player.cell = self
         player.arrows = player.arrows_max
-        print("weapon restored")
+        return {'info': 'оружие восстановлено'}
 
     def active(self, player: Player):
         self.idle(player)
@@ -175,7 +175,7 @@ class CellArmoryExplosive(CellArmory):
     def idle(self, player: Player):
         player.cell = self
         player.bombs = player.bombs_max
-        print("Explosive restored")
+        return {'info': 'взрывчатка восстановлена'}
 
     def active(self, player: Player):
         self.idle(player)

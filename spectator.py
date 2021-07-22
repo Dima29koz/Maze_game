@@ -19,14 +19,12 @@ field = Field()
 grid_cells = field.get_field()
 
 
-def convert_keys(key):
+def convert_keys(key) -> Optional[tuple[Actions, Optional[Directions]]]:
     if key:
         if key == K_SPACE:
-            return Actions.skip, Directions.top
+            return Actions.skip, None
         if key == K_RETURN:
-            return Actions.swap_treasure, Directions.top
-        if key == K_MINUS:
-            return Actions.hurted, Directions.top
+            return Actions.swap_treasure, None
 
         if key == K_UP:
             return Actions.move, Directions.top
@@ -62,7 +60,7 @@ def get_cell_color(cell):
     if type(cell) is CellExit:
         return 55, 120, 20
     if type(cell) is CellRiver:
-        return 62, 105, len(cell.river)*30
+        return 62, 105, len(cell.river) * 30
     else:
         return 107, 98, 60
 
@@ -112,7 +110,7 @@ def draw_armory(cell, x, y):
         s += 'E'
     if type(cell) == CellArmoryWeapon:
         s += 'W'
-    f1 = pygame.font.Font(None, TILE*4//5)
+    f1 = pygame.font.Font(None, TILE * 4 // 5)
     text = f1.render(s, True, (180, 180, 180))
     place = text.get_rect(center=(x + TILE // 2, y + TILE // 2))
     sc.blit(text, place)
@@ -152,7 +150,7 @@ def draw_players():
 
 
 def draw_river_dir(cell, x, y):
-    f1 = pygame.font.Font(None, TILE*2//3)
+    f1 = pygame.font.Font(None, TILE * 2 // 3)
     s = str(cell.river.index(cell))
     text = f1.render(s, True, (180, 180, 180))
     place = text.get_rect(center=(x + TILE // 2, y + TILE // 2))
@@ -182,8 +180,9 @@ while True:
         if event.type == KEYDOWN:
             key = event.key
         if event.type == KEYUP:
-            if convert_keys(key):
-                field.action_handler(*convert_keys(key))
+            act = convert_keys(key)
+            if act:
+                field.action_handler(act)
             key = False
             break
 
