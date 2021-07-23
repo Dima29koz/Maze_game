@@ -8,7 +8,6 @@ class Player:
     def __init__(self, cell, name):
         self.name = name
         self.cell = cell
-        self.direction: Optional[Directions] = None
         self.health_max = 2
         self.health = self.health_max
         self.bombs_max = 3

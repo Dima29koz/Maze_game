@@ -33,21 +33,16 @@ class Field:
         action: Actions = act[0]
         direction: Optional[Directions] = act[1]
 
-        player.direction = direction  # todo ????
-
         if action is Actions.swap_treasure:
             response = self.treasure_pickup_handler(player)
-        elif action is Actions.shoot_bow:  # todo не работает механика idle, так и должно быть?
+        elif action is Actions.shoot_bow:  # todo не работает механика idle, так и должно быть?, нет не должно
             response = self.shooting_handler(player, direction)
-        elif action is Actions.throw_bomb:  # todo не работает механика idle, так и должно быть?
+        elif action is Actions.throw_bomb:  # todo не работает механика idle, так и должно быть?, нет не должно
             response = self.bomb_throw_handler(player, direction)
-        elif action is Actions.skip:  # todo должно ли вообще хоть что-то сообщаться?
-            response = player.cell.idle(player)
-            self.pass_the_turn_to_the_next_player()
+        elif action is Actions.skip:  # todo должно ли вообще хоть что-то сообщаться? - да должно всегда
+            response = self.idle_handler(player)
         elif action is Actions.move:  # todo
-            response = {}
-            player.cell.check_wall(player)
-            self.pass_the_turn_to_the_next_player()
+            response = self.movement_handler(player, direction)
         else:
             response = {}
             print('!!!!', action)
@@ -116,7 +111,7 @@ class Field:
                         pl_dr.append(player.name)
                         self.treasures.append(treasure)
                 response['lost_treasure_players'] = pl_dr
-
+            # active_player.
             self.pass_the_turn_to_the_next_player()
             return response
         else:
@@ -134,6 +129,16 @@ class Field:
             return response
         else:
             return response
+
+    def idle_handler(self, active_player):
+        response = active_player.cell.idle(active_player)
+        self.pass_the_turn_to_the_next_player()
+        return response
+
+    def movement_handler(self, active_player, movement_direction):
+        response = active_player.cell.check_wall(active_player, movement_direction)
+        self.pass_the_turn_to_the_next_player()
+        return response
 
     def pass_the_turn_to_the_next_player(self):
         self.active_player = (self.active_player + 1) % len(self.players)

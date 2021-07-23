@@ -41,22 +41,20 @@ class Cell:
             return True
         return False
 
-    def idle(self, player: Player):
+    def idle(self, player: Player) -> dict:
         player.cell = self
-        return {'info': ''}
+        return {'info': None}
 
-    def active(self, player: Player):
-        """active обработчик пустой клетки"""
-        print(f"active ({self.x}, {self.y})")
-        player.cell = self
+    def active(self, player: Player) -> dict:
+        return self.idle(player)
 
     def treasure_movement(self, treasure: Treasure):
         treasure.cell = self
 
-    def check_wall(self, player):
-        state, moved = self.walls[player.direction].handler()
+    def check_wall(self, player, direction):
+        state, moved = self.walls[direction].handler()
         if moved:
-            cell = self.neighbours[player.direction]
+            cell = self.neighbours[direction]
         else:
             cell = self
         if state:
@@ -75,18 +73,27 @@ class CellRiver(Cell):
 
         if idx + 1 < len(self.river):
             player.cell = self.river[idx + 1]
-            return {'info': ''}
         else:
             player.cell = self
-            return {'info': 'устье'}
+
+        response = 'устье' if player.cell == self.river[-1] else 'река'
+        return {'info': response}
 
     def active(self, player: Player):
+        response = []
         if self.__is_same_river(player):
             player.cell = self
+            response.append('устье') if self.river[-1] == self else response.append('река')
         else:
             idx = self.river.index(self)
             dif = len(self.river) - 1 - idx
             player.cell = self.river[idx + 2] if dif > 2 else self.river[idx + dif]
+            if self == player.cell:
+                response.append('устье')
+            else:
+                response.append('река')
+                response.append('устье') if self.river[-1] == player.cell else response.append('река')
+        return {'info': response}
 
     def treasure_movement(self, treasure: Treasure):
         idx = self.river.index(self)
@@ -118,14 +125,15 @@ class CellExit(Cell):
         self.walls.update({direction: WallEntrance()})
 
     def active(self, player: Player):
-        super().active(player)
+        player.cell = self
         if player.treasure:
             treasure = player.treasure
             player.treasure = None
             if treasure.t_type is TreasureTypes.very:
-                print("player wins")
+                return {'info': 'WIN'}
             else:
-                print(treasure.t_type)
+                return {'info': f'клад {treasure.t_type.name}'}
+        return {'info': 'а шо это ты тут делаешь без клада?! (баг)'}  # todo
 
 
 class CellClinic(Cell):
@@ -135,10 +143,10 @@ class CellClinic(Cell):
     def idle(self, player: Player):
         player.cell = self
         player.health = player.health_max
-        return {'info': 'здоровье восстановлено'}
+        return {'info': 'медпункт'}
 
     def active(self, player: Player):
-        self.idle(player)
+        return self.idle(player)
 
 
 class CellArmory(Cell):
@@ -149,10 +157,10 @@ class CellArmory(Cell):
         player.cell = self
         player.bombs = player.bombs_max
         player.arrows = player.arrows_max
-        return {'info': 'боезапас восстановлен'}
+        return {'info': 'арсенал'}
 
     def active(self, player: Player):
-        self.idle(player)
+        return self.idle(player)
 
 
 class CellArmoryWeapon(CellArmory):
@@ -162,10 +170,10 @@ class CellArmoryWeapon(CellArmory):
     def idle(self, player: Player):
         player.cell = self
         player.arrows = player.arrows_max
-        return {'info': 'оружие восстановлено'}
+        return {'info': 'оружейная'}
 
     def active(self, player: Player):
-        self.idle(player)
+        return self.idle(player)
 
 
 class CellArmoryExplosive(CellArmory):
@@ -175,7 +183,7 @@ class CellArmoryExplosive(CellArmory):
     def idle(self, player: Player):
         player.cell = self
         player.bombs = player.bombs_max
-        return {'info': 'взрывчатка восстановлена'}
+        return {'info': 'склад взрывчатки'}
 
     def active(self, player: Player):
-        self.idle(player)
+        return self.idle(player)
