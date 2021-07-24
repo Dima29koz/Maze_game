@@ -6,7 +6,7 @@ from field.field import Field
 from entities.player import Player
 from enums import Directions, Actions, TreasureTypes
 
-RES = WIDTH, HEIGHT = 1202, 902
+RES = WIDTH, HEIGHT = 1202, 600
 TILE = 50
 cols, rows = 5, 4
 

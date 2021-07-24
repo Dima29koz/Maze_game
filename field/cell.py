@@ -41,11 +41,11 @@ class Cell:
             return True
         return False
 
-    def idle(self, player: Player) -> dict:
+    def idle(self, player: Player) -> list:
         player.cell = self
-        return {'info': None}
+        return []
 
-    def active(self, player: Player) -> dict:
+    def active(self, player: Player) -> list:
         return self.idle(player)
 
     def treasure_movement(self, treasure: Treasure):
@@ -68,7 +68,7 @@ class CellRiver(Cell):
         super().__init__(x, y)
         self.river = []
 
-    def idle(self, player: Player):
+    def idle(self, player: Player) -> list:
         idx = self.river.index(self)
 
         if idx + 1 < len(self.river):
@@ -77,9 +77,9 @@ class CellRiver(Cell):
             player.cell = self
 
         response = 'устье' if player.cell == self.river[-1] else 'река'
-        return {'info': response}
+        return [response]
 
-    def active(self, player: Player):
+    def active(self, player: Player) -> list:
         response = []
         if self.__is_same_river(player):
             player.cell = self
@@ -93,7 +93,7 @@ class CellRiver(Cell):
             else:
                 response.append('река')
                 response.append('устье') if self.river[-1] == player.cell else response.append('река')
-        return {'info': response}
+        return response
 
     def treasure_movement(self, treasure: Treasure):
         idx = self.river.index(self)
@@ -124,28 +124,29 @@ class CellExit(Cell):
             Directions.left: WallOuter()}
         self.walls.update({direction: WallEntrance()})
 
-    def active(self, player: Player):
+    def active(self, player: Player) -> list:  # todo есть мнение что афк обработчик должен возвращать на поле
+
         player.cell = self
         if player.treasure:
             treasure = player.treasure
             player.treasure = None
             if treasure.t_type is TreasureTypes.very:
-                return {'info': 'WIN'}
+                return ['WIN']
             else:
-                return {'info': f'клад {treasure.t_type.name}'}
-        return {'info': 'а шо это ты тут делаешь без клада?! (баг)'}  # todo
+                return [f'клад {treasure.t_type.name}']
+        return ['а шо это ты тут делаешь без клада?! (баг)']  # todo
 
 
 class CellClinic(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player):
+    def idle(self, player: Player) -> list:
         player.cell = self
         player.health = player.health_max
-        return {'info': 'медпункт'}
+        return ['медпункт']
 
-    def active(self, player: Player):
+    def active(self, player: Player) -> list:
         return self.idle(player)
 
 
@@ -153,13 +154,13 @@ class CellArmory(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player):
+    def idle(self, player: Player) -> list:
         player.cell = self
         player.bombs = player.bombs_max
         player.arrows = player.arrows_max
-        return {'info': 'арсенал'}
+        return ['арсенал']
 
-    def active(self, player: Player):
+    def active(self, player: Player) -> list:
         return self.idle(player)
 
 
@@ -167,12 +168,12 @@ class CellArmoryWeapon(CellArmory):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player):
+    def idle(self, player: Player) -> list:
         player.cell = self
         player.arrows = player.arrows_max
-        return {'info': 'оружейная'}
+        return ['оружейная']
 
-    def active(self, player: Player):
+    def active(self, player: Player) -> list:
         return self.idle(player)
 
 
@@ -180,10 +181,10 @@ class CellArmoryExplosive(CellArmory):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player):
+    def idle(self, player: Player) -> list:
         player.cell = self
         player.bombs = player.bombs_max
-        return {'info': 'склад взрывчатки'}
+        return ['склад взрывчатки']
 
-    def active(self, player: Player):
+    def active(self, player: Player) -> list:
         return self.idle(player)

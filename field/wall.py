@@ -37,7 +37,7 @@ class WallOuter(WallConcrete):
         return True, False
 
 
-class WallExit(WallOuter):
+class WallExit(WallOuter):  # todo выход не должен пропускать без клада
     def __init__(self):
         super().__init__()
 

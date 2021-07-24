@@ -35,13 +35,13 @@ class Field:
 
         if action is Actions.swap_treasure:
             response = self.treasure_pickup_handler(player)
-        elif action is Actions.shoot_bow:  # todo не работает механика idle, так и должно быть?, нет не должно
+        elif action is Actions.shoot_bow:
             response = self.shooting_handler(player, direction)
-        elif action is Actions.throw_bomb:  # todo не работает механика idle, так и должно быть?, нет не должно
+        elif action is Actions.throw_bomb:
             response = self.bomb_throw_handler(player, direction)
-        elif action is Actions.skip:  # todo должно ли вообще хоть что-то сообщаться? - да должно всегда
+        elif action is Actions.skip:
             response = self.idle_handler(player)
-        elif action is Actions.move:  # todo
+        elif action is Actions.move:
             response = self.movement_handler(player, direction)
         else:
             response = {}
@@ -89,7 +89,7 @@ class Field:
 
     def shooting_handler(self, active_player, shot_direction):
         response = {
-            'info': 'не попал',  # 'не попал'/'попал'/'нет стрел'
+            'info': ['не попал'],  # 'не попал'/'попал'/'нет стрел'
             'damaged_players': [],  # список раненых игроков
             'lost_treasure_players': []  # список игроков, потерявших клад
         }
@@ -102,7 +102,7 @@ class Field:
                 current_cell = current_cell.neighbours[shot_direction]
                 current_players = self.check_players(current_cell, active_player)
             else:
-                response['info'] = 'попал'
+                response['info'] = ['попал']
                 response['damaged_players'] = [player.name for player in current_players]
                 pl_dr = []
                 for player in current_players:
@@ -111,34 +111,31 @@ class Field:
                         pl_dr.append(player.name)
                         self.treasures.append(treasure)
                 response['lost_treasure_players'] = pl_dr
-            # active_player.
-            self.pass_the_turn_to_the_next_player()
+            response['info'].extend(self.idle_handler(active_player)['info'])
             return response
         else:
-            response['info'] = 'нет стрел'
+            response['info'] = ['нет стрел']
             return response
 
     def bomb_throw_handler(self, active_player, throwing_direction):
-        response = {'info': 'у игрока кочились бомбы, сделай другой ход'}
+        response = {'info': ['нет бомб']}
         if active_player.throw_bomb():
             if active_player.cell.break_wall(throwing_direction):
-                response['info'] = 'взорвал'
+                response['info'] = ['взорвал']
             else:
-                response['info'] = 'не взорвал'
-            self.pass_the_turn_to_the_next_player()
-            return response
-        else:
-            return response
+                response['info'] = ['не взорвал']
+            response['info'].extend(self.idle_handler(active_player)['info'])
+        return response
 
-    def idle_handler(self, active_player):
+    def idle_handler(self, active_player) -> dict:
         response = active_player.cell.idle(active_player)
         self.pass_the_turn_to_the_next_player()
-        return response
+        return {'info': response}
 
-    def movement_handler(self, active_player, movement_direction):
+    def movement_handler(self, active_player, movement_direction) -> dict:
         response = active_player.cell.check_wall(active_player, movement_direction)
         self.pass_the_turn_to_the_next_player()
-        return response
+        return {'info': response}
 
     def pass_the_turn_to_the_next_player(self):
         self.active_player = (self.active_player + 1) % len(self.players)
