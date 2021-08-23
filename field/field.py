@@ -48,8 +48,7 @@ class Field:
             try:
                 response = self.movement_handler(player, direction)
             except WinningCondition:
-                response = {'info': "player WIN"}
-                # raise # todo добавить обработчик для выиграша
+                raise WinningCondition(f'{player.name} WIN')
         else:
             response = {}
             print('что-то пошло не так, не ожидаемое действие', action)
