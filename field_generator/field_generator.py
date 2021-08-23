@@ -2,16 +2,16 @@ from random import choice
 
 from field.cell import *
 from field.wall import *
-from enums import Directions
+from globalEnv.enums import Directions
 from entities.treasure import Treasure, TreasureTypes
 from field_generator.level_pattern import PatternCell
 from field_generator.river_generator import RiverGenerator
 
 
 class FieldGenerator:
-    def __init__(self, cols, rows):
-        self.rows = rows
-        self.cols = cols
+    def __init__(self, generator_rules: dict):
+        self.rows = generator_rules['rows']
+        self.cols = generator_rules['cols']
         self.pattern: list[list[PatternCell]] = [[]]
         self.ground_cells: list[Cell] = []
         self.field: list[list[Cell]] = [[]]

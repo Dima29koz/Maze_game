@@ -1,5 +1,4 @@
-from enums import TreasureTypes
-from field.cell import *
+from globalEnv.enums import TreasureTypes
 
 
 class Treasure:

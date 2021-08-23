@@ -1,10 +1,10 @@
 from typing import Optional
 
-from enums import Directions, TreasureTypes
+from globalEnv.enums import Directions, TreasureTypes
+from globalEnv.Exepts import WinningCondition
 from field.wall import *
 from entities.player import Player
 from entities.treasure import Treasure
-from field.wall import WallEmpty
 
 
 class Cell:
@@ -41,26 +41,25 @@ class Cell:
             return True
         return False
 
-    def idle(self, player: Player) -> list:
+    def idle(self, player: Player) -> list[type]:
         player.cell = self
-        return []
+        return [type(self)]
 
-    def active(self, player: Player) -> list:
+    def active(self, player: Player) -> list[type]:
         return self.idle(player)
 
     def treasure_movement(self, treasure: Treasure):
         treasure.cell = self
 
-    def check_wall(self, player, direction):
-        state, moved = self.walls[direction].handler()
-        if moved:
-            cell = self.neighbours[direction]
+    def check_wall(self, player: Player, direction: Directions) -> list[type]:
+        pl_collision, pl_state, wall_type = self.walls[direction].handler()
+        cell = self.neighbours[direction] if not pl_collision else self
+        try:
+            response = cell.active(player) if pl_state else cell.idle(player)
+        except WinningCondition:
+            raise
         else:
-            cell = self
-        if state:
-            return cell.active(player)
-        else:
-            return cell.idle(player)
+            return [wall_type] + response
 
 
 class CellRiver(Cell):
@@ -68,32 +67,20 @@ class CellRiver(Cell):
         super().__init__(x, y)
         self.river = []
 
-    def idle(self, player: Player) -> list:
+    def idle(self, player: Player) -> list[type]:
         idx = self.river.index(self)
+        player.cell = self.river[idx + 1]
+        return [type(player.cell)]
 
-        if idx + 1 < len(self.river):
-            player.cell = self.river[idx + 1]
-        else:
-            player.cell = self
-
-        response = 'устье' if player.cell == self.river[-1] else 'река'
-        return [response]
-
-    def active(self, player: Player) -> list:
-        response = []
+    def active(self, player: Player) -> list[type]:
         if self.__is_same_river(player):
             player.cell = self
-            response.append('устье') if self.river[-1] == self else response.append('река')
+            return [type(self)]
         else:
             idx = self.river.index(self)
             dif = len(self.river) - 1 - idx
             player.cell = self.river[idx + 2] if dif > 2 else self.river[idx + dif]
-            if self == player.cell:
-                response.append('устье')
-            else:
-                response.append('река')
-                response.append('устье') if self.river[-1] == player.cell else response.append('река')
-        return response
+            return [type(self), type(player.cell)]
 
     def treasure_movement(self, treasure: Treasure):
         idx = self.river.index(self)
@@ -113,6 +100,18 @@ class CellRiver(Cell):
         self.river = river
 
 
+class CellRiverMouth(CellRiver):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
+    def idle(self, player: Player) -> list[type]:
+        player.cell = self
+        return [type(self)]
+
+    def active(self, player: Player) -> list[type]:
+        return self.idle(player)
+
+
 class CellExit(Cell):
     def __init__(self, x, y, direction, cell):
         super().__init__(x, y)
@@ -124,29 +123,27 @@ class CellExit(Cell):
             Directions.left: WallOuter()}
         self.walls.update({direction: WallEntrance()})
 
-    def active(self, player: Player) -> list:  # todo есть мнение что афк обработчик должен возвращать на поле
-
+    def active(self, player: Player) -> list[type]:  # todo есть мнение что афк обработчик должен возвращать на поле
+        # todo есть мнение, что игрок без клада не может выйти
         player.cell = self
         if player.treasure:
             treasure = player.treasure
             player.treasure = None
             if treasure.t_type is TreasureTypes.very:
-                return ['WIN']
-            else:
-                return [f'клад {treasure.t_type.name}']
-        return ['а шо это ты тут делаешь без клада?! (баг)']  # todo
+                raise WinningCondition()
+        return [type(self)]
 
 
 class CellClinic(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list:
+    def idle(self, player: Player) -> list[type]:
         player.cell = self
         player.health = player.health_max
-        return ['медпункт']
+        return [type(self)]
 
-    def active(self, player: Player) -> list:
+    def active(self, player: Player) -> list[type]:
         return self.idle(player)
 
 
@@ -154,13 +151,13 @@ class CellArmory(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list:
+    def idle(self, player: Player) -> list[type]:
         player.cell = self
         player.bombs = player.bombs_max
         player.arrows = player.arrows_max
-        return ['арсенал']
+        return [type(self)]
 
-    def active(self, player: Player) -> list:
+    def active(self, player: Player) -> list[type]:
         return self.idle(player)
 
 
@@ -168,12 +165,12 @@ class CellArmoryWeapon(CellArmory):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list:
+    def idle(self, player: Player) -> list[type]:
         player.cell = self
         player.arrows = player.arrows_max
-        return ['оружейная']
+        return [type(self)]
 
-    def active(self, player: Player) -> list:
+    def active(self, player: Player) -> list[type]:
         return self.idle(player)
 
 
@@ -181,10 +178,10 @@ class CellArmoryExplosive(CellArmory):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list:
+    def idle(self, player: Player) -> list[type]:
         player.cell = self
         player.bombs = player.bombs_max
-        return ['склад взрывчатки']
+        return [type(self)]
 
-    def active(self, player: Player) -> list:
+    def active(self, player: Player) -> list[type]:
         return self.idle(player)

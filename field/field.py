@@ -1,14 +1,17 @@
 from typing import Optional
 
 from field_generator.field_generator import FieldGenerator
+from field.host import Host
+from globalEnv.Exepts import WinningCondition, PlayerDeath
 from entities.player import Player
 from entities.treasure import Treasure
-from enums import Actions, Directions
+from globalEnv.enums import Actions, Directions
 
 
 class Field:
-    def __init__(self):
-        field = FieldGenerator(5, 4)
+    def __init__(self, rules: dict):
+        field = FieldGenerator(rules['generator_rules'])
+        self.host = Host(rules['host_rules'])
         self.field = field.get_field()
         self.treasures: list[Treasure] = field.get_treasures()
         self.players: list[Player] = []
@@ -22,8 +25,8 @@ class Field:
         return self.treasures
 
     def spawn_players(self):
-        self.players.append(Player(self.field[1][1], 'player1'))
-        # self.players.append(Player(self.field[1][0], 'player2'))
+        self.players.append(Player(self.field[1][1], 'skipper'))
+        # self.players.append(Player(self.field[1][0], 'tester'))
 
     def get_players(self):
         return self.players
@@ -42,10 +45,14 @@ class Field:
         elif action is Actions.skip:
             response = self.idle_handler(player)
         elif action is Actions.move:
-            response = self.movement_handler(player, direction)
+            try:
+                response = self.movement_handler(player, direction)
+            except WinningCondition:
+                response = {'info': "player WIN"}
+                # raise # todo добавить обработчик для выиграша
         else:
             response = {}
-            print('!!!!', action)
+            print('что-то пошло не так, не ожидаемое действие', action)
 
         res = {
             'player': player.name,
@@ -53,7 +60,8 @@ class Field:
             'direction': direction.name if direction else None,
             'response': response
         }
-        print(res)
+
+        self.host.give_info(res)
 
     def check_players(self, current_cell, active_player) -> list[Player]:
         current_players = []
@@ -106,10 +114,14 @@ class Field:
                 response['damaged_players'] = [player.name for player in current_players]
                 pl_dr = []
                 for player in current_players:
-                    treasure = player.dropped_treasure()  # todo игрока невозможно убить
-                    if treasure:
-                        pl_dr.append(player.name)
-                        self.treasures.append(treasure)
+                    try:
+                        treasure = player.dropped_treasure()
+                    except PlayerDeath:
+                        print(player.name, 'убит')  # todo добавить обработчик зависящий от правил игры
+                    else:
+                        if treasure:
+                            pl_dr.append(player.name)
+                            self.treasures.append(treasure)
                 response['lost_treasure_players'] = pl_dr
             response['info'].extend(self.idle_handler(active_player)['info'])
             return response
@@ -127,15 +139,19 @@ class Field:
             response['info'].extend(self.idle_handler(active_player)['info'])
         return response
 
-    def idle_handler(self, active_player) -> dict:
+    def idle_handler(self, active_player: Player) -> dict:
         response = active_player.cell.idle(active_player)
         self.pass_the_turn_to_the_next_player()
         return {'info': response}
 
     def movement_handler(self, active_player, movement_direction) -> dict:
-        response = active_player.cell.check_wall(active_player, movement_direction)
-        self.pass_the_turn_to_the_next_player()
-        return {'info': response}
+        try:
+            response = active_player.cell.check_wall(active_player, movement_direction)
+        except WinningCondition:
+            raise
+        else:
+            self.pass_the_turn_to_the_next_player()
+            return {'info': response}
 
     def pass_the_turn_to_the_next_player(self):
         self.active_player = (self.active_player + 1) % len(self.players)

@@ -3,8 +3,7 @@ from pygame.locals import *
 from field.cell import *
 from field.wall import *
 from field.field import Field
-from entities.player import Player
-from enums import Directions, Actions, TreasureTypes
+from globalEnv.enums import Directions, Actions, TreasureTypes
 
 RES = WIDTH, HEIGHT = 1202, 600
 TILE = 50
@@ -15,7 +14,10 @@ pygame.font.init()
 sc = pygame.display.set_mode(RES)
 clock = pygame.time.Clock()
 
-field = Field()
+field = Field(rules={
+    'generator_rules': {'rows': 4, 'cols': 5},
+    'host_rules': {},
+})
 grid_cells = field.get_field()
 
 
@@ -59,7 +61,7 @@ def convert_keys(key) -> Optional[tuple[Actions, Optional[Directions]]]:
 def get_cell_color(cell):
     if type(cell) is CellExit:
         return 55, 120, 20
-    if type(cell) is CellRiver:
+    if type(cell) in [CellRiver, CellRiverMouth]:
         return 62, 105, len(cell.river) * 30
     else:
         return 107, 98, 60
@@ -89,7 +91,7 @@ def draw_field():
 def draw_cell(cell):
     x, y = cell.x * TILE, cell.y * TILE
     pygame.draw.rect(sc, pygame.Color(get_cell_color(cell)), (x + 2, y + 2, TILE - 2, TILE - 2))
-    if type(cell) == CellRiver:
+    if type(cell) in [CellRiver, CellRiverMouth]:
         draw_river_dir(cell, x, y)
     if type(cell) == CellClinic:
         draw_clinic(x, y)
@@ -135,7 +137,8 @@ def draw_players():
     players = field.get_players()
     for player in players:
         x, y = player.cell.x * TILE + TILE // 2, player.cell.y * TILE + TILE // 2
-        pygame.draw.circle(sc, pygame.Color("red"), (x, y), TILE // 4)
+
+        pygame.draw.circle(sc, pygame.Color(abs(hash(player.name)) % 255, 155, 155), (x, y), TILE // 4)
         if player.treasure:
             x, y = player.cell.x * TILE, player.cell.y * TILE
             if player.treasure.t_type is TreasureTypes.very:
@@ -175,7 +178,7 @@ while True:
     sc.fill(pygame.Color('darkslategray'))
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
             exit()
         if event.type == KEYDOWN:
             key = event.key

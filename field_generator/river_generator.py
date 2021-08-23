@@ -1,8 +1,8 @@
 from random import choice, shuffle
 from typing import Optional
 from field_generator.level_pattern import PatternCell
-from enums import Directions
-from field.cell import Cell, CellRiver
+from globalEnv.enums import Directions
+from field.cell import Cell, CellRiver, CellRiverMouth
 
 
 class RiverGenerator:
@@ -20,10 +20,11 @@ class RiverGenerator:
             self.generate_river(length)
 
     def generate_river(self, length):
-        river = self.__gen_river(length)
-        if not river:
+        river_tmp = self.__gen_river(length)
+        if not river_tmp:
             return False
-        river = [CellRiver(riv_cell.x, riv_cell.y) for riv_cell in river]
+        river = [CellRiver(riv_cell.x, riv_cell.y) for riv_cell in river_tmp]
+        river[-1] = CellRiverMouth(river[-1].x, river[-1].y)
         for riv_cell in river:
             riv_cell.add_river_list(river)
             self.__field[riv_cell.y][riv_cell.x] = riv_cell

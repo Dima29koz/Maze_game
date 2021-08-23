@@ -1,7 +1,7 @@
 from typing import Optional
 
-from enums import Actions, Directions
 from entities.treasure import Treasure
+from globalEnv.Exepts import PlayerDeath
 
 
 class Player:
@@ -24,6 +24,8 @@ class Player:
 
     def dropped_treasure(self):
         self.health -= 1
+        if self.health == 0:
+            raise PlayerDeath
         if self.treasure and self.health <= self.health_max // 2:
             treasure = self.treasure
             treasure.cell = self.cell
