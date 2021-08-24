@@ -5,6 +5,7 @@ from field.wall import *
 from field.field import Field
 from globalEnv.enums import Directions, Actions, TreasureTypes
 from globalEnv.Exepts import WinningCondition
+from GUI.button import Button
 
 
 class GUI:
@@ -18,12 +19,31 @@ class GUI:
         self.sc = pygame.display.set_mode(res)
         self.clock = pygame.time.Clock()
 
+        up = Button(self.sc, (self.tile_size+400, 50+300), "↑", Directions.top, self.tile_size)
+        down = Button(self.sc, (self.tile_size+400, 100+300), "↓", Directions.bottom, self.tile_size)
+        left = Button(self.sc, (0+400, 100+300), "←",  Directions.left, self.tile_size)
+        right = Button(self.sc, (self.tile_size * 2+400, 100+300), "→", Directions.right, self.tile_size)
+
+        take_tr = Button(self.sc, (100 + 400, 0 + 300), "Tr", Actions.swap_treasure, self.tile_size)
+        skip = Button(self.sc, (0 + 400, 0 + 300), "sk", Actions.skip, self.tile_size)
+
+        moving = Button(self.sc, (150 + 400, 100 + 300), "mo", Actions.move, self.tile_size)
+        shooting = Button(self.sc, (150 + 400, 0 + 300), "sh", Actions.shoot_bow, self.tile_size)
+        bombing = Button(self.sc, (150 + 400, 50 + 300), "bo", Actions.throw_bomb, self.tile_size)
+
+        moving.is_active = True
+        self.buttons = [up, down, left, right, take_tr, skip, moving, shooting, bombing]
+        self.buttons_st = [moving, shooting, bombing]
+        self.buttons_dirs = [up, down, left, right]
+
     def mainloop(self):
+        current_state = Actions.move
         while True:
             self.clock.tick(30)
             self.sc.fill(pygame.Color('darkslategray'))
 
             for event in pygame.event.get():
+                act = None
                 if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                     exit()
                 # if event.type == KEYDOWN:
@@ -31,15 +51,31 @@ class GUI:
                 if event.type == KEYUP:
                     act = self.convert_keys(event.key)
 
-                    if act:
-                        try:
-                            self.field.action_handler(act)
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    pos = pygame.mouse.get_pos()
+                    for button in self.buttons:
+                        if button.get().collidepoint(pos):
+                            if button in self.buttons_st:
+                                for butt in self.buttons_st:
+                                    butt.is_active = False
+                                button.is_active = True
+                                current_state = button.action
+                            elif button in self.buttons_dirs:
+                                act = (current_state, button.active())
+                            else:
+                                act = (button.active(), None)
 
-                        except WinningCondition as e:
-                            print(e.message)
-                            exit()
-                    break
+                if act:
+                    try:
+                        self.field.action_handler(act)
 
+                    except WinningCondition as e:
+                        print(e.message)
+                        exit()
+                break
+
+            for button in self.buttons:
+                button.draw()
             self.draw_field()
             self.draw_treasures()
             self.draw_players()
@@ -63,7 +99,7 @@ class GUI:
             if key == K_RIGHT:
                 return Actions.move, Directions.right
 
-            if key == K_w:
+            if key == K_a:
                 return Actions.throw_bomb, Directions.top
             if key == K_s:
                 return Actions.throw_bomb, Directions.bottom
