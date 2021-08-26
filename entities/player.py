@@ -15,6 +15,7 @@ class Player:
         self.arrows_max = 3
         self.arrows = self.arrows_max
         self.treasure: Optional[Treasure] = None
+        self.is_active = False
 
     def can_take_treasure(self):
         if self.health == self.health_max:

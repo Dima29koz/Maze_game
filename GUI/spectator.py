@@ -193,9 +193,12 @@ class SpectatorGUI:
         for player in players:
             x = player.cell.x * self.tile_size + self.tile_size // 2
             y = player.cell.y * self.tile_size + self.tile_size // 2
-
+            if player.is_active:
+                pygame.draw.circle(self.sc, (255, 255, 255),
+                                   (x, y), self.tile_size // 3.5)
             pygame.draw.circle(self.sc, pygame.Color(abs(hash(player.name)) % 255, 155, 155),
                                (x, y), self.tile_size // 4)
+
             if player.treasure:
                 x, y = player.cell.x * self.tile_size, player.cell.y * self.tile_size
                 if player.treasure.t_type is TreasureTypes.very:

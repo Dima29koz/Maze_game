@@ -17,6 +17,13 @@ class Field:
         self.players: list[Player] = []
         self.spawn_players()
         self.active_player = 0
+        self.action_to_handler = {
+            Actions.swap_treasure: self.treasure_swap_handler,
+            Actions.shoot_bow: self.shooting_handler,
+            Actions.throw_bomb: self.bomb_throw_handler,
+            Actions.skip: self.idle_handler,
+            Actions.move: self.movement_handler,
+        }
 
     def get_field(self):
         return self.field
@@ -24,34 +31,23 @@ class Field:
     def get_treasures(self):
         return self.treasures
 
-    def spawn_players(self):
+    def spawn_players(self, rules=None):
         self.players.append(Player(self.field[1][1], 'skipper'))
-        # self.players.append(Player(self.field[1][0], 'tester'))
+        self.players.append(Player(self.field[1][0], 'tester'))
 
     def get_players(self):
         return self.players
 
-    def action_handler(self, act):
+    def action_handler(self, action: Actions, direction: Optional[Directions] = None):
         player = self.players[self.active_player]
-        action: Actions = act[0]
-        direction: Optional[Directions] = act[1]
-
-        if action is Actions.swap_treasure:
-            response = self.treasure_pickup_handler(player)
-        elif action is Actions.shoot_bow:
-            response = self.shooting_handler(player, direction)
-        elif action is Actions.throw_bomb:
-            response = self.bomb_throw_handler(player, direction)
-        elif action is Actions.skip:
-            response = self.idle_handler(player)
-        elif action is Actions.move:
-            try:
-                response = self.movement_handler(player, direction)
-            except WinningCondition:
-                raise WinningCondition(f'{player.name} WIN')
-        else:
+        try:
+            response = self.action_to_handler[action](player, direction)
+        except WinningCondition:
+            raise WinningCondition(f'{player.name} WIN')
+        except KeyError:
             response = {}
             print('что-то пошло не так, не ожидаемое действие', action)
+
         treasures = self.treasures_on_cell(player.cell)
         if treasures:
             response['info'].append(f'клад ({len(treasures)}шт)')
@@ -82,7 +78,14 @@ class Field:
         self.treasures.remove(player.treasure)
         player.treasure.cell = None
 
-    def treasure_pickup_handler(self, active_player):
+    def treasures_on_cell(self, cell):
+        treasures = []
+        for treasure in self.treasures:
+            if cell == treasure.cell:
+                treasures.append(treasure)
+        return treasures
+
+    def treasure_swap_handler(self, active_player, direction=None):
         response = {'info': ['на клетке игрока нет клада']}
         if active_player.can_take_treasure():
             treasures = self.treasures_on_cell(active_player.cell)
@@ -93,13 +96,6 @@ class Field:
         else:
             response['info'] = ['только полностью здоровые игроки могут поднять клад']
             return response
-
-    def treasures_on_cell(self, cell):
-        treasures = []
-        for treasure in self.treasures:
-            if cell == treasure.cell:
-                treasures.append(treasure)
-        return treasures
 
     def shooting_handler(self, active_player, shot_direction):
         response = {
@@ -145,7 +141,7 @@ class Field:
             response['info'].extend(self.idle_handler(active_player)['info'])
         return response
 
-    def idle_handler(self, active_player: Player) -> dict:
+    def idle_handler(self, active_player: Player, direction=None) -> dict:
         response = active_player.cell.idle(active_player)
         self.pass_the_turn_to_the_next_player()
         return {'info': response}
@@ -160,7 +156,9 @@ class Field:
             return {'info': response}
 
     def pass_the_turn_to_the_next_player(self):
+        self.players[self.active_player].is_active = False
         self.active_player = (self.active_player + 1) % len(self.players)
+        self.players[self.active_player].is_active = True
         if self.active_player + 1 == len(self.players):
             self.host_turn()
 

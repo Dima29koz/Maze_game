@@ -22,7 +22,7 @@ while isRunning:
     act, state = gui.get_action(state)
     if act:
         try:
-            field.action_handler(act)
+            field.action_handler(*act)
         except WinningCondition as e:
             print(e.message)
             isRunning = False
