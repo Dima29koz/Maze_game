@@ -11,7 +11,7 @@ info = {
     CellArmoryWeapon: {'ru': 'Склад оружия'},
     CellArmoryExplosive: {'ru': 'Склад взрывчатки'},
 
-    WallEmpty: {'ru': 'пустая стена'},
+    WallEmpty: {'ru': 'пустая стена', 'en': ''},
     WallConcrete: {'ru': 'стена'},
     WallOuter: {'ru': 'внешняя стена'},
     WallRubber: {'ru': 'резиновая стена'},

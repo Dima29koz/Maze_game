@@ -4,11 +4,10 @@ from field.cell import *
 from field.wall import *
 from field.field import Field
 from globalEnv.enums import Directions, Actions, TreasureTypes
-from globalEnv.Exepts import WinningCondition
 from GUI.button import Button
 
 
-class GUI:
+class SpectatorGUI:
     def __init__(self, fps, res: tuple[int, int], tile_size, field: Field):
         self.fps = fps
         self.res = res
@@ -36,51 +35,42 @@ class GUI:
         self.buttons_st = [moving, shooting, bombing]
         self.buttons_dirs = [up, down, left, right]
 
-    def mainloop(self):
-        current_state = Actions.move
-        while True:
-            self.clock.tick(30)
-            self.sc.fill(pygame.Color('darkslategray'))
+    def draw(self):
+        self.clock.tick(30)
+        self.sc.fill(pygame.Color('darkslategray'))
+        self.draw_buttons()
+        self.draw_field()
+        self.draw_treasures()
+        self.draw_players()
 
-            for event in pygame.event.get():
-                act = None
-                if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                    exit()
-                # if event.type == KEYDOWN:
-                #     key = event.key
-                if event.type == KEYUP:
-                    act = self.convert_keys(event.key)
+        pygame.display.flip()
 
-                elif event.type == pygame.MOUSEBUTTONUP:
-                    pos = pygame.mouse.get_pos()
-                    for button in self.buttons:
-                        if button.get().collidepoint(pos):
-                            if button in self.buttons_st:
-                                for butt in self.buttons_st:
-                                    butt.is_active = False
-                                button.is_active = True
-                                current_state = button.action
-                            elif button in self.buttons_dirs:
-                                act = (current_state, button.active())
-                            else:
-                                act = (button.active(), None)
+    def get_action(self, current_state=Actions.move):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                self.close()
 
-                if act:
-                    try:
-                        self.field.action_handler(act)
+            if event.type == KEYUP:
+                return self.convert_keys(event.key), current_state
 
-                    except WinningCondition as e:
-                        print(e.message)
-                        exit()
-                break
+            elif event.type == pygame.MOUSEBUTTONUP:
+                pos = pygame.mouse.get_pos()
+                for button in self.buttons:
+                    if button.get().collidepoint(pos):
+                        if button in self.buttons_st:
+                            for butt in self.buttons_st:
+                                butt.is_active = False
+                            button.is_active = True
+                            return self.get_action(button.action)
+                        elif button in self.buttons_dirs:
+                            return (current_state, button.active()), current_state
+                        else:
+                            return (button.active(), None), current_state
+        return None, current_state
 
-            for button in self.buttons:
-                button.draw()
-            self.draw_field()
-            self.draw_treasures()
-            self.draw_players()
-
-            pygame.display.flip()
+    @staticmethod
+    def close():
+        exit()
 
     @staticmethod
     def convert_keys(key) -> Optional[tuple[Actions, Optional[Directions]]]:
@@ -99,7 +89,7 @@ class GUI:
             if key == K_RIGHT:
                 return Actions.move, Directions.right
 
-            if key == K_a:
+            if key == K_w:
                 return Actions.throw_bomb, Directions.top
             if key == K_s:
                 return Actions.throw_bomb, Directions.bottom
@@ -140,6 +130,10 @@ class GUI:
             return 15, 15, 15
         else:
             return 'darkslategray'
+
+    def draw_buttons(self):
+        for button in self.buttons:
+            button.draw()
 
     def draw_field(self):
         grid_cells = self.field.get_field()

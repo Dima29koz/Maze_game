@@ -52,6 +52,9 @@ class Field:
         else:
             response = {}
             print('что-то пошло не так, не ожидаемое действие', action)
+        treasures = self.treasures_on_cell(player.cell)
+        if treasures:
+            response['info'].append(f'клад ({len(treasures)}шт)')
 
         res = {
             'player': player.name,
@@ -80,19 +83,23 @@ class Field:
         player.treasure.cell = None
 
     def treasure_pickup_handler(self, active_player):
-        response = {'info': 'на клетке игрока нет клада'}
+        response = {'info': ['на клетке игрока нет клада']}
         if active_player.can_take_treasure():
-            treasures = []
-            for treasure in self.treasures:
-                if active_player.cell == treasure.cell:
-                    treasures.append(treasure)
+            treasures = self.treasures_on_cell(active_player.cell)
             if treasures:
                 self.swap_treasure(treasures, active_player)
-                response['info'] = 'игрок сменил клад'
+                response['info'] = ['игрок сменил клад']
             return response
         else:
-            response['info'] = 'только полностью здоровые игроки могут поднять клад'
+            response['info'] = ['только полностью здоровые игроки могут поднять клад']
             return response
+
+    def treasures_on_cell(self, cell):
+        treasures = []
+        for treasure in self.treasures:
+            if cell == treasure.cell:
+                treasures.append(treasure)
+        return treasures
 
     def shooting_handler(self, active_player, shot_direction):
         response = {
