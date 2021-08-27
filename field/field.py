@@ -14,9 +14,9 @@ class Field:
         self.host = Host(rules['host_rules'])
         self.field = field.get_field()
         self.treasures: list[Treasure] = field.get_treasures()
-        self.players: list[Player] = []
-        self.spawn_players()
+        self.players = self.spawn_players()
         self.active_player = 0
+
         self.action_to_handler = {
             Actions.swap_treasure: self.treasure_swap_handler,
             Actions.shoot_bow: self.shooting_handler,
@@ -32,8 +32,10 @@ class Field:
         return self.treasures
 
     def spawn_players(self, rules=None):
-        self.players.append(Player(self.field[1][1], 'skipper'))
-        self.players.append(Player(self.field[1][0], 'tester'))
+        players = []
+        players.append(Player(self.field[1][1], 'skipper'))
+        players.append(Player(self.field[1][0], 'tester'))
+        return players
 
     def get_players(self):
         return self.players

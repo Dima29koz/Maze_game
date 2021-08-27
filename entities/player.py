@@ -2,6 +2,7 @@ from typing import Optional
 
 from entities.treasure import Treasure
 from globalEnv.Exepts import PlayerDeath
+from globalEnv.enums import Actions
 
 
 class Player:
@@ -16,6 +17,14 @@ class Player:
         self.arrows = self.arrows_max
         self.treasure: Optional[Treasure] = None
         self.is_active = False
+
+        self.abilities = {
+            Actions.move: '',
+            Actions.shoot_bow: '',
+            Actions.throw_bomb: '',
+            Actions.swap_treasure: '',
+            Actions.skip: True,
+        }
 
     def can_take_treasure(self):
         if self.health == self.health_max:
