@@ -1,12 +1,13 @@
 from typing import Optional
 
 from entities.treasure import Treasure
-from globalEnv.Exepts import PlayerDeath
-from globalEnv.enums import Actions
+from field.cell import *
+from globalEnv.Exepts import PlayerDeath, WinningCondition
+from globalEnv.enums import Actions, TreasureTypes
 
 
 class Player:
-    def __init__(self, cell, name):
+    def __init__(self, cell: Cell, name):
         self.name = name
         self.cell = cell
         self.health_max = 2
@@ -56,3 +57,21 @@ class Player:
             return True
         else:
             return False
+
+    def move(self, cell):
+        self.cell = cell
+        if isinstance(self.cell, CellExit) and self.treasure:
+            treasure = self.treasure
+            self.treasure = None
+            if treasure.t_type is TreasureTypes.very:
+                raise WinningCondition()
+        elif isinstance(self.cell, CellClinic):
+            self.health = self.health_max
+        elif isinstance(self.cell, CellArmory):
+            self.bombs = self.bombs_max
+            self.arrows = self.arrows_max
+        elif isinstance(self.cell, CellArmoryWeapon):
+            self.arrows = self.arrows_max
+        elif isinstance(self.cell, CellArmoryExplosive):
+            self.bombs = self.bombs_max
+        return [type(self.cell)]

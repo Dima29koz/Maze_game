@@ -21,7 +21,7 @@ class Field:
             Actions.swap_treasure: self.treasure_swap_handler,
             Actions.shoot_bow: self.shooting_handler,
             Actions.throw_bomb: self.bomb_throw_handler,
-            Actions.skip: self.idle_handler,
+            Actions.skip: self.pass_handler,
             Actions.move: self.movement_handler,
         }
 
@@ -34,7 +34,8 @@ class Field:
     def spawn_players(self, rules=None):
         players = []
         players.append(Player(self.field[1][1], 'skipper'))
-        players.append(Player(self.field[1][0], 'tester'))
+        players[0].is_active = True
+        # players.append(Player(self.field[1][0], 'tester'))
         return players
 
     def get_players(self):
@@ -127,7 +128,7 @@ class Field:
                             pl_dr.append(player.name)
                             self.treasures.append(treasure)
                 response['lost_treasure_players'] = pl_dr
-            response['info'].extend(self.idle_handler(active_player)['info'])
+            response['info'].extend(self.pass_handler(active_player)['info'])
             return response
         else:
             response['info'] = ['нет стрел']
@@ -140,17 +141,22 @@ class Field:
                 response['info'] = ['взорвал']
             else:
                 response['info'] = ['не взорвал']
-            response['info'].extend(self.idle_handler(active_player)['info'])
+            response['info'].extend(self.pass_handler(active_player)['info'])
         return response
 
-    def idle_handler(self, active_player: Player, direction=None) -> dict:
-        response = active_player.cell.idle(active_player)
+    def pass_handler(self, active_player: Player, direction=None) -> dict:
+        new_pl_cell = active_player.cell.idle(active_player.cell)
+        response = active_player.move(new_pl_cell)
         self.pass_the_turn_to_the_next_player()
         return {'info': response}
 
-    def movement_handler(self, active_player, movement_direction) -> dict:
+    def movement_handler(self, active_player: Player, movement_direction) -> dict:
+        current_cell = active_player.cell
+        pl_collision, pl_state, wall_type = current_cell.check_wall(movement_direction)
+        cell = current_cell.neighbours[movement_direction] if not pl_collision else current_cell
+        new_pl_cell = cell.active(current_cell) if pl_state else cell.idle(current_cell)
         try:
-            response = active_player.cell.check_wall(active_player, movement_direction)
+            response = active_player.move(new_pl_cell)
         except WinningCondition:
             raise
         else:

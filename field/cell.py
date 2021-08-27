@@ -1,10 +1,7 @@
 from typing import Optional
 
-from globalEnv.enums import Directions, TreasureTypes
-from globalEnv.Exepts import WinningCondition
+from globalEnv.enums import Directions
 from field.wall import *
-from entities.player import Player
-from entities.treasure import Treasure
 
 
 class Cell:
@@ -41,25 +38,17 @@ class Cell:
             return True
         return False
 
-    def idle(self, player: Player) -> list[type]:
-        player.cell = self
-        return [type(self)]
+    def idle(self, previous_cell):
+        return self
 
-    def active(self, player: Player) -> list[type]:
-        return self.idle(player)
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
 
-    def treasure_movement(self, treasure: Treasure):
-        treasure.cell = self
+    def treasure_movement(self):
+        return self
 
-    def check_wall(self, player: Player, direction: Directions) -> list[type]:
-        pl_collision, pl_state, wall_type = self.walls[direction].handler()
-        cell = self.neighbours[direction] if not pl_collision else self
-        try:
-            response = cell.active(player) if pl_state else cell.idle(player)
-        except WinningCondition:
-            raise
-        else:
-            return [wall_type] + response
+    def check_wall(self, direction: Directions):
+        return self.walls[direction].handler()
 
 
 class CellRiver(Cell):
@@ -67,33 +56,26 @@ class CellRiver(Cell):
         super().__init__(x, y)
         self.river = []
 
-    def idle(self, player: Player) -> list[type]:
+    def idle(self, previous_cell):
         idx = self.river.index(self)
-        player.cell = self.river[idx + 1]
-        return [type(player.cell)]
+        return self.river[idx + 1]
 
-    def active(self, player: Player) -> list[type]:
-        if self.__is_same_river(player):
-            player.cell = self
-            return [type(self)]
+    def active(self, previous_cell):
+        if self.__is_same_river(previous_cell):
+            return self
         else:
             idx = self.river.index(self)
             dif = len(self.river) - 1 - idx
-            player.cell = self.river[idx + 2] if dif > 2 else self.river[idx + dif]
-            return [type(self), type(player.cell)]
+            return self.river[idx + 2] if dif > 2 else self.river[idx + dif]
 
-    def treasure_movement(self, treasure: Treasure):
+    def treasure_movement(self):
         idx = self.river.index(self)
+        return self.river[idx + 1]
 
-        if idx + 1 < len(self.river):
-            treasure.cell = self.river[idx + 1]
-        else:
-            treasure.cell = self
-
-    def __is_same_river(self, player: Player):
-        if isinstance(player.cell, CellRiver) and player.cell is not self:
-            if player.cell in self.river:
-                if abs(self.river.index(self) - self.river.index(player.cell)) == 1:
+    def __is_same_river(self, previous_cell):
+        if isinstance(previous_cell, CellRiver) and previous_cell is not self:
+            if previous_cell in self.river:
+                if abs(self.river.index(self) - self.river.index(previous_cell)) == 1:
                     return True
 
     def add_river_list(self, river):
@@ -104,12 +86,11 @@ class CellRiverMouth(CellRiver):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list[type]:
-        player.cell = self
-        return [type(self)]
+    def idle(self, previous_cell):
+        return self
 
-    def active(self, player: Player) -> list[type]:
-        return self.idle(player)
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
 
 
 class CellExit(Cell):
@@ -123,65 +104,50 @@ class CellExit(Cell):
             Directions.left: WallOuter()}
         self.walls.update({direction: WallEntrance()})
 
-    def active(self, player: Player) -> list[type]:  # todo есть мнение что афк обработчик должен возвращать на поле
+    def active(self, previous_cell):  # todo есть мнение что афк обработчик должен возвращать на поле
         # todo есть мнение, что игрок без клада не может выйти
-        player.cell = self
-        if player.treasure:
-            treasure = player.treasure
-            player.treasure = None
-            if treasure.t_type is TreasureTypes.very:
-                raise WinningCondition()
-        return [type(self)]
+        return self
 
 
 class CellClinic(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list[type]:
-        player.cell = self
-        player.health = player.health_max
-        return [type(self)]
+    def idle(self, previous_cell):
+        return self
 
-    def active(self, player: Player) -> list[type]:
-        return self.idle(player)
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
 
 
 class CellArmory(Cell):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list[type]:
-        player.cell = self
-        player.bombs = player.bombs_max
-        player.arrows = player.arrows_max
-        return [type(self)]
+    def idle(self, previous_cell):
+        return self
 
-    def active(self, player: Player) -> list[type]:
-        return self.idle(player)
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
 
 
 class CellArmoryWeapon(CellArmory):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list[type]:
-        player.cell = self
-        player.arrows = player.arrows_max
-        return [type(self)]
+    def idle(self, previous_cell):
+        return self
 
-    def active(self, player: Player) -> list[type]:
-        return self.idle(player)
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
 
 
 class CellArmoryExplosive(CellArmory):
     def __init__(self, x, y):
         super().__init__(x, y)
 
-    def idle(self, player: Player) -> list[type]:
-        player.cell = self
-        player.bombs = player.bombs_max
-        return [type(self)]
+    def idle(self, previous_cell):
+        return self
 
-    def active(self, player: Player) -> list[type]:
-        return self.idle(player)
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
