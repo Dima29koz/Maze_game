@@ -11,6 +11,7 @@ from field.cell import *
 
 class Field:
     def __init__(self, rules: dict):
+        self.gameplay_rules = rules['gameplay_rules']
         field = FieldGenerator(rules['generator_rules'])
         self.host = Host(rules['host_rules'])
         self.field = field.get_field()
@@ -127,7 +128,7 @@ class Field:
                         print(player.name, 'убит')  # todo добавить обработчик зависящий от правил игры
                         self.players.remove(player)
                         self.dead_players.append(player)
-                        if len(self.players) == 1:
+                        if len(self.players) == 1 and self.gameplay_rules['fast_win']:
                             raise WinningCondition
                     else:
                         if treasure:

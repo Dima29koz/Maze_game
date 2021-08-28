@@ -10,6 +10,7 @@ TILE = 50
 rules = {
     'generator_rules': {'rows': 4, 'cols': 5},
     'host_rules': {},
+    'gameplay_rules': {'fast_win': False}
 }
 
 field = Field(rules=rules)
