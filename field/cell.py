@@ -27,16 +27,16 @@ class Cell:
     def break_wall(self, direction: Directions):
         """
         Уничтожает стену в заданном направлении если стена разрушима
-        :param direction:
-        :return: True if wall was destroyed else False
+
+        :return: hit wall
         """
+        wall = self.walls[direction]
         if self.walls[direction].breakable:
             self.add_wall(direction, WallEmpty())
             neighbour = self.neighbours[direction]
             if neighbour and neighbour.walls[-direction].breakable:
                 neighbour.walls[-direction] = WallEmpty()
-            return True
-        return False
+        return wall
 
     def idle(self, previous_cell):
         return self

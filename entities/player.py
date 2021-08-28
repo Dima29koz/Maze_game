@@ -19,7 +19,7 @@ class Player:
         self.treasure: Optional[Treasure] = None
         self.is_active = False
 
-        self.abilities = {  # todo
+        self.abilities = {
             Actions.move: True,
             Actions.shoot_bow: True,
             Actions.throw_bomb: True,
@@ -65,15 +65,12 @@ class Player:
         self.cell = cell
 
     def heal(self):
-        print('healed')
         self.health = self.health_max
 
     def restore_bombs(self):
-        print('bombs rest')
         self.bombs = self.bombs_max
 
     def restore_arrows(self):
-        print('arrows rest')
         self.arrows = self.arrows_max
 
     def restore_armory(self):
