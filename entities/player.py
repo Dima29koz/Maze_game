@@ -19,13 +19,16 @@ class Player:
         self.treasure: Optional[Treasure] = None
         self.is_active = False
 
-        self.abilities = {
-            Actions.move: '',
-            Actions.shoot_bow: '',
-            Actions.throw_bomb: '',
-            Actions.swap_treasure: '',
+        self.abilities = {  # todo
+            Actions.move: True,
+            Actions.shoot_bow: True,
+            Actions.throw_bomb: True,
+            Actions.swap_treasure: False,
             Actions.skip: True,
         }
+
+    def get_allowed_abilities(self):
+        return self.abilities
 
     def can_take_treasure(self):
         if self.health == self.health_max:
@@ -58,20 +61,33 @@ class Player:
         else:
             return False
 
-    def move(self, cell):
+    def move(self, cell: Cell):
         self.cell = cell
-        if isinstance(self.cell, CellExit) and self.treasure:
+
+    def heal(self):
+        print('healed')
+        self.health = self.health_max
+
+    def restore_bombs(self):
+        print('bombs rest')
+        self.bombs = self.bombs_max
+
+    def restore_arrows(self):
+        print('arrows rest')
+        self.arrows = self.arrows_max
+
+    def restore_armory(self):
+        self.restore_bombs()
+        self.restore_arrows()
+
+    def drop_treasure(self):
+        if self.treasure:
             treasure = self.treasure
             self.treasure = None
-            if treasure.t_type is TreasureTypes.very:
-                raise WinningCondition()
-        elif isinstance(self.cell, CellClinic):
-            self.health = self.health_max
-        elif isinstance(self.cell, CellArmory):
-            self.bombs = self.bombs_max
-            self.arrows = self.arrows_max
-        elif isinstance(self.cell, CellArmoryWeapon):
-            self.arrows = self.arrows_max
-        elif isinstance(self.cell, CellArmoryExplosive):
-            self.bombs = self.bombs_max
-        return [type(self.cell)]
+            return treasure
+        return
+
+    def came_out_maze(self):
+        treasure = self.drop_treasure()
+        if treasure and treasure.t_type is TreasureTypes.very:
+            raise WinningCondition()

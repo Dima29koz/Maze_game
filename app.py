@@ -17,12 +17,14 @@ gui = SpectatorGUI(FPS, RES, TILE, field)
 
 isRunning = True
 state = Actions.move
+act_pl_abilities = field.player_turn_start_handler()
 while isRunning:
-    gui.draw()
-    act, state = gui.get_action(state)
+    gui.draw(act_pl_abilities)
+    act, state = gui.get_action(act_pl_abilities, state)
     if act:
         try:
             field.action_handler(*act)
+            act_pl_abilities = field.player_turn_start_handler()
         except WinningCondition as e:
             print(e.message)
             isRunning = False

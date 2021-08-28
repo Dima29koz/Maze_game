@@ -4,6 +4,7 @@ import pygame
 class Button:
     def __init__(self, screen, position, text, action, size):
         self.is_active = False
+        self.is_available = True
         self.screen = screen
         self.x, self.y = position
         self.text = text

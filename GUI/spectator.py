@@ -35,17 +35,17 @@ class SpectatorGUI:
         self.buttons_st = [moving, shooting, bombing]
         self.buttons_dirs = [up, down, left, right]
 
-    def draw(self):
+    def draw(self, allowed_actions):
         self.clock.tick(30)
         self.sc.fill(pygame.Color('darkslategray'))
-        self.draw_buttons()
+        self.draw_buttons(allowed_actions)
         self.draw_field()
         self.draw_treasures()
         self.draw_players()
 
         pygame.display.flip()
 
-    def get_action(self, current_state=Actions.move):
+    def get_action(self, allowed_actions, current_state=Actions.move):
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 self.close()
@@ -57,15 +57,17 @@ class SpectatorGUI:
                 pos = pygame.mouse.get_pos()
                 for button in self.buttons:
                     if button.get().collidepoint(pos):
-                        if button in self.buttons_st:
-                            for butt in self.buttons_st:
-                                butt.is_active = False
-                            button.is_active = True
-                            return self.get_action(button.action)
-                        elif button in self.buttons_dirs:
-                            return (current_state, button.active()), current_state
-                        else:
-                            return (button.active(), None), current_state
+                        if (button not in self.buttons_dirs and allowed_actions[button.action]) \
+                                or button in self.buttons_dirs:
+                            if button in self.buttons_st:
+                                for butt in self.buttons_st:
+                                    butt.is_active = False
+                                button.is_active = True
+                                return self.get_action(allowed_actions, button.action)
+                            elif button in self.buttons_dirs:
+                                return (current_state, button.active()), current_state
+                            else:
+                                return (button.active(), None), current_state
         return None, current_state
 
     @staticmethod
@@ -131,9 +133,13 @@ class SpectatorGUI:
         else:
             return 'darkslategray'
 
-    def draw_buttons(self):
+    def draw_buttons(self, allowed_actions):
         for button in self.buttons:
-            button.draw()
+            if button not in self.buttons_dirs:
+                if allowed_actions[button.action]:
+                    button.draw()
+            else:
+                button.draw()
 
     def draw_field(self):
         grid_cells = self.field.get_field()
