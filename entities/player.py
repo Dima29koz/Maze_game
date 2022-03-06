@@ -2,7 +2,7 @@ from typing import Optional
 
 from entities.treasure import Treasure
 from field.cell import *
-from globalEnv.Exepts import PlayerDeath, WinningCondition
+from globalEnv.Exceptions import PlayerDeath, WinningCondition
 from globalEnv.enums import Actions, TreasureTypes
 
 
@@ -17,6 +17,7 @@ class Player:
         self.arrows_max = 3
         self.arrows = self.arrows_max
         self.treasure: Optional[Treasure] = None
+        self.is_alive = True
         self.is_active = False
 
         self.abilities = {
@@ -27,25 +28,28 @@ class Player:
             Actions.skip: True,
         }
 
-    def get_allowed_abilities(self):
+    def get_allowed_abilities(self, is_tr_under: bool):
+        self.abilities[Actions.shoot_bow] = True if self.arrows > 0 else False
+        self.abilities[Actions.throw_bomb] = True if self.bombs > 0 else False
+        self.abilities[Actions.swap_treasure] = True if (self.can_take_treasure() and is_tr_under) else False
         return self.abilities
 
     def can_take_treasure(self):
-        if self.health == self.health_max:
-            return True
-        else:
-            return False
+        return self.health == self.health_max
 
-    def dropped_treasure(self):
+    def take_damage(self):
         self.health -= 1
         if self.health == 0:
+            self.is_alive = False
             raise PlayerDeath
+
+    def dropped_treasure(self):
+        self.take_damage()
         if self.treasure and self.health <= self.health_max // 2:
             treasure = self.treasure
             treasure.cell = self.cell
             self.treasure = None
             return treasure
-        return
 
     def throw_bomb(self):
         if self.bombs:

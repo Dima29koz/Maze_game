@@ -51,7 +51,10 @@ class SpectatorGUI:
                 self.close()
 
             if event.type == KEYUP:
-                return self.convert_keys(event.key), current_state
+                action, direction = self.convert_keys(event.key)
+                if (not action) or not allowed_actions[action]:
+                    return None, current_state
+                return (action, direction), current_state
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 pos = pygame.mouse.get_pos()
@@ -75,7 +78,7 @@ class SpectatorGUI:
         exit()
 
     @staticmethod
-    def convert_keys(key) -> Optional[tuple[Actions, Optional[Directions]]]:
+    def convert_keys(key) -> tuple[Optional[Actions], Optional[Directions]]:
         if key:
             if key == K_SPACE:
                 return Actions.skip, None
@@ -109,7 +112,7 @@ class SpectatorGUI:
             if key == K_l:
                 return Actions.shoot_bow, Directions.right
 
-        return
+        return None, None
 
     @staticmethod
     def get_cell_color(cell):
@@ -181,44 +184,40 @@ class SpectatorGUI:
         treasures = self.field.get_treasures()
         for treasure in treasures:
             x, y = treasure.cell.x * self.tile_size, treasure.cell.y * self.tile_size
-            if treasure.t_type is TreasureTypes.very:
-                pygame.draw.rect(self.sc, pygame.Color(209, 171, 0),
-                                 (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                                  self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-            if treasure.t_type is TreasureTypes.spurious:
-                pygame.draw.rect(self.sc, pygame.Color(87, 201, 102),
-                                 (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                                  self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-            if treasure.t_type is TreasureTypes.mined:
-                pygame.draw.rect(self.sc, pygame.Color(201, 92, 87),
-                                 (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                                  self.tile_size // 3 - 2, self.tile_size // 3 - 2))
+            self.draw_treasure(treasure, x, y)
+
+    def draw_treasure(self, treasure, x, y):
+        if treasure.t_type is TreasureTypes.very:
+            pygame.draw.rect(self.sc, pygame.Color(209, 171, 0),
+                             (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
+                              self.tile_size // 3 - 2, self.tile_size // 3 - 2))
+        if treasure.t_type is TreasureTypes.spurious:
+            pygame.draw.rect(self.sc, pygame.Color(87, 201, 102),
+                             (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
+                              self.tile_size // 3 - 2, self.tile_size // 3 - 2))
+        if treasure.t_type is TreasureTypes.mined:
+            pygame.draw.rect(self.sc, pygame.Color(201, 92, 87),
+                             (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
+                              self.tile_size // 3 - 2, self.tile_size // 3 - 2))
 
     def draw_players(self):
         players = self.field.get_players()
         for player in players:
-            x = player.cell.x * self.tile_size + self.tile_size // 2
-            y = player.cell.y * self.tile_size + self.tile_size // 2
-            if player.is_active:
-                pygame.draw.circle(self.sc, (255, 255, 255),
-                                   (x, y), self.tile_size // 3.5)
-            pygame.draw.circle(self.sc, pygame.Color(abs(hash(player.name)) % 255, 155, 155),
-                               (x, y), self.tile_size // 4)
+            if player.is_alive:
+                self.draw_player(player)
 
-            if player.treasure:
-                x, y = player.cell.x * self.tile_size, player.cell.y * self.tile_size
-                if player.treasure.t_type is TreasureTypes.very:
-                    pygame.draw.rect(self.sc, pygame.Color(209, 171, 0),
-                                     (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                                      self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-                if player.treasure.t_type is TreasureTypes.spurious:
-                    pygame.draw.rect(self.sc, pygame.Color(87, 201, 102),
-                                     (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                                      self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-                if player.treasure.t_type is TreasureTypes.mined:
-                    pygame.draw.rect(self.sc, pygame.Color(201, 92, 87),
-                                     (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                                      self.tile_size // 3 - 2, self.tile_size // 3 - 2))
+    def draw_player(self, player):
+        x = player.cell.x * self.tile_size + self.tile_size // 2
+        y = player.cell.y * self.tile_size + self.tile_size // 2
+        if player.is_active:
+            pygame.draw.circle(self.sc, (255, 255, 255),
+                               (x, y), self.tile_size // 3.5)
+        pygame.draw.circle(self.sc, pygame.Color(abs(hash(player.name)) % 255, 155, 155),
+                           (x, y), self.tile_size // 4)
+
+        if player.treasure:
+            x, y = player.cell.x * self.tile_size, player.cell.y * self.tile_size
+            self.draw_treasure(player.treasure, x, y)
 
     def draw_river_dir(self, cell, x, y):
         f1 = pygame.font.Font(None, self.tile_size * 2 // 3)

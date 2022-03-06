@@ -1,24 +1,22 @@
 from typing import Optional
 
 from field_generator.field_generator import FieldGenerator
-# from field.host import Host
-from field.response import *
-from globalEnv.Exepts import WinningCondition, PlayerDeath
+import field.response as r
+from globalEnv.Exceptions import WinningCondition, PlayerDeath
 from entities.player import Player
 from entities.treasure import Treasure
 from globalEnv.enums import Actions, Directions, TreasureTypes
-from field.cell import *
+from field.cell import Cell
+import field.cell as c
 
 
 class Field:
     def __init__(self, rules: dict):
         self.gameplay_rules = rules['gameplay_rules']
-        field = FieldGenerator(rules['generator_rules'])
-        # self.host = Host(rules['host_rules'])
-        self.field = field.get_field()
-        self.treasures: list[Treasure] = field.get_treasures()
-        self.players = self.spawn_players()
-        self.dead_players: list[Player] = []
+        generator = FieldGenerator(rules['generator_rules'])
+        self.field = generator.get_field()
+        self.treasures: list[Treasure] = generator.get_treasures()
+        self.players: list[Player] = self.spawn_players(rules['players'])
         self.active_player = 0
 
         self.action_to_handler = {
@@ -35,17 +33,17 @@ class Field:
     def get_treasures(self):
         return self.treasures
 
-    def spawn_players(self, rules=None):
+    def spawn_players(self, players_: list[str]):
         players = []
-        players.append(Player(self.field[1][1], 'skipper'))
+        for player in players_:
+            players.append(Player(self.field[1][1], player))
         players[0].is_active = True
-        # players.append(Player(self.field[1][0], 'tester'))
         return players
 
     def get_players(self):
         return self.players
 
-    def action_handler(self, action: Actions, direction: Optional[Directions] = None) -> RespHandler:
+    def action_handler(self, action: Actions, direction: Optional[Directions] = None) -> r.RespHandler:
         player = self.players[self.active_player]
         try:
             response = self.action_to_handler[action](player, direction)
@@ -57,14 +55,14 @@ class Field:
         except KeyError:
             print('что-то пошло не так, не ожидаемое действие', action)
 
-    def check_players(self, current_cell, active_player) -> list[Player]:
+    def check_players(self, current_cell: Cell) -> list[Player]:
         current_players = []
         for player in self.players:
-            if player.cell == current_cell and player is not active_player:
+            if player.cell == current_cell and not player.is_active and player.is_alive:
                 current_players.append(player)
         return current_players
 
-    def treasures_on_cell(self, cell):
+    def treasures_on_cell(self, cell: Cell):
         treasures = []
         for treasure in self.treasures:
             if cell == treasure.cell:
@@ -83,51 +81,62 @@ class Field:
         player.treasure = treasures.pop(0)
         self.treasures.remove(player.treasure)
         player.treasure.cell = None
-        return RespHandlerSwapTreasure(has_treasure)
+        return r.RespHandlerSwapTreasure(has_treasure)
 
     def shooting_handler(self, active_player: Player, shot_direction: Directions):
         hit = False
         lost_treasure_players = []
+        dead_players = []
         current_cell = active_player.cell
         active_player.shoot_bow()
-        damaged_players = self.check_players(current_cell, active_player)
+        damaged_players = self.check_players(current_cell)
         while not damaged_players:
             if current_cell.walls[shot_direction].weapon_collision:
                 break
             current_cell = current_cell.neighbours[shot_direction]
-            damaged_players = self.check_players(current_cell, active_player)
+            damaged_players = self.check_players(current_cell)
         else:
             hit = True
-
-            for player in damaged_players:
-                try:
-                    treasure = player.dropped_treasure()
-                except PlayerDeath:  # todo добавить обработчик зависящий от правил игры
-                    print(player.name, 'убит')
-                    self.players.remove(player)
-                    self.dead_players.append(player)
-                    if len(self.players) == 1 and self.gameplay_rules['fast_win']:
-                        raise WinningCondition
-                else:
-                    if treasure:
-                        lost_treasure_players.append(player)
-                        self.treasures.append(treasure)
+            lost_treasure_players, dead_players = self.player_take_dmg_handler(damaged_players)
 
         new_pl_location = self.pass_handler(active_player).new_location
-        return RespHandlerShootBow(hit, damaged_players, lost_treasure_players, new_pl_location)
+        return r.RespHandlerShootBow(hit, damaged_players, dead_players, lost_treasure_players, new_pl_location)
+
+    def player_take_dmg_handler(self, damaged_players: list[Player]):
+        lost_treasure_players = []
+        dead_players = []
+        for player in damaged_players:
+            try:
+                treasure = player.dropped_treasure()
+            except PlayerDeath:  # todo добавить обработчик зависящий от правил игры
+                dead_players.append(player)
+                if self.alive_pl_amount() == 1 and self.gameplay_rules['fast_win']:
+                    raise WinningCondition
+            else:
+                if treasure:
+                    lost_treasure_players.append(player)
+                    self.treasures.append(treasure)
+        return lost_treasure_players, dead_players
+
+    def alive_pl_amount(self):
+        amount = 0
+        for player in self.players:
+            if player.is_alive:
+                amount += 1
+        return amount
 
     def bomb_throw_handler(self, active_player: Player, throwing_direction: Directions):
         active_player.throw_bomb()
         wall = active_player.cell.break_wall(throwing_direction)
         new_pl_location = self.pass_handler(active_player).new_location
-        return RespHandlerBombing(wall, new_pl_location)
+        return r.RespHandlerBombing(wall, new_pl_location)
 
     def pass_handler(self, active_player: Player, direction: Directions = None):
         new_pl_cell = active_player.cell.idle(active_player.cell)
         active_player.move(new_pl_cell)
         self.cell_mechanics_activator(active_player, new_pl_cell)
         self.pass_the_turn_to_the_next_player()
-        return RespHandlerSkip(type(new_pl_cell))
+        return r.RespHandlerSkip(type(new_pl_cell))
 
     def movement_handler(self, active_player: Player, movement_direction: Directions):
         current_cell = active_player.cell
@@ -138,22 +147,19 @@ class Field:
         self.cell_mechanics_activator(active_player, new_pl_cell)
 
         self.pass_the_turn_to_the_next_player()
-        return RespHandlerMoving(wall_type, cell, new_pl_cell)
+        return r.RespHandlerMoving(wall_type, cell, new_pl_cell)
 
     @staticmethod
     def cell_mechanics_activator(player: Player, cell):
         cell_type_to_player_handler = {
-            CellExit: player.came_out_maze,
-            CellClinic: player.heal,
-            CellArmory: player.restore_armory,
-            CellArmoryWeapon: player.restore_arrows,
-            CellArmoryExplosive: player.restore_bombs,
+            c.CellExit: player.came_out_maze,
+            c.CellClinic: player.heal,
+            c.CellArmory: player.restore_armory,
+            c.CellArmoryWeapon: player.restore_arrows,
+            c.CellArmoryExplosive: player.restore_bombs,
         }
         if type(cell) in cell_type_to_player_handler.keys():
-            try:
-                cell_type_to_player_handler[type(cell)]()
-            except WinningCondition:
-                raise
+            cell_type_to_player_handler[type(cell)]()
 
     def pass_the_turn_to_the_next_player(self):
         self.players[self.active_player].is_active = False
@@ -161,18 +167,17 @@ class Field:
         self.players[self.active_player].is_active = True
         if self.active_player + 1 == len(self.players):
             self.host_turn()
+        if not self.players[self.active_player].is_alive:
+            self.pass_the_turn_to_the_next_player()
 
     def host_turn(self):
         for treasure in self.treasures:
             treasure.idle()
 
     def player_turn_start_handler(self):
+        """
+        :return: active player allowed_abilities
+        """
         player = self.players[self.active_player]
-        player.abilities[Actions.shoot_bow] = True if player.arrows > 0 else False
-        player.abilities[Actions.throw_bomb] = True if player.bombs > 0 else False
-        player.abilities[Actions.swap_treasure] = True if player.can_take_treasure() and self.treasures_on_cell(
-            player.cell) else False
-        return self.players[self.active_player].get_allowed_abilities()
-
-    def player_turn_end_handler(self):
-        pass
+        is_treasures_under = True if self.treasures_on_cell(player.cell) else False
+        return player.get_allowed_abilities(is_treasures_under)

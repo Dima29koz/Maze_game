@@ -81,21 +81,28 @@ class RespHandlerSwapTreasure(RespHandler):
 class RespHandlerShootBow(RespHandlerSkip):
     def __init__(self, hit: bool,
                  damaged_players: list[Player] = None,
+                 dead_players: list[Player] = None,
                  lost_treasure_players: list[Player] = None,
                  new_location: Type[Cell] = None):
         super().__init__(new_location)
         self.hit = hit
         self.damaged_players = damaged_players
+        self.dead_players = dead_players
         self.lost_treasure_players = lost_treasure_players
 
     def get_info(self):
-        dmg_pl_names = [player.name for player in self.damaged_players]
-        tr_lost_pl_names = [player.name for player in self.lost_treasure_players]
         if self.hit:
-            res = f'попал, игроки {dmg_pl_names} ранены, игроки {tr_lost_pl_names} выронили клад'
+            dmg_pl_names = [player.name for player in self.damaged_players]
+            tr_lost_pl_names = [player.name for player in self.lost_treasure_players]
+            dead_pl_names = [player.name for player in self.dead_players]
+
+            dmg_pl = f' игроки {dmg_pl_names} ранены,' if dmg_pl_names else ''
+            dead_pl = f' игроки {dead_pl_names} убиты,' if dead_pl_names else ''
+            drop_pl = f' игроки {tr_lost_pl_names} выронили клад' if tr_lost_pl_names else ''
+            res = f'попал,{dmg_pl}{dead_pl}{drop_pl}'
         else:
-            res = f'не попал'
-        return res + ', ' + super().get_info()
+            res = f'не попал,'
+        return res + ' ' + super().get_info()
 
 
 class RespHandlerBombing(RespHandlerSkip):

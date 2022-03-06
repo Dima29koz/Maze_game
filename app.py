@@ -1,6 +1,6 @@
 from GUI.spectator import SpectatorGUI
 from field.field import Field
-from globalEnv.Exepts import WinningCondition
+from globalEnv.Exceptions import WinningCondition
 from globalEnv.enums import Actions
 from field.response import RespHandler
 
@@ -8,19 +8,23 @@ FPS = 30
 RES = WIDTH, HEIGHT = 1202, 600
 TILE = 50
 
+players = ['Skipper', 'tester']
+
 rules = {
     'generator_rules': {'rows': 4, 'cols': 5},
     'host_rules': {},
-    'gameplay_rules': {'fast_win': True}
+    'players': players,
+    'gameplay_rules': {'fast_win': False}
 }
+
 
 field = Field(rules=rules)
 gui = SpectatorGUI(FPS, RES, TILE, field)
 
-isRunning = True
+is_running = True
 state = Actions.move
 act_pl_abilities = field.player_turn_start_handler()
-while isRunning:
+while is_running:
     gui.draw(act_pl_abilities)
     act, state = gui.get_action(act_pl_abilities, state)
     if act:
@@ -30,5 +34,5 @@ while isRunning:
             act_pl_abilities = field.player_turn_start_handler()
         except WinningCondition as e:
             print(e.message)
-            isRunning = False
+            is_running = False
             gui.close()

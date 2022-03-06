@@ -1,7 +1,7 @@
 from typing import Optional
 
 from globalEnv.enums import Directions
-from field.wall import *
+from field.wall import WallEmpty, WallOuter, WallEntrance
 
 
 class Cell:
@@ -12,7 +12,7 @@ class Cell:
             Directions.right: None,
             Directions.bottom: None,
             Directions.left: None}
-        self.walls = {
+        self.walls: dict[Directions, WallEmpty] = {
             Directions.top: WallEmpty(),
             Directions.right: WallEmpty(),
             Directions.bottom: WallEmpty(),
