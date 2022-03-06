@@ -14,7 +14,7 @@ rules = {
     'generator_rules': {'rows': 4, 'cols': 5},
     'host_rules': {},
     'players': players,
-    'gameplay_rules': {'fast_win': False}
+    'gameplay_rules': {'fast_win': True}
 }
 
 

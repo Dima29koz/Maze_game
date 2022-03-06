@@ -1,5 +1,5 @@
 # created by virtualenv automatically
-venv1/Lib
-.idea
+/venv/
+/.idea/
 main.py
 MazeGame.drawio

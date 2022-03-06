@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+
 from field.cell import *
 from field.wall import *
 from field.field import Field
@@ -51,66 +52,76 @@ class SpectatorGUI:
                 self.close()
 
             if event.type == KEYUP:
-                action, direction = self.convert_keys(event.key)
-                if (not action) or not allowed_actions[action]:
-                    return None, current_state
-                return (action, direction), current_state
+                return self.get_key_act(event.key, allowed_actions, current_state)
 
-            elif event.type == pygame.MOUSEBUTTONUP:
-                pos = pygame.mouse.get_pos()
-                for button in self.buttons:
-                    if button.get().collidepoint(pos):
-                        if (button not in self.buttons_dirs and allowed_actions[button.action]) \
-                                or button in self.buttons_dirs:
-                            if button in self.buttons_st:
-                                for butt in self.buttons_st:
-                                    butt.is_active = False
-                                button.is_active = True
-                                return self.get_action(allowed_actions, button.action)
-                            elif button in self.buttons_dirs:
-                                return (current_state, button.active()), current_state
-                            else:
-                                return (button.active(), None), current_state
+            if event.type == pygame.MOUSEBUTTONUP:
+                return self.get_click_act(allowed_actions, current_state)
+
         return None, current_state
+
+    def get_key_act(self, key, allowed_actions, current_state):
+        if key:
+            action, direction = self.convert_keys(key)
+            if (not action) or not allowed_actions[action]:
+                return None, current_state
+            return (action, direction), current_state
+
+    def get_click_act(self, allowed_actions, current_state):
+        pos = pygame.mouse.get_pos()
+        for button in self.buttons:
+            if button.get().collidepoint(pos):
+                return self.btn_on_click(button, allowed_actions, current_state)
+
+    def btn_on_click(self, button, allowed_actions, current_state):
+        if (button not in self.buttons_dirs and allowed_actions[button.action]) \
+                or button in self.buttons_dirs:
+            if button in self.buttons_st:
+                for butt in self.buttons_st:
+                    butt.is_active = False
+                button.is_active = True
+                return self.get_action(allowed_actions, button.action)
+            elif button in self.buttons_dirs:
+                return (current_state, button.active()), current_state
+            else:
+                return (button.active(), None), current_state
 
     @staticmethod
     def close():
         exit()
 
     @staticmethod
-    def convert_keys(key) -> tuple[Optional[Actions], Optional[Directions]]:
-        if key:
-            if key == K_SPACE:
-                return Actions.skip, None
-            if key == K_RETURN:
-                return Actions.swap_treasure, None
+    def convert_keys(key) -> tuple[Actions | None, Directions | None]:
+        if key == K_SPACE:
+            return Actions.skip, None
+        if key == K_RETURN:
+            return Actions.swap_treasure, None
 
-            if key == K_UP:
-                return Actions.move, Directions.top
-            if key == K_DOWN:
-                return Actions.move, Directions.bottom
-            if key == K_LEFT:
-                return Actions.move, Directions.left
-            if key == K_RIGHT:
-                return Actions.move, Directions.right
+        if key == K_UP:
+            return Actions.move, Directions.top
+        if key == K_DOWN:
+            return Actions.move, Directions.bottom
+        if key == K_LEFT:
+            return Actions.move, Directions.left
+        if key == K_RIGHT:
+            return Actions.move, Directions.right
 
-            if key == K_w:
-                return Actions.throw_bomb, Directions.top
-            if key == K_s:
-                return Actions.throw_bomb, Directions.bottom
-            if key == K_a:
-                return Actions.throw_bomb, Directions.left
-            if key == K_d:
-                return Actions.throw_bomb, Directions.right
+        if key == K_w:
+            return Actions.throw_bomb, Directions.top
+        if key == K_s:
+            return Actions.throw_bomb, Directions.bottom
+        if key == K_a:
+            return Actions.throw_bomb, Directions.left
+        if key == K_d:
+            return Actions.throw_bomb, Directions.right
 
-            if key == K_i:
-                return Actions.shoot_bow, Directions.top
-            if key == K_k:
-                return Actions.shoot_bow, Directions.bottom
-            if key == K_j:
-                return Actions.shoot_bow, Directions.left
-            if key == K_l:
-                return Actions.shoot_bow, Directions.right
+        if key == K_i:
+            return Actions.shoot_bow, Directions.top
+        if key == K_k:
+            return Actions.shoot_bow, Directions.bottom
+        if key == K_j:
+            return Actions.shoot_bow, Directions.left
+        if key == K_l:
+            return Actions.shoot_bow, Directions.right
 
         return None, None
 

@@ -1,7 +1,5 @@
-from typing import Optional
-
 from entities.treasure import Treasure
-from field.cell import *
+from field.cell import Cell
 from globalEnv.Exceptions import PlayerDeath, WinningCondition
 from globalEnv.enums import Actions, TreasureTypes
 
@@ -16,7 +14,7 @@ class Player:
         self.bombs = self.bombs_max
         self.arrows_max = 3
         self.arrows = self.arrows_max
-        self.treasure: Optional[Treasure] = None
+        self.treasure: Treasure | None = None
         self.is_alive = True
         self.is_active = False
 
@@ -86,7 +84,6 @@ class Player:
             treasure = self.treasure
             self.treasure = None
             return treasure
-        return
 
     def came_out_maze(self):
         treasure = self.drop_treasure()

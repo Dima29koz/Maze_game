@@ -1,5 +1,5 @@
 from random import choice, shuffle
-from typing import Optional
+
 from field_generator.level_pattern import PatternCell
 from globalEnv.enums import Directions
 from field.cell import Cell, CellRiver, CellRiverMouth
@@ -30,7 +30,7 @@ class RiverGenerator:
             self.__field[riv_cell.y][riv_cell.x] = riv_cell
         return True
 
-    def __gen_river(self, length) -> Optional[list[Cell]]:
+    def __gen_river(self, length) -> list[Cell] | None:
         shuffle(self.__ground_cells)
         for source in self.__ground_cells:
             river = self.__gen_next_river_cell(length - 1, [source])
@@ -38,9 +38,8 @@ class RiverGenerator:
                 for cell in river:
                     self.__ground_cells.remove(cell)
                 return river
-        return
 
-    def __check_directions(self, current_cell: Cell) -> Optional[list[Cell]]:
+    def __check_directions(self, current_cell: Cell) -> list[Cell] | None:
         empty_neighbours = []
         for direction in Directions:
             x, y = direction.calc(current_cell.x, current_cell.y)
@@ -49,7 +48,7 @@ class RiverGenerator:
                 empty_neighbours.append(self.__field[y][x])
         return empty_neighbours
 
-    def __gen_next_river_cell(self, length, river: list[Cell]) -> Optional[list[Cell]]:
+    def __gen_next_river_cell(self, length, river: list[Cell]) -> list[Cell] | None:
         if length == 0:
             self.__pattern[river[-1].y][river[-1].x].visited = True
             return river

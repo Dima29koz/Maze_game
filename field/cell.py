@@ -1,5 +1,3 @@
-from typing import Optional
-
 from globalEnv.enums import Directions
 from field.wall import WallEmpty, WallOuter, WallEntrance
 
@@ -7,7 +5,7 @@ from field.wall import WallEmpty, WallOuter, WallEntrance
 class Cell:
     def __init__(self, x, y):
         self.x, self.y = x, y
-        self.neighbours: dict[Directions, Optional[Cell]] = {
+        self.neighbours: dict[Directions, Cell | None] = {
             Directions.top: None,
             Directions.right: None,
             Directions.bottom: None,
@@ -69,8 +67,8 @@ class CellRiver(Cell):
             return self.river[idx + 2] if dif > 2 else self.river[idx + dif]
 
     def treasure_movement(self):
-        idx = self.river.index(self)
-        return self.river[idx + 1]
+        index = self.river.index(self)
+        return self.river[index + 1]
 
     def __is_same_river(self, previous_cell):
         if isinstance(previous_cell, CellRiver) and previous_cell is not self:

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from field_generator.field_generator import FieldGenerator
 import field.response as r
 from globalEnv.Exceptions import WinningCondition, PlayerDeath
@@ -43,7 +41,7 @@ class Field:
     def get_players(self):
         return self.players
 
-    def action_handler(self, action: Actions, direction: Optional[Directions] = None) -> r.RespHandler:
+    def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
         player = self.players[self.active_player]
         try:
             response = self.action_to_handler[action](player, direction)
