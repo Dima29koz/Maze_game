@@ -24,7 +24,7 @@ class Cell:
     def add_wall(self, direction, wall):
         self.walls[direction] = wall
 
-    def break_wall(self, direction: Directions):
+    def break_wall(self, direction: Directions) -> WallEmpty:
         """
         Уничтожает стену в заданном направлении если стена разрушима
 
@@ -91,6 +91,9 @@ class CellRiverMouth(CellRiver):
 
     def active(self, previous_cell):
         return self.idle(previous_cell)
+
+    def treasure_movement(self):
+        return self
 
 
 class CellExit(Cell):

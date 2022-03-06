@@ -18,6 +18,7 @@ class Directions(Enum):
             return Directions.left
 
     def calc(self, x, y):
+        """Пересчет координат по направлению"""
         if self is Directions.top:
             y -= 1
         elif self is Directions.bottom:
