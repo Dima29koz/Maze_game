@@ -1,9 +1,8 @@
 from typing import Type
 
-from field.cell import *
-from field.wall import *
-from entities.player import Player
-
+from GameEngine.entities.player import Player
+from GameEngine.field.cell import *
+from GameEngine.field.wall import *
 
 info = {
     Cell: {'ru': 'суша'},

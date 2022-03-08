@@ -1,8 +1,8 @@
 from random import choice, shuffle
 
-from field_generator.level_pattern import PatternCell
-from globalEnv.enums import Directions
-from field.cell import Cell, CellRiver, CellRiverMouth
+from GameEngine.field_generator.level_pattern import PatternCell
+from GameEngine.globalEnv.enums import Directions
+from GameEngine.field.cell import Cell, CellRiver, CellRiverMouth
 
 
 class RiverGenerator:

@@ -1,5 +1,5 @@
-from globalEnv.enums import Directions
-from field.wall import WallEmpty, WallOuter, WallEntrance
+from GameEngine.globalEnv.enums import Directions
+from GameEngine.field.wall import WallEmpty, WallOuter, WallEntrance
 
 
 class Cell:

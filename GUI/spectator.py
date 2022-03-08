@@ -1,10 +1,10 @@
 import pygame
 from pygame.locals import *
 
-from field.cell import *
-from field.wall import *
-from field.field import Field
-from globalEnv.enums import Directions, Actions, TreasureTypes
+from GameEngine.field.field import Field
+from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
+from GameEngine.field.cell import *
+from GameEngine.field.wall import *
 from GUI.button import Button
 
 

@@ -1,7 +1,7 @@
-from entities.treasure import Treasure
-from field.cell import Cell
-from globalEnv.Exceptions import PlayerDeath, WinningCondition
-from globalEnv.enums import Actions, TreasureTypes
+from GameEngine.entities.treasure import Treasure
+from GameEngine.field.cell import Cell
+from GameEngine.globalEnv.Exceptions import PlayerDeath, WinningCondition
+from GameEngine.globalEnv.enums import Actions, TreasureTypes
 
 
 class Player:

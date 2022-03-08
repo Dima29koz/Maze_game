@@ -1,5 +1,5 @@
-from field.cell import Cell
-from globalEnv.enums import TreasureTypes
+from GameEngine.field.cell import Cell
+from GameEngine.globalEnv.enums import TreasureTypes
 
 
 class Treasure:

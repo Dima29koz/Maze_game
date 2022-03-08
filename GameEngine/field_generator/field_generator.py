@@ -1,11 +1,11 @@
 from random import choice
 
-from field.cell import *
-from field.wall import *
-from globalEnv.enums import Directions
-from entities.treasure import Treasure, TreasureTypes
-from field_generator.level_pattern import PatternCell
-from field_generator.river_generator import RiverGenerator
+from GameEngine.globalEnv.enums import Directions
+from GameEngine.entities.treasure import Treasure, TreasureTypes
+from GameEngine.field_generator.level_pattern import PatternCell
+from GameEngine.field_generator.river_generator import RiverGenerator
+from GameEngine.field.cell import *
+from GameEngine.field.wall import *
 
 
 class FieldGenerator:
@@ -14,9 +14,9 @@ class FieldGenerator:
         self.cols = generator_rules['cols']
         self.pattern: list[list[PatternCell]] = [[]]
         self.ground_cells: list[Cell] = []
-        self.field: list[list[Cell]] = [[]]
+        self.field: list[list[Cell | None]] = [[]]
         self.treasures: list[Treasure] = []
-        self.generate_field(rules=None)
+        self.generate_field(rules=generator_rules)
 
     def get_field(self):
         return self.field
@@ -25,27 +25,27 @@ class FieldGenerator:
         return self.treasures
 
     def generate_field(self, rules):
-        self.generate_pattern()
+        self.generate_pattern(rules['is_rect'])
         self.generate_base_field()
-        self.generate_rivers(river_rules=[5, 3])
-        self.generate_armory(armory_rules=True)
+        self.generate_rivers(rules['river_rules'])
+        self.generate_armory(rules['armory'])
         self.generate_clinic()
-        self.treasures = self.spawn_treasures(treasures_rules=[1, 1, 0])
+        self.treasures = self.spawn_treasures(rules['treasures'])
         self.generate_connections()
-        self.generate_walls(wall_rules=None)
+        self.generate_walls(rules['walls'])
         outer_cells = self.generate_outer_walls()
         self.create_exit(outer_cells)
 
-    def generate_pattern(self):
+    def generate_pattern(self, is_rect: bool):
+        """
+        Создает форму уровня
+        """
         self.pattern = [[PatternCell(col, row) for col in range(self.cols)] for row in range(self.rows)]
-        # for i in range(5):
-        #     self.pattern[0][i].is_not_none = False
-        #     self.pattern[1][i].is_not_none = False
-        self.pattern[3][0].is_not_none = False
-        self.pattern[3][3].is_not_none = False
-        self.pattern[3][4].is_not_none = False
-
-        self.pattern[1][2].is_not_none = False
+        if not is_rect:  # todo это заглушка. нужна функция превращающая прямоугольник в облачко с дырками
+            self.pattern[3][0].is_not_none = False
+            self.pattern[3][3].is_not_none = False
+            self.pattern[3][4].is_not_none = False
+            self.pattern[1][2].is_not_none = False
 
     def generate_base_field(self):
         self.field = [[Cell(col, row) if self.pattern[row][col].is_not_none else None
@@ -86,7 +86,7 @@ class FieldGenerator:
     def generate_connections(self):
         for row in range(0, self.rows):
             for col in range(0, self.cols):
-                if isinstance(self.field[row][col], Cell):
+                if self.field[row][col] is not None:
                     neighbours = {}
                     for direction in Directions:
                         x, y = direction.calc(col, row)
@@ -97,7 +97,7 @@ class FieldGenerator:
 
                     self.field[row][col].change_neighbours(neighbours)
 
-    def generate_walls(self, wall_rules):
+    def generate_walls(self, wall_rules):  # todo
         pass
 
     def generate_outer_walls(self):

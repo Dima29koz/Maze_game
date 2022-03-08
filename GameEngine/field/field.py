@@ -1,11 +1,10 @@
-from field_generator.field_generator import FieldGenerator
-import field.response as r
-from globalEnv.Exceptions import WinningCondition, PlayerDeath
-from entities.player import Player
-from entities.treasure import Treasure
-from globalEnv.enums import Actions, Directions, TreasureTypes
-from field.cell import Cell
-import field.cell as c
+from GameEngine.field_generator.field_generator import FieldGenerator
+from GameEngine.field import response as r, cell as c
+from GameEngine.globalEnv.Exceptions import WinningCondition, PlayerDeath
+from GameEngine.entities.player import Player
+from GameEngine.entities.treasure import Treasure
+from GameEngine.globalEnv.enums import Actions, Directions
+from GameEngine.field.cell import Cell
 
 
 class Field:
