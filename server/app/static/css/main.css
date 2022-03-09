@@ -1,0 +1,9 @@
+body {
+    .form-contact .invalid2 {
+             display: inline-block;
+             background: #FF9898;
+    }
+    .form-contact .invalid-feedback2 {
+             color: #CC0000;
+    }
+}
