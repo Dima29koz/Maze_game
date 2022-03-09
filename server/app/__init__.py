@@ -11,7 +11,7 @@ def create_app():
     db.init_app(app)
 
     login_manager = LoginManager(app)
-    login_manager.login_view = 'login'
+    login_manager.login_view = 'entity.login'
     login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
     login_manager.login_message_category = "success"
 

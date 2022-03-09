@@ -1,9 +1,31 @@
-body {
-    .form-contact .invalid2 {
-             display: inline-block;
-             background: #FF9898;
-    }
-    .form-contact .invalid-feedback2 {
-             color: #CC0000;
-    }
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.flash-error, .err {
+    color: red
+}
+
+.invalid-feedback {}
+
+.errors {
+    list-style: none;
+    font-size: .8em;
+    text-align: left;
+    width: -webkit-fill-available;
+    width: -moz-available;
+    background: #fae7ea;
+    padding: 9px 15px;
+    border-radius: 0 0 3px 3px;
+    border-top: 0;
+    border: 1px solid #e1c5c5;
+    color: #8d7575;
+    height: fit-content;
+}
+
+.error {
+    margin-bottom: 0px;
 }

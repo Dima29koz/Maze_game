@@ -5,29 +5,39 @@
 {% endblock %}
 
 {% block body %}
-<h1>Войти:</h1>
-{% for cat, msg in get_flashed_messages(True) %}
-<div class="flash {{cat}}">{{msg}}</div>
-{% endfor %}
-<form action="/login" method="post" class="form-contact">
-    {{ form.hidden_tag() }}
-    {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
-        <p>{{ field.label() }}
-        {% if field.errors %}
-            {{ field(class="invalid2") }}
-            <span class="invalid-feedback2">
-                {% for e in field.errors %}
-                    {{ e }}
-                {% endfor %}
-            </span>
-        {% else %}
-            {{ field() }}
-        {% endif %}
-    {% endfor %}
+<main class="form-signin text-center">
+    <form action="/login" method="post" class="form-contact">
+        {{ form.hidden_tag() }}
+        <h1 class="h3 mb-3 fw-normal">Войти:</h1>
+        {% for cat, msg in get_flashed_messages(True) %}
+            <div class="flash-{{cat}}">{{msg}}</div>
+        {% endfor %}
+        {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
+            <div class="form-floating">
+                {% if field.errors %}
+                    {{ field(class="form-control") }}
+                    <ul class="errors">
+                        {% for error in field.errors %}
+                            <li class="error">
+                                <span class="err">
+                                    {{ error }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {{ field.label(class="err", value=field.errors[0]) }}
+                 {% else %}
+                    {{ field(class="form-control") }}
+                    {{ field.label() }}
+                 {% endif %}
+            </div>
+        {% endfor %}
 
-    <p>{{ form.remember.label() }} {{ form.remember() }}
-    <p>{{ form.submit() }}
-    <hr align=left width="300px">
-    <p><a href="{{url_for('entity.registration')}}">Регистрация</a>
-</form>
+        <div class="checkbox mb-3">{{ form.remember() }} {{ form.remember.label() }}</div>
+        <div>{{ form.submit(class="w-100 btn btn-lg btn-primary") }}</div>
+        <div><a href="{{url_for('entity.registration')}}">Регистрация</a></div>
+    </form>
+</main>
+
+
 {% endblock %}
