@@ -6,13 +6,13 @@
 
 {% block body %}
 <main class="form-signin text-center">
-    <form action="/login" method="post" class="form-contact">
+    <form method="post" class="form-contact">
         {{ form.hidden_tag() }}
         <h1 class="h3 mb-3 fw-normal">Войти:</h1>
         {% for cat, msg in get_flashed_messages(True) %}
             <div class="flash-{{cat}}">{{msg}}</div>
         {% endfor %}
-        {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] -%}
+        {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] %}
             <div class="form-floating">
                 {% if field.errors %}
                     {{ field(class="form-control") }}

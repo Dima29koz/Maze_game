@@ -29,6 +29,7 @@ def index():
 
 
 @module.route('/play')
+@login_required
 def play():
     return render_template('play.html')
 

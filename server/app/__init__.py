@@ -13,7 +13,7 @@ def create_app():
     login_manager = LoginManager(app)
     login_manager.login_view = 'entity.login'
     login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
-    login_manager.login_message_category = "success"
+    login_manager.login_message_category = "error"
 
     from server.app.entity.models import User
 

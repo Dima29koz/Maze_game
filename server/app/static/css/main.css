@@ -5,13 +5,14 @@
   margin: auto;
 }
 
-.flash-error, .err {
+.err {
     color: red
 }
 
 .invalid-feedback {}
 
-.errors {
+
+.errors, .flash-error {
     list-style: none;
     font-size: .8em;
     text-align: left;
