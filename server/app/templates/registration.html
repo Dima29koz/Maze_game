@@ -18,7 +18,7 @@
                             <li class="error">
                                 <span class="err">
                                     {% if field.name == 'username' %}
-                                        {{ error }}. <a href="{{ url_for('entity.login') }}">Перейти на страницу авторизации.</a>.
+                                        {{ error }}. <a href="{{ url_for('main.login') }}">Перейти на страницу авторизации.</a>.
                                     {% else %}
                                         {{ error }}
                                     {% endif %}

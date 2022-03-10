@@ -1,7 +1,12 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_socketio import SocketIO
 
-from .database import db
+
+db = SQLAlchemy()
+login_manager = LoginManager()
+sio = SocketIO(logger=True)
 
 
 def create_app():
@@ -9,17 +14,7 @@ def create_app():
     app.config.from_object('config.DevelopmentConfig')
 
     db.init_app(app)
-
-    login_manager = LoginManager(app)
-    login_manager.login_view = 'entity.login'
-    login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
-    login_manager.login_message_category = "error"
-
-    from server.app.entity.models import User
-
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+    login_manager.init_app(app)
 
     with app.test_request_context():
         db.create_all()
@@ -28,13 +23,15 @@ def create_app():
         try:
             from flask_debugtoolbar import DebugToolbarExtension
             toolbar = DebugToolbarExtension(app)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
-    import server.app.entity.controllers as entity
+    from .entity import main as main_blueprint
     import server.app.general.controllers as general
 
     app.register_blueprint(general.module)
-    app.register_blueprint(entity.module)
+    app.register_blueprint(main_blueprint)
+
+    sio.init_app(app)
 
     return app
