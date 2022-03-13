@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, EqualTo, StopValidation, ValidationError
 
-from server.app.entity.models import User
+from server.app.main.models import User
 
 
 class RegistrationForm(FlaskForm):
@@ -23,3 +23,8 @@ class LoginForm(FlaskForm):
     pwd = PasswordField("Пароль: ", validators=[DataRequired('Поле не заполнено')])
     remember = BooleanField(" Запомнить ", default=False)
     submit = SubmitField("Войти")
+
+
+class RulesForm(FlaskForm):
+    room_name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])
+    submit = SubmitField("Создать")

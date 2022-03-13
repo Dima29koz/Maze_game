@@ -1,8 +1,19 @@
 from datetime import datetime
 
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from .. import db, login_manager
+
+login_manager.login_view = 'main.login'
+login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
+login_manager.login_message_category = "error"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    print(db.session.query(User).get(user_id))
+    return db.session.query(User).get(user_id)
 
 
 class User(db.Model, UserMixin):
@@ -14,6 +25,12 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % self.id
 
+    def set_pwd(self, password):
+        self.pwd = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.pwd, password)
+
     def add(self):
         try:
             db.session.add(self)
@@ -23,11 +40,3 @@ class User(db.Model, UserMixin):
             print('Error - добавление в бд', e)
 
 
-login_manager.login_view = 'main.login'
-login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
-login_manager.login_message_category = "error"
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))

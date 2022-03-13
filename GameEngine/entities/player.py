@@ -45,7 +45,7 @@ class Player:
         self.take_damage()
         if self.treasure and self.health <= self.health_max // 2:
             treasure = self.treasure
-            treasure.cell = self.cell
+            treasure.cell = self.cell  # fixme объект меняется внутри объекта
             self.treasure = None
             return treasure
 

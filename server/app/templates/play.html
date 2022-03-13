@@ -5,6 +5,9 @@
 {% endblock %}
 
 {% block body %}
-<h1>создать / присоединиться</h1>
-<div><a href="{{url_for('main.game_room')}}">Лобби</a></div>
+<main class="form-signin text-center">
+    <a class="w-100 btn btn-lg btn-primary" href="{{url_for('main.room_create')}}">Создать</a>
+    <a class="w-100 btn btn-lg btn-primary" href="{{url_for('main.room_join')}}">Присоединиться</a>
+</main>
+
 {% endblock %}

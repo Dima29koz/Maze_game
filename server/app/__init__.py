@@ -3,10 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 
+from server.app.utils.game import Game
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 sio = SocketIO(logger=True)
+game_rooms: list[Game] = []  # fixme
 
 
 def create_app():
@@ -26,7 +28,7 @@ def create_app():
         except Exception as e:
             print(e)
 
-    from .entity import main as main_blueprint
+    from .main import main as main_blueprint
     import server.app.general.controllers as general
 
     app.register_blueprint(general.module)

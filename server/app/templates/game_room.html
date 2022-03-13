@@ -1,13 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+{% extends 'base.html' %}
+
+{% block title %}
+Создание комнаты
+{% endblock %}
+
+{% block script %}
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.9.0/brython.js"></script>-->
+<!--    <script src="https://cdn.jsdelivr.net/npm/brython@3.8.9/brython_stdlib.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+
     <script src="{{ url_for('static', filename='scripts/socketio.js') }}"></script>
-</head>
-<body>
-    room
-</body>
-</html>
+
+{% endblock %}
+
+{% block body %}
+<!--    <body onload="brython()">-->
+<!--        <script type="text/python" src="{{ url_for('static', filename='scripts/socketio.py') }}"></script>-->
+<!--    </body>-->
+    <body>
+        <span id="get-username">{{ user_name }}</span>
+    </body>
+{% endblock %}
 
