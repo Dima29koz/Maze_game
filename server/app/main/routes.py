@@ -8,12 +8,10 @@ from flask import (
 from flask_login import login_user, login_required, logout_user, current_user
 
 from . import main
-from .forms import RegistrationForm, LoginForm, RulesForm
-from .models import User
+from .forms import RegistrationForm, LoginForm, RulesForm, LoginRoomForm
+from .models import User, GameRoom
 
-from .. import game_rooms
-from ..utils.game import Game
-
+from GameEngine.rules import rules as default_rules
 
 @main.errorhandler(404)
 def handle_404(err):
@@ -76,16 +74,19 @@ def profile():
     return render_template('profile.html')
 
 
-@main.route('/join')
+@main.route('/join', methods=["POST", "GET"])
 @login_required
 def room_join():
-    return render_template('join.html')
-
-
-@main.route('/game_room')
-@login_required
-def game_room():
-    return render_template('game_room.html', user_name=current_user.user_name)
+    form = LoginRoomForm()
+    if form.validate_on_submit():
+        room: GameRoom | None = GameRoom.query.filter_by(name=form.name.data).first()
+        if room and room.check_password(form.pwd.data):
+            if room.add_player(current_user.user_name):
+                return redirect(url_for("main.game_room", room=room.name))
+            flash("Комната полностью заполнена", "error")
+        else:
+            flash("Неверная пара логин/пароль", "error")
+    return render_template('join.html', form=form)
 
 
 @main.route('/create', methods=["POST", "GET"])
@@ -93,8 +94,16 @@ def game_room():
 def room_create():
     form = RulesForm()
     if form.validate_on_submit():
-        game = Game()
-        game.create()
-        game_rooms.append(game)
-        return redirect(url_for("main.game_room"))
+        room = GameRoom(name=form.room_name.data)
+        room.set_pwd(form.pwd.data)
+        room.rules = default_rules  # fixme
+        room.add_player(current_user.user_name)
+        room.add()
+        return redirect(url_for("main.game_room", room=room.name))
     return render_template('create.html', form=form)
+
+
+@main.route('/game_room')
+@login_required
+def game_room():
+    return render_template('game_room.html')

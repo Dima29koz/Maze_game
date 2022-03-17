@@ -3,7 +3,7 @@ from GameEngine.field.wall import WallEmpty, WallOuter, WallEntrance
 
 
 class Cell:
-    def __init__(self, x, y):
+    def __init__(self, x: int, y: int):
         self.x, self.y = x, y
         self.neighbours: dict[Directions, Cell | None] = {
             Directions.top: None,

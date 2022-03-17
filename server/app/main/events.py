@@ -1,6 +1,7 @@
 from flask_socketio import send, emit, join_room, leave_room
 
-from .. import sio, game_rooms
+from .models import GameRoom
+from .. import sio
 
 
 @sio.on('my_event', namespace='/game_room')
@@ -14,7 +15,7 @@ def handle_message(data):
     print('received message: ', data.get('data'))
 
     # emit('message', data.get('data'))
-    emit('message', {'data' : game_rooms[0].make_turn()})
+    emit('message', {'data': 'some data'})
 
 
 @sio.on('connect', namespace='/game_room')
@@ -30,13 +31,18 @@ def handle_disconnect():
 @sio.on('join', namespace='/game_room')
 def on_join(data):
     """User joins a room"""
-    print('join')
     username = data["username"]
-    room = data["room"]
-    join_room(room)
-
+    room_name = data["room"]
+    print(f'user {username} joins the room {room_name}')
+    join_room(room_name)
+    room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
+    players_name = [user.user_name for user in room.players]
     # Broadcast that new user has joined
-    send({"data": username + " has joined the " + room + " room."}, room=room)
+    emit(
+        'join',
+        {"players": players_name, "max_players": room.rules.get('players_amount')},
+        room=room_name
+    )
 
 
 @sio.on('leave', namespace='/game_room')

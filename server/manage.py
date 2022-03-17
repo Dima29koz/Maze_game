@@ -10,3 +10,4 @@ migrate = Migrate(app, db)
 
 if __name__ == '__main__':
     sio.run(app)
+    # db.create_all(app=app)

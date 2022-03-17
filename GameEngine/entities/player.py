@@ -3,16 +3,18 @@ from GameEngine.field.cell import Cell
 from GameEngine.globalEnv.Exceptions import PlayerDeath, WinningCondition
 from GameEngine.globalEnv.enums import Actions, TreasureTypes
 
+from GameEngine.rules import rules
+
 
 class Player:
     def __init__(self, cell: Cell, name):
         self.name = name
         self.cell = cell
-        self.health_max = 2
+        self.health_max = rules.get('player_stat').get('max_health')
         self.health = self.health_max
-        self.bombs_max = 3
+        self.bombs_max = rules.get('player_stat').get('max_bombs')
         self.bombs = self.bombs_max
-        self.arrows_max = 3
+        self.arrows_max = rules.get('player_stat').get('max_arrows')
         self.arrows = self.arrows_max
         self.treasure: Treasure | None = None
         self.is_alive = True

@@ -3,12 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 
-from server.app.utils.game import Game
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 sio = SocketIO(logger=True)
-game_rooms: list[Game] = []  # fixme
 
 
 def create_app():

@@ -3,25 +3,11 @@ from GameEngine.field.field import Field
 from GameEngine.globalEnv.Exceptions import WinningCondition
 from GameEngine.globalEnv.enums import Actions
 
+from rules import rules
+
 FPS = 30
 RES = WIDTH, HEIGHT = 1202, 600
 TILE = 50
-
-players = ['Skipper', 'tester']
-
-rules = {
-    'generator_rules': {
-        'rows': 4, 'cols': 5,
-        'is_rect': True,
-        'river_rules': [5, 3],
-        'armory': True,
-        'treasures': [1, 1, 0],
-        'walls': {}
-    },
-    'host_rules': {},
-    'players': players,
-    'gameplay_rules': {'fast_win': True}
-}
 
 
 field = Field(rules=rules)

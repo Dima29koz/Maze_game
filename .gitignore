@@ -2,3 +2,4 @@
 /venv/
 /.idea/
 /needToBeDelleted/
+/server/app/templates/tmp.html
