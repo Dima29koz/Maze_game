@@ -29,6 +29,7 @@ class User(db.Model, UserMixin):
     user_name = db.Column(db.String(50), unique=True)
     pwd = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    game_room = db.relationship('GameRoom', backref='creator', lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.id
@@ -55,6 +56,7 @@ class GameRoom(db.Model):
     pwd = db.Column(db.String(50), nullable=False)
     rules = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     players = db.relationship("User", secondary=user_room)
 
     def set_pwd(self, password):
@@ -81,3 +83,7 @@ class GameRoom(db.Model):
         self.players.append(user)
         db.session.commit()
         return True
+
+    def set_creator(self, user_name):
+        user: User = User.query.filter_by(user_name=user_name).first()
+        self.creator_id = user.id

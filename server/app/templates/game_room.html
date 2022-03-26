@@ -11,10 +11,10 @@
 
 {% block body %}
     <h1>Комната: <span id="get-room-name">{{ request.args.get('room') }}</span></h1>
+    <div id="control"></div>
     <div id="players" class="list-group list-group-flush border-bottom scrollarea">
-        <span id="get-username">{{current_user.user_name}}</span>
+        <span id="get-user-name">{{ current_user.user_name }}</span>
     </div>
-    <button id="start-btn" type="button" class="w-100 btn btn-lg btn-primary" disabled>Начать игру</button>
-
+    <div id="bots" class="list-group list-group-flush border-bottom scrollarea"></div>
 {% endblock %}
 

@@ -13,6 +13,7 @@ from .models import User, GameRoom
 
 from GameEngine.rules import rules as default_rules
 
+
 @main.errorhandler(404)
 def handle_404(err):
     return render_template('404.html'), 404
@@ -97,6 +98,9 @@ def room_create():
         room = GameRoom(name=form.room_name.data)
         room.set_pwd(form.pwd.data)
         room.rules = default_rules  # fixme
+        room.rules['players_amount'] = form.players_amount.data
+        room.rules['bots_amount'] = form.bots_amount.data
+        room.set_creator(current_user.user_name)
         room.add_player(current_user.user_name)
         room.add()
         return redirect(url_for("main.game_room", room=room.name))
@@ -107,3 +111,9 @@ def room_create():
 @login_required
 def game_room():
     return render_template('game_room.html')
+
+
+@main.route('/game')
+@login_required
+def game():
+    return render_template('game.html')
