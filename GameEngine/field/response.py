@@ -48,7 +48,7 @@ class RespHandler:
             return ''
 
     def get_turn_info(self):
-        return self.player_name, self.action, self.direction
+        return {'player_name': self.player_name, 'action': self.action, 'direction': self.direction}
 
     @staticmethod
     def _translate(obj, lang='ru'):

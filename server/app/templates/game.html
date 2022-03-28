@@ -1,10 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Maze Game</title>
-</head>
-<body>
-    Game
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+Maze Game
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='scripts/game_page.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+    <h1>Game <span id="get-room-name">{{ request.args.get('room') }}</span></h1>
+    <div id="game-info" class="container chat"></div>
+    <div id="game-chat">Game Chat</div>
+    <div id="player-stats">Players Stats</div>
+    <div id="control" class="container"></div>
+{% endblock %}

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //redirect всех игроков в комнате в игру
     socket.on('start', () => {
-         window.location.href = '/game';
+        window.location.href = '/game?room='+room;
     });
 
     function drawPlayerSection(data) {
@@ -47,16 +47,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawBotsSection(data) {
-        let bots_amount = data.bots_amount;
+        let bots = data.bots_name;
 
         let div = document.getElementById('bots');
         div.innerHTML = '';
         let p = document.createElement('p');
         p.innerHTML = 'Боты'
         div.append(p);
-        for (let i=0; i < bots_amount; i++) {
-            let p = document.createElement('p');
+        for (let bot of bots) {
+            p = document.createElement('p');
             p.className  = 'list-group-item list-group-item-action py-3 lh-tight';
+            p.innerHTML = bot;
             div.append(p);
         }
     }

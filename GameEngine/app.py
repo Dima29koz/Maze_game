@@ -5,13 +5,9 @@ from GameEngine.globalEnv.enums import Actions
 
 from rules import rules
 
-FPS = 30
-RES = WIDTH, HEIGHT = 1202, 600
-TILE = 50
-
 
 field = Field(rules=rules)
-gui = SpectatorGUI(FPS, RES, TILE, field)
+gui = SpectatorGUI(field)
 
 is_running = True
 state = Actions.move

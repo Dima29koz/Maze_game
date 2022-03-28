@@ -7,16 +7,20 @@ from GameEngine.field.cell import *
 from GameEngine.field.wall import *
 from GUI.button import Button
 
+FPS = 30
+RES = WIDTH, HEIGHT = 1202, 600
+TILE = 50
+
 
 class SpectatorGUI:
-    def __init__(self, fps, res: tuple[int, int], tile_size, field: Field):
-        self.fps = fps
-        self.res = res
-        self.tile_size = tile_size
+    def __init__(self, field: Field):
+        self.fps = FPS
+        self.res = RES
+        self.tile_size = TILE
         self.field = field
         pygame.init()
         pygame.font.init()
-        self.sc = pygame.display.set_mode(res)
+        self.sc = pygame.display.set_mode(RES)
         self.clock = pygame.time.Clock()
 
         up = Button(self.sc, (self.tile_size+400, 50+300), "↑", Directions.top, self.tile_size)

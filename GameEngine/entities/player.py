@@ -7,7 +7,7 @@ from GameEngine.rules import rules
 
 
 class Player:
-    def __init__(self, cell: Cell, name):
+    def __init__(self, cell: Cell, name, is_bot: bool = False):
         self.name = name
         self.cell = cell
         self.health_max = rules.get('player_stat').get('max_health')
@@ -19,6 +19,7 @@ class Player:
         self.treasure: Treasure | None = None
         self.is_alive = True
         self.is_active = False
+        self.is_bot = is_bot
 
         self.abilities = {
             Actions.move: True,

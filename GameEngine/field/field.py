@@ -13,7 +13,7 @@ class Field:
         generator = FieldGenerator(rules['generator_rules'])
         self.field = generator.get_field()
         self.treasures: list[Treasure] = generator.get_treasures()
-        self.players: list[Player] = self.spawn_players(rules['players'])
+        self.players: list[Player] = self.spawn_players(rules['players'], rules['bots'])
         self.active_player = 0
 
         self.action_to_handler = {
@@ -30,10 +30,12 @@ class Field:
     def get_treasures(self):
         return self.treasures
 
-    def spawn_players(self, players_: list[str]):
+    def spawn_players(self, players_: list[str], bots_: list[str]):
         players = []
         for player in players_:
             players.append(Player(self.field[1][1], player))
+        for bot in bots_:
+            players.append(Player(self.field[1][1], bot, True))
         players[0].is_active = True
         return players
 
@@ -171,10 +173,18 @@ class Field:
         for treasure in self.treasures:
             treasure.idle()
 
-    def player_turn_start_handler(self):
-        """
-        :return: active player allowed_abilities
-        """
-        player = self.players[self.active_player]
+    def get_active_player(self):
+        return self.players[self.active_player]
+
+    def get_player_allowed_abilities(self, player: Player):
+        if player != self.get_active_player():
+            return
         is_treasures_under = True if self.treasures_on_cell(player.cell) else False
         return player.get_allowed_abilities(is_treasures_under)
+
+    def player_turn_start_handler(self):
+        """
+        :return: allowed_abilities of active player
+        """
+
+        return self.get_player_allowed_abilities(self.get_active_player())

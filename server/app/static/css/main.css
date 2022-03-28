@@ -34,3 +34,61 @@
 .creator {
     background: #ffd700;
 }
+
+.others-msg {
+    margin-right:7em;
+    margin-left: 1em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    border-radius: 5px;
+    border-color: grey;
+    border-width: 0.5px;
+    border-style: solid;
+    background-color: #C2DBFB;
+
+}
+
+.my-msg {
+    margin-left:7em;
+    margin-right:1em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    border-radius: 5px;
+    border-color: #206ED2;
+    border-width: 1px;
+    border-style: solid;
+
+}
+
+.system-msg {
+    margin-right:7em;
+    margin-left: 1em;
+    padding: 0.5em 0.5em 0.5em 1em;
+    color: #656d78;
+    font-size:0.9em;
+}
+
+.timestamp {
+    color: #656d78;
+    font-size:0.7em;
+}
+
+.other-username {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #206ED2;
+}
+
+.my-username {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #FF6B13;
+}
+
+.chat {
+    overflow: hidden;
+    margin-top: 5em;
+    min-height: 50vh;
+    max-height: 50vh;
+    min-width: 50vh;
+    max-width: 50vh;
+    overflow-y: auto;
+}

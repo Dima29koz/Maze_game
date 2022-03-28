@@ -100,6 +100,7 @@ def room_create():
         room.rules = default_rules  # fixme
         room.rules['players_amount'] = form.players_amount.data
         room.rules['bots_amount'] = form.bots_amount.data
+        room.rules['bots'] = [f'Bot{i}' for i in range(room.rules['bots_amount'])]  # fixme
         room.set_creator(current_user.user_name)
         room.add_player(current_user.user_name)
         room.add()

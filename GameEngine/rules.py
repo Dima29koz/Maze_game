@@ -10,9 +10,10 @@ rules = {
         'walls': {}
     },
     'host_rules': {},
-    'players': players,
+    'players': [],
     'players_amount': 2,
     'bots_amount': 0,
+    'bots': [],
     'gameplay_rules': {'fast_win': False},
     'player_stat': {
         'max_health': 2,
