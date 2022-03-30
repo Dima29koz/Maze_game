@@ -106,3 +106,12 @@ def on_get_history(data):
          {
              'turns': [turn.to_dict() for turn in turns],
          })
+
+
+@sio.on('get_players_stat', namespace='/game')
+def on_get_players_stat(data):
+    room_name = data.get('room')
+    room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
+    emit('set_players_stat',
+         {'players_data': room.game.get_players_data()},
+         room=room_name)

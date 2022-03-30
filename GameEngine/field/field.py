@@ -182,9 +182,14 @@ class Field:
         is_treasures_under = True if self.treasures_on_cell(player.cell) else False
         return player.get_allowed_abilities(is_treasures_under)
 
-    def player_turn_start_handler(self):
-        """
-        :return: allowed_abilities of active player
-        """
-
-        return self.get_player_allowed_abilities(self.get_active_player())
+    def get_players_stat(self):
+        stats = []
+        for player in self.players:
+            stats.append({
+                'name': player.name,
+                'health': player.health,
+                'arrows': player.arrows,
+                'bombs': player.bombs,
+                'has_treasure': True if player.treasure else False,
+            })
+        return stats

@@ -32,3 +32,6 @@ class Game:
             resp = self.field.action_handler(Actions.skip)
             response.append((resp, self.get_current_player().name))  # fixme
         return response
+
+    def get_players_data(self):
+        return self.field.get_players_stat()

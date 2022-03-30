@@ -14,13 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
         current_user = data.current_user;
         socket.emit('check_active', {'room': room});
         socket.emit('get_history', {'room': room});
+        socket.emit('get_players_stat', {'room': room});
     });
 
     socket.on('turn_info', data => {
         drawTurnMessage(data);
         scrollDownChatWindow();
         socket.emit('check_active', {'room': room});
-
+        socket.emit('get_players_stat', {'room': room});
     });
 
     socket.on('set_active', data => {
@@ -30,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('set_history', data => {
         drawTurnMessages(data.turns);
+    });
+
+    socket.on('set_players_stat', data => {
+        drawPlayersStat(data.players_data);
     });
 
     function drawButtons(allowed_abilities) {
@@ -190,5 +195,72 @@ document.addEventListener('DOMContentLoaded', () => {
     function scrollDownChatWindow() {
         const chatWindow = document.getElementById('game-info');
         chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function drawPlayersStat(players_data) {
+        console.log(players_data);
+        const div = document.getElementById('player-stats');
+        div.innerHTML = '';
+        for (player_data of players_data) {
+            div.append(drawPlayerStat(player_data));
+        }
+    }
+
+    function drawPlayerStat(player_data) {
+        const div = document.createElement('div');
+        div.className = 'col';
+        const card = document.createElement('div');
+        card.className = 'card bg-secondary';
+        const card_header = document.createElement('div');
+        card_header.className = 'card-header bg-info';
+        let header_row = document.createElement('div');
+        header_row.className = 'row';
+        let header_col = document.createElement('div');
+        header_col.className = 'col-2 g-0';
+        let img = document.createElement('img');
+        //img.src = player_data.img;
+        img.alt = 'ave';
+        img.width = 128;
+        img.height = 128;
+        img.className = "img-fluid rounded-circle";
+
+        header_col.append(img);
+        header_row.append(header_col);
+
+        header_col = document.createElement('div');
+        header_col.className = 'col-10';
+        let content = document.createElement('p');
+        content.className = 'card-title h5';
+        content.innerText = player_data.name;
+        header_col.append(content);
+        let bar = document.createElement('div');
+        bar.className = 'd-flex justify-content-between';
+        content = document.createElement('p');
+        content.className = 'card-text my-0';
+        content.innerText = '❤'.repeat(player_data.health); //'❤❤🖤';
+        bar.append(content);
+        content = document.createElement('p');
+        content.className = 'card-text my-0';
+        content.innerText = player_data.has_treasure ? '💰' : '-'; //'💰';
+        bar.append(content);
+        header_col.append(bar);
+        header_row.append(header_col);
+        card_header.append(header_row);
+        card.append(card_header);
+
+        let card_body = document.createElement('div');
+        card_body.className = 'card-body d-flex justify-content-between py-1';
+        content = document.createElement('p');
+        content.className = 'card-text my-0';
+        content.innerText = player_data.arrows > 0 ? '🏹'.repeat(player_data.arrows): '-'; //'🏹🏹🏹';
+        card_body.append(content);
+        content = document.createElement('p');
+        content.className = 'card-text my-0';
+        content.innerText = player_data.bombs > 0 ? '💣'.repeat(player_data.bombs) : '-'; //'💣💣💣';
+        card_body.append(content);
+        card.append(card_body);
+        div.append(card);
+
+        return div;
     }
 });

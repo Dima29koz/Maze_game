@@ -13,33 +13,13 @@ Maze Game
     <h4>Game <span id="get-room-name">{{ request.args.get('room') }}</span></h4>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-5">
                 <div id="game-info" class="container-fluid border overflow-auto chat"></div>
                 <div id="control" class="container d-flex justify-content-center mt-4"></div>
             </div>
-            <div class="col-md-8">
-                <div id="player-stats" class="container-fluid">
-                    <div class="row row-cols-1 row-cols-md-2 g-3">
-                        <div class="col">
-                            <div class="card bg-secondary">
-                                <div class="card-header bg-info">
-                                    <div class="row">
-                                        <div class="col-2 g-0">
-                                            <img src="{{ url_for('static', filename='images/ave.jpg') }}" alt="" width="128" height="128" class="img-fluid rounded-circle">
-                                        </div>
-                                        <div class="col-10">
-                                            <h5 class="card-title">LongUserName</h5>
-                                            <p class="card-text">❤❤🖤</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body d-flex justify-content-between pb-0">
-                                    <p class="card-text">🏹🏹🏹</p>
-                                    <p class="card-text">💣💣💣</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="col-md-8 col-sm-7">
+                <div class="container-fluid">
+                    <div id="player-stats" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-3"></div>
                 </div>
                 <div id="game-chat">Game Chat</div>
             </div>
