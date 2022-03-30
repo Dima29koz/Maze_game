@@ -81,12 +81,12 @@ def room_join():
     form = LoginRoomForm()
     if form.validate_on_submit():
         room: GameRoom | None = GameRoom.query.filter_by(name=form.name.data).first()
-        if room and room.check_password(form.pwd.data):
-            if room.add_player(current_user.user_name):
-                return redirect(url_for("main.game_room", room=room.name))
-            flash("Комната полностью заполнена", "error")
-        else:
-            flash("Неверная пара логин/пароль", "error")
+        if room.add_player(current_user.user_name):
+            if room.is_running:
+                return redirect(url_for("main.game", room=room.name))
+            return redirect(url_for("main.game_room", room=room.name))
+        flash("Комната полностью заполнена", "error")
+
     return render_template('join.html', form=form)
 
 

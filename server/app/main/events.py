@@ -48,7 +48,6 @@ def on_start(data):
     room_name = data.get('room')
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
     room.add_game()
-    print('start')
     emit('start', room=room_name)
 
 
@@ -98,3 +97,12 @@ def on_check_active(data):
          })
 
 
+@sio.on('get_history', namespace='/game')
+def on_get_history(data):
+    room_name = data.get('room')
+    room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
+    turns: list[TurnInfo] = room.turn_info
+    emit('set_history',
+         {
+             'turns': [turn.to_dict() for turn in turns],
+         })

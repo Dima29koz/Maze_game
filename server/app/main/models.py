@@ -62,6 +62,7 @@ class GameRoom(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     game = db.Column(db.PickleType)
+    is_running = db.Column(db.Boolean, default=False)
     players = db.relationship("User", secondary=user_room)
     turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
 
@@ -98,6 +99,7 @@ class GameRoom(db.Model):
         self.rules['players'] = [player.user_name for player in self.players]
         self.game = Game(self.rules)
         self.rules = copy(self.rules)
+        self.is_running = True
         db.session.commit()
 
     def save(self, game):
@@ -121,3 +123,11 @@ class TurnInfo(db.Model):
         self.turn_response = response
         db.session.add(self)
         db.session.commit()
+
+    def to_dict(self):
+        return {
+            'player': self.player_name,
+            'action': self.action,
+            'direction': self.direction,
+            'response': self.turn_response,
+        }

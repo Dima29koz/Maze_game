@@ -13,11 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('join', data => {
         current_user = data.current_user;
         socket.emit('check_active', {'room': room});
+        socket.emit('get_history', {'room': room});
     });
 
     socket.on('turn_info', data => {
-        console.log(data);
-        drawGameMessages(data);
+        drawTurnMessage(data);
+        scrollDownChatWindow();
         socket.emit('check_active', {'room': room});
 
     });
@@ -25,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('set_active', data => {
         is_active = data.is_active;
         drawButtons(data.allowed_abilities);
+    });
+
+    socket.on('set_history', data => {
+        drawTurnMessages(data.turns);
     });
 
     function drawButtons(allowed_abilities) {
@@ -44,56 +49,47 @@ document.addEventListener('DOMContentLoaded', () => {
             ['move', '🏃', true],
         ];
 
-        let row = document.createElement('div');
-        row.className = 'row row-cols-5';
+        let btn_group = document.createElement('div');
+        btn_group.className = 'btn-group';
 
+        let btn_gr_vert = document.createElement('div');
+        btn_gr_vert.className = 'btn-group-vertical';
         let btn = createButton([null, '⭲'], 'skip', allowed_abilities.skip);
-        btn.classList.add('col-md-1');
-        row.append(btn);
+        btn_gr_vert.append(btn);
+        btn = createButton(dirs[1], null);
+        btn_gr_vert.append(btn);
+        btn_group.append(btn_gr_vert);
 
-        btn = createButton([null, '🔄'], 'swap_treasure', allowed_abilities.swap_treasure);
-        btn.classList.add('col-md-1');
-        btn.classList.add('offset-md-1');
-        row.append(btn);
-
-        res = createRadioBtn(acts[0], allowed_abilities.shoot_bow);
-        res[1].classList.add('col-md-1');
-        res[1].classList.add('offset-md-1');
-        row.append(res[0]);
-        row.append(res[1]);
-
-        div.append(row);
-
-        row = document.createElement('div');
-        row.className = 'row row-cols-5';
+        btn_gr_vert = document.createElement('div');
+        btn_gr_vert.className = 'btn-group-vertical';
         btn = createButton(dirs[0], null);
-        btn.classList.add('col-md-1');
-        btn.classList.add('offset-md-1');
-        row.append(btn);
+        btn_gr_vert.append(btn);
+        btn = createButton(dirs[2], null);
+        btn_gr_vert.append(btn);
+        btn_group.append(btn_gr_vert);
 
+        btn_gr_vert = document.createElement('div');
+        btn_gr_vert.className = 'btn-group-vertical';
+        btn = createButton([null, '🔄'], 'swap_treasure', allowed_abilities.swap_treasure);
+        btn_gr_vert.append(btn);
+        btn = createButton(dirs[3], null);
+        btn_gr_vert.append(btn);
+        btn_group.append(btn_gr_vert);
+
+        btn_gr_vert = document.createElement('div');
+        btn_gr_vert.className = 'btn-group-vertical';
+        res = createRadioBtn(acts[0], allowed_abilities.shoot_bow);
+        btn_gr_vert.append(res[0]);
+        btn_gr_vert.append(res[1]);
         res = createRadioBtn(acts[1], allowed_abilities.throw_bomb);
-        res[1].classList.add('col-md-1');
-        res[1].classList.add('offset-md-2');
-        row.append(res[0]);
-        row.append(res[1]);
-
-        div.append(row);
-
-        row = document.createElement('div');
-        row.className = 'row row-cols-5';
-        for (let elem = 1; elem < 4; elem++) {
-            btn = createButton(dirs[elem], null);
-            btn.classList.add('col-md-1');
-            row.append(btn);
-        }
-
+        btn_gr_vert.append(res[0]);
+        btn_gr_vert.append(res[1]);
         res = createRadioBtn(acts[2], allowed_abilities.move);
-        res[1].classList.add('col-md-1');
-        res[1].classList.add('offset-md-1');
-        row.append(res[0]);
-        row.append(res[1]);
+        btn_gr_vert.append(res[0]);
+        btn_gr_vert.append(res[1]);
+        btn_group.append(btn_gr_vert);
 
-        div.append(row);
+        div.append(btn_group);
 
 
         function createButton(args, act, is_allowed=true) {
@@ -131,44 +127,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function drawGameMessages(data) {
+    function drawTurnMessages(turns) {
+        for (turn of turns) { drawTurnMessage(turn); }
+        scrollDownChatWindow();
+    }
+
+    function drawTurnMessage(turn_data) {
+        const div = document.createElement('div');
+        div.className = "d-flex flex-row";
         const p = document.createElement('p');
+        p.className = "msg";
         const span_username = document.createElement('span');
         const span_turn_info = document.createElement('span');
         const br = document.createElement('br')
-        // Display user's own message
-        if (typeof data.player == 'undefined') { printSysMsg(data.msg); }
+
+        if (typeof turn_data.player == 'undefined') { printSysMsg(turn_data.msg); }
         else {
-            if (data.player == current_user) {
-                p.setAttribute("class", "my-msg");
-                span_username.setAttribute("class", "my-username");
+            // user's own message
+            if (turn_data.player == current_user) {
+                div.classList.add('justify-content-end');
+                p.classList.add('my-msg');
+                span_username.classList.add('my-username');
             }
 
-            // Display other users' messages
+            // other users' messages
             else {
-                p.setAttribute("class", "others-msg");
-                span_username.setAttribute("class", "other-username");
+                div.classList.add('justify-content-start');
+                p.classList.add('others-msg');
+                span_username.classList.add('other-username');
             }
 
-            span_username.innerText = data.player;
+            span_username.innerText = turn_data.player;
 
             // TurnInfo
             span_turn_info.setAttribute("class", "text-muted");
-            span_turn_info.innerText = ' (' + data.action + dir() + ')';
+            span_turn_info.innerText = ' (' + turn_data.action + dir() + ')';
             function dir() {
-                if (data.direction) {
-                    return ' ' + data.direction;
+                if (turn_data.direction) {
+                    return ' ' + turn_data.direction;
                 }
                 return '';
             };
 
             // HTML to append
-            p.innerHTML += span_username.outerHTML + span_turn_info.outerHTML + br.outerHTML + data.response + br.outerHTML;
+            p.innerHTML += span_username.outerHTML + span_turn_info.outerHTML + br.outerHTML + turn_data.response + br.outerHTML;
 
             //Append
-            document.getElementById('game-info').append(p);
+            div.append(p);
+            document.getElementById('game-info').append(div);
         }
-        scrollDownChatWindow();
     }
 
     // Print system messages
@@ -177,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         p.setAttribute("class", "system-msg");
         p.innerHTML = msg;
         document.getElementById('game-info').append(p);
-        scrollDownChatWindow();
     }
 
     // Scroll chat window down
