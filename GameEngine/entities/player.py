@@ -21,19 +21,14 @@ class Player:
         self.is_active = False
         self.is_bot = is_bot
 
-        self.abilities = {
+    def get_allowed_abilities(self, is_tr_under: bool) -> dict[Actions, bool]:
+        return {
             Actions.move: True,
-            Actions.shoot_bow: True,
-            Actions.throw_bomb: True,
-            Actions.swap_treasure: False,
+            Actions.shoot_bow: True if self.arrows > 0 else False,
+            Actions.throw_bomb: True if self.bombs > 0 else False,
+            Actions.swap_treasure: True if (self.can_take_treasure() and is_tr_under) else False,
             Actions.skip: True,
         }
-
-    def get_allowed_abilities(self, is_tr_under: bool):
-        self.abilities[Actions.shoot_bow] = True if self.arrows > 0 else False
-        self.abilities[Actions.throw_bomb] = True if self.bombs > 0 else False
-        self.abilities[Actions.swap_treasure] = True if (self.can_take_treasure() and is_tr_under) else False
-        return self.abilities
 
     def can_take_treasure(self):
         return self.health == self.health_max
@@ -43,14 +38,8 @@ class Player:
         if self.health == 0:
             self.is_alive = False
             raise PlayerDeath
-
-    def dropped_treasure(self):
-        self.take_damage()
-        if self.treasure and self.health <= self.health_max // 2:
-            treasure = self.treasure
-            treasure.cell = self.cell  # fixme объект меняется внутри объекта
-            self.treasure = None
-            return treasure
+        if self.health <= self.health_max // 2:
+            return self.drop_treasure()
 
     def throw_bomb(self):
         if self.bombs:
@@ -88,7 +77,16 @@ class Player:
             self.treasure = None
             return treasure
 
-    def came_out_maze(self):
+    def came_out_maze(self):  # todo необходимо сообщать о типе вынесенного сокровища
         treasure = self.drop_treasure()
         if treasure and treasure.t_type is TreasureTypes.very:
             raise WinningCondition()
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'health': self.health,
+            'arrows': self.arrows,
+            'bombs': self.bombs,
+            'has_treasure': True if self.treasure else False,
+        }

@@ -160,7 +160,7 @@ class SpectatorGUI:
                 button.draw()
 
     def draw_field(self):
-        grid_cells = self.field.get_field()
+        grid_cells = self.field.field
         for row in grid_cells:
             for cell in row:
                 if cell:
@@ -196,7 +196,7 @@ class SpectatorGUI:
         self.sc.blit(text, place)
 
     def draw_treasures(self):
-        treasures = self.field.get_treasures()
+        treasures = self.field.treasures
         for treasure in treasures:
             x, y = treasure.cell.x * self.tile_size, treasure.cell.y * self.tile_size
             self.draw_treasure(treasure, x, y)
@@ -216,7 +216,7 @@ class SpectatorGUI:
                               self.tile_size // 3 - 2, self.tile_size // 3 - 2))
 
     def draw_players(self):
-        players = self.field.get_players()
+        players = self.field.players
         for player in players:
             if player.is_alive:
                 self.draw_player(player)

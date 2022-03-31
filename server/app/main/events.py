@@ -1,5 +1,5 @@
 from flask_login import current_user
-from flask_socketio import send, emit, join_room, leave_room, rooms
+from flask_socketio import send, emit, join_room, leave_room
 
 from .models import GameRoom, TurnInfo
 from .. import sio
@@ -69,7 +69,6 @@ def on_action(data):
     room.save(room.game)
     if resp:
         for turn_resp, next_player_name in resp:
-            # todo add turn info to db
             turn_info_dict = turn_resp.get_turn_info()
             turn_info = TurnInfo(game_room_id=room.id, player_name=turn_info_dict.get('player_name'))
             turn_info.add_turn(turn_info_dict, turn_resp.get_info())
@@ -113,5 +112,7 @@ def on_get_players_stat(data):
     room_name = data.get('room')
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
     emit('set_players_stat',
-         {'players_data': room.game.get_players_data()},
+         {
+             'players_data': room.game.get_players_data(),
+         },
          room=room_name)

@@ -1,5 +1,3 @@
-players = ['Skipper', 'tester']
-
 rules = {
     'generator_rules': {
         'rows': 4, 'cols': 5,

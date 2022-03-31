@@ -6,7 +6,7 @@ from GameEngine.globalEnv.enums import Actions, Directions
 class Game:
     def __init__(self, rules):
         self.field = Field(rules=rules)
-        self.is_running = True
+        self.field.players = self.field.spawn_players(rules['players'], rules['bots'])
 
     def get_current_player(self) -> Player:
         return self.field.get_active_player()

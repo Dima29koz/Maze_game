@@ -5,21 +5,21 @@ from GameEngine.field.cell import *
 from GameEngine.field.wall import *
 
 info = {
-    Cell: {'ru': 'суша'},
-    CellRiver: {'ru': 'река'},
-    CellRiverMouth: {'ru': 'устье'},
-    CellExit: {'ru': 'выход'},
-    CellClinic: {'ru': 'Медпункт'},
-    CellArmory: {'ru': 'Арсенал'},
-    CellArmoryWeapon: {'ru': 'Склад оружия'},
-    CellArmoryExplosive: {'ru': 'Склад взрывчатки'},
+    Cell: {'name': {'ru': 'суша'}, 'mechanics': {'ru': ''}},
+    CellRiver: {'name': {'ru': 'река'}, 'mechanics': {'ru': ''}},
+    CellRiverMouth: {'name': {'ru': 'устье'}, 'mechanics': {'ru': ''}},
+    CellExit: {'name': {'ru': 'выход'}, 'mechanics': {'ru': ''}},
+    CellClinic: {'name': {'ru': 'Медпункт'}, 'mechanics': {'ru': 'запас здоровья восстановлен'}},
+    CellArmory: {'name': {'ru': 'Арсенал'}, 'mechanics': {'ru': 'запас оружия восстановлен'}},
+    CellArmoryWeapon: {'name': {'ru': 'Склад оружия'}, 'mechanics': {'ru': 'запас стрел восстановлен'}},
+    CellArmoryExplosive: {'name': {'ru': 'Склад взрывчатки'}, 'mechanics': {'ru': 'запас бомб восстановлен'}},
 
-    WallEmpty: {'ru': 'прошёл', 'en': ''},
-    WallConcrete: {'ru': 'стена'},
-    WallOuter: {'ru': 'внешняя стена'},
-    WallRubber: {'ru': 'резиновая стена'},
-    WallExit: {'ru': 'выход'},
-    WallEntrance: {'ru': 'вход'},
+    WallEmpty: {'name': {'ru': 'прошёл', 'en': ''}, 'mechanics': {'ru': ''}},
+    WallConcrete: {'name': {'ru': 'стена'}, 'mechanics': {'ru': ''}},
+    WallOuter: {'name': {'ru': 'внешняя стена'}, 'mechanics': {'ru': ''}},
+    WallRubber: {'name': {'ru': 'резиновая стена'}, 'mechanics': {'ru': ''}},
+    WallExit: {'name': {'ru': 'выход'}, 'mechanics': {'ru': ''}},
+    WallEntrance: {'name': {'ru': 'вход'}, 'mechanics': {'ru': ''}},
 }
 
 
@@ -27,14 +27,16 @@ class RespHandler:
     def __init__(self):
         self.treasures = False
         self.treasures_amount = 0
+        self.cell_type = None
         self.player_name = ''
         self.action = ''
         self.direction = ''
 
-    def update_treasure_info(self, treasures_amount: int):
+    def update_cell_info(self, treasures_amount: int, cell_type: Type[Cell]):
         if treasures_amount:
             self.treasures = True
             self.treasures_amount = treasures_amount
+        self.cell_type = cell_type
 
     def update_turn_info(self, player_name: str, action_name: str, direction_name: str):
         self.player_name = player_name
@@ -43,16 +45,17 @@ class RespHandler:
 
     def get_info(self):
         if self.treasures:
-            return f', клад ({self.treasures_amount}шт.)'
+            res = f', клад ({self.treasures_amount}шт.)'
         else:
-            return ''
+            res = ''
+        return res + f', {self._translate(self.cell_type, "mechanics")}'
 
     def get_turn_info(self):
         return {'player_name': self.player_name, 'action': self.action, 'direction': self.direction}
 
     @staticmethod
-    def _translate(obj, lang='ru'):
-        return info[obj][lang]
+    def _translate(obj, rtype='name', lang='ru'):
+        return info[obj][rtype][lang]
 
 
 class RespHandlerSkip(RespHandler):

@@ -1,5 +1,6 @@
 from GUI.spectator import SpectatorGUI
 from GameEngine.field.field import Field
+from GameEngine.game import Game
 from GameEngine.globalEnv.Exceptions import WinningCondition
 from GameEngine.globalEnv.enums import Actions
 
@@ -12,7 +13,7 @@ from rules import rules
 
 def main():
     rules['players'] = ['Skipper', 'Tester']
-    field = Field(rules=rules)
+    field = Game(rules=rules).field
     gui = SpectatorGUI(field)
 
     is_running = True
