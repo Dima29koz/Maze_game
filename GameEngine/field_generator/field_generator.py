@@ -16,6 +16,7 @@ class FieldGenerator:
         self.ground_cells: list[Cell] = []
         self.field: list[list[Cell | None]] = [[]]
         self.treasures: list[Treasure] = []
+        self.exit_cell: CellExit | None = None
         self.generate_field(rules=generator_rules)
 
     def get_field(self):
@@ -23,6 +24,9 @@ class FieldGenerator:
 
     def get_treasures(self):
         return self.treasures
+
+    def get_exit_cell(self):
+        return self.exit_cell
 
     def generate_field(self, rules):
         self.generate_pattern(rules['is_rect'])
@@ -34,7 +38,7 @@ class FieldGenerator:
         self.generate_connections()
         self.generate_walls(rules['walls'])
         outer_cells = self.generate_outer_walls()
-        self.create_exit(outer_cells)
+        self.exit_cell = self.create_exit(outer_cells)
 
     def generate_pattern(self, is_rect: bool):
         """
@@ -121,7 +125,9 @@ class FieldGenerator:
                 dirs.append(direction)
         direction = choice(dirs)
         cell.add_wall(direction, WallExit())
-        cell.neighbours.update({direction: CellExit(*direction.calc(cell.x, cell.y), -direction, cell)})
+        exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell)
+        cell.neighbours.update({direction: exit_cell})
+        return exit_cell
 
     def spawn_treasures(self, treasures_rules: list[int]):
         treasures = []

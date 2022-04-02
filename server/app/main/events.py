@@ -63,25 +63,33 @@ def on_connect_game(data):
 def on_action(data):
     room_name = data.get('room')
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
-    resp = room.game.make_turn(
-        current_user.user_name, data.get('action'), data.get('direction'))
 
+    next_player = turn_handler(room, room_name, current_user.user_name, data.get('action'), data.get('direction'))
+    while next_player.is_bot:
+        next_player = turn_handler(room, room_name, next_player.name, 'skip')
+
+
+def turn_handler(room: GameRoom, room_name: str, player_name: str, action: str, direction: str | None = None):
+    turn_resp, next_player = room.game.make_turn(
+        player_name, action, direction)
+    room.game.check_win_condition(room.rules)
     room.save(room.game)
-    if resp:
-        for turn_resp, next_player_name in resp:
-            turn_info_dict = turn_resp.get_turn_info()
-            turn_info = TurnInfo(game_room_id=room.id, player_name=turn_info_dict.get('player_name'))
-            turn_info.add_turn(turn_info_dict, turn_resp.get_info())
-
-            emit('turn_info',
-                 {
-                     'player': turn_info.player_name,
-                     'action': turn_info.action,
-                     'direction': turn_info.direction,
-                     'response': turn_info.turn_response,
-                     'next_player_name': next_player_name,
-                 },
-                 room=room_name)
+    if turn_resp:
+        turn_info_dict = turn_resp.get_turn_info()
+        turn_info = TurnInfo(game_room_id=room.id, player_name=turn_info_dict.get('player_name'))
+        turn_info.add_turn(turn_info_dict, turn_resp.get_info())
+        emit('turn_info',
+             {
+                 'player': turn_info.player_name,
+                 'action': turn_info.action,
+                 'direction': turn_info.direction,
+                 'response': turn_info.turn_response,
+                 'next_player_name': next_player.name,
+                 'turns_end_resp': f'{player_name} wins' if not room.game.is_running else '',
+                 'field': room.game.field.get_field_list(),
+             },
+             room=room_name)
+    return next_player
 
 
 @sio.on('check_active', namespace='/game')

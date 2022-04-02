@@ -7,7 +7,7 @@ from GameEngine.rules import rules
 
 
 class Player:
-    def __init__(self, cell: Cell, name, is_bot: bool = False):
+    def __init__(self, cell: Cell, name: str, is_bot: bool = False):
         self.name = name
         self.cell = cell
         self.health_max = rules.get('player_stat').get('max_health')
@@ -37,7 +37,6 @@ class Player:
         self.health -= 1
         if self.health == 0:
             self.is_alive = False
-            raise PlayerDeath
         if self.health <= self.health_max // 2:
             return self.drop_treasure()
 
@@ -75,12 +74,8 @@ class Player:
         if self.treasure:
             treasure = self.treasure
             self.treasure = None
+            treasure.cell = self.cell
             return treasure
-
-    def came_out_maze(self):  # todo необходимо сообщать о типе вынесенного сокровища
-        treasure = self.drop_treasure()
-        if treasure and treasure.t_type is TreasureTypes.very:
-            raise WinningCondition()
 
     def to_dict(self):
         return {

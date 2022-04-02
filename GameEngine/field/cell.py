@@ -48,6 +48,14 @@ class Cell:
     def check_wall(self, direction: Directions):
         return self.walls[direction].handler()
 
+    def to_dict(self):
+        return {
+            'type': self.__class__.__name__,
+            'x': self.x,
+            'y': self.y,
+            'walls': {direction.name: wall.__class__.__name__ for direction, wall in self.walls.items()}
+        }
+
 
 class CellRiver(Cell):
     def __init__(self, x, y):
@@ -78,6 +86,27 @@ class CellRiver(Cell):
 
     def add_river_list(self, river):
         self.river = river
+
+    def to_dict(self):
+        sup = super().to_dict()
+        idx = self.river.index(self)
+        try:
+            next_river_cell = self.river[idx + 1]
+        except IndexError:
+            direction = 'mouth'
+        else:
+            if self.x > next_river_cell.x:
+                direction = 'left'
+            elif self.x < next_river_cell.x:
+                direction = 'right'
+            elif self.y > next_river_cell.y:
+                direction = 'top'
+            else:
+                direction = 'bottom'
+
+        riv_dict = {'river_dir': direction}
+        sup |= riv_dict
+        return sup
 
 
 class CellRiverMouth(CellRiver):

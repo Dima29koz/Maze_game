@@ -18,8 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('turn_info', data => {
+        console.log(data);
         drawTurnMessage(data);
         scrollDownChatWindow();
+
+        drawMap(data.field);
         socket.emit('check_active', {'room': room});
         socket.emit('get_players_stat', {'room': room});
     });
@@ -198,7 +201,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawPlayersStat(players_data) {
-        console.log(players_data);
         const div = document.getElementById('player-stats');
         div.innerHTML = '';
         for (player_data of players_data) {
@@ -262,5 +264,150 @@ document.addEventListener('DOMContentLoaded', () => {
         div.append(card);
 
         return div;
+    }
+
+    function drawMap(field) {
+        const drawingCanvas = document.getElementById('map');
+        const div = document.getElementById('map-container');
+        width = div.clientWidth;
+        height = div.clientHeight;
+        tile_size = height < width ? height / field.length : width / field[0].length;
+        if(drawingCanvas && drawingCanvas.getContext) {
+            let context = drawingCanvas.getContext('2d');
+            context.canvas.width  = width;
+            context.canvas.height = tile_size * field.length;
+            let cells = drawField(context);
+
+            drawingCanvas.onclick = e => {
+                cells.forEach(cell_obj => {
+                    if(context.isPointInPath(cell_obj, e.offsetX, e.offsetY)){
+                        console.log(cell_obj.data);
+                    }
+                })
+            }
+        }
+
+        function drawField(context) {
+            let cells = [];
+            for (row of field) {
+                for (cell of row) {
+                    cells.push(drawCell(cell, context));
+                    drawWalls(cell.walls, context);
+                }
+            }
+            return cells;
+        }
+
+        function drawCell(cell, context) {
+            let cell_obj = new Path2D();
+            x = cell.x * tile_size;
+            y = cell.y * tile_size;
+            cell_obj.rect(x+2, y+2, tile_size-4, tile_size-4);
+            cell_obj.data = { 'x': cell.x, 'y': cell.y };
+            context.fillStyle = getCellColor(cell.type);
+            context.fill(cell_obj);
+            if (cell.type == 'CellRiver' || cell.type == 'CellRiverMouth') {
+                drawRiverDir(cell, x, y, context);
+            }
+            if (cell.type == 'CellClinic') {
+                drawClinic(cell, x, y, context);
+            }
+            if (cell.type == 'CellArmory' || cell.type == 'CellArmoryWeapon') {
+                drawArmory(cell, x, y, context);
+            }
+            if (cell.type == 'CellArmoryExplosive') {
+                drawArmoryExplosive(cell, x, y, context);
+            }
+            return cell_obj;
+        }
+
+        function getCellColor(type_str) {
+            switch (type_str) {
+                case 'CellExit':
+                    return '#377814';
+                case 'CellRiver':
+                case 'CellRiverMouth':
+                    return '#0044cc';
+
+                default:
+                    return '#6b623c';
+            }
+        }
+
+        function drawWalls(walls, context) {
+            x = cell.x * tile_size;
+            y = cell.y * tile_size;
+
+            context.fillStyle = getWallColor(walls.top);
+            context.fillRect(x, y, tile_size, 4);
+
+            context.fillStyle = getWallColor(walls.right);
+            context.fillRect(x+tile_size-4, y, 4, tile_size);
+
+            context.fillStyle = getWallColor(walls.left);
+            context.fillRect(x, y, 4, tile_size);
+
+            context.fillStyle = getWallColor(walls.bottom);
+            context.fillRect(x, y+tile_size-4, tile_size, 4);
+        }
+
+        function getWallColor(type_str) {
+            switch (type_str) {
+                case 'WallOuter':
+                    return '#3c2d0f';
+                case 'WallConcrete':
+                    return '#aa6919'
+                case 'WallExit':
+                    return '#37ac19';
+                case 'WallRubber':
+                    return '#0f0f0f';
+                default:
+                    return '#2F4F4F';
+            }
+        }
+
+        function drawRiverDir(cell, x, y, context) {
+            context.font = `${tile_size  / 2}px serif`;
+            context.fillStyle = 'white'
+            let direction = '';
+            switch (cell.river_dir) {
+                case 'top':
+                    direction = '↑';
+                    break;
+                case 'bottom':
+                    direction = '↓';
+                    break;
+                case 'right':
+                    direction = '→';
+                    break;
+                case 'left':
+                    direction = '←';
+                    break;
+                default:
+                    direction = 'o';
+                    break;
+            }
+            context.fillText(direction, x + tile_size / 2, y + tile_size / 2);
+        }
+
+        function drawClinic(cell, x, y, context) {
+            context.font = `${tile_size  / 2}px serif`;
+            context.fillStyle = 'red';
+            context.fillText('H', x + tile_size / 2, y + tile_size / 2);
+        }
+
+        function drawArmory(cell, x, y, context) {
+            context.font = `${tile_size  / 2}px serif`;
+            context.fillStyle = 'red';
+
+            context.fillText('W', x + tile_size / 2, y + tile_size / 2);
+        }
+
+        function drawArmoryExplosive(cell, x, y, context) {
+            context.font = `${tile_size  / 2}px serif`;
+            context.fillStyle = 'red';
+
+            context.fillText('E', x + tile_size / 2, y + tile_size / 2);
+        }
     }
 });

@@ -12,25 +12,26 @@ from rules import rules
 
 
 def main():
-    rules['players'] = ['Skipper', 'Tester']
-    field = Game(rules=rules).field
+    rules['players'] = ['Skipper']
+    rules['generator_rules']['river_rules'] = []
+    game = Game(rules=rules)
+    field = game.field
     gui = SpectatorGUI(field)
 
-    is_running = True
     state = Actions.move
-    act_pl_abilities = field.get_player_allowed_abilities(field.get_active_player())
-    while is_running:
+
+    while game.is_running:
+        act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
         gui.draw(act_pl_abilities)
         act, state = gui.get_action(act_pl_abilities, state)
         if act:
-            try:
-                response = field.action_handler(*act)
-                print(response.get_turn_info(), response.get_info())
-                act_pl_abilities = field.get_player_allowed_abilities(field.get_active_player())
-            except WinningCondition as e:
-                print(e.message)
-                is_running = False
-                gui.close()
+
+            response = game.field.action_handler(*act)
+
+            print(response.get_turn_info(), response.get_info())
+            game.check_win_condition(rules)
+
+    gui.close()
 
 
 if __name__ == "__main__":

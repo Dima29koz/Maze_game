@@ -81,13 +81,13 @@ class RespHandlerSwapTreasure(RespHandler):
 
 
 class RespHandlerShootBow(RespHandlerSkip):
-    def __init__(self, hit: bool,
+    def __init__(self,
                  damaged_players: list[Player] = None,
                  dead_players: list[Player] = None,
                  lost_treasure_players: list[Player] = None,
                  new_location: Type[Cell] = None):
         super().__init__(new_location)
-        self.hit = hit
+        self.hit = True if damaged_players else False
         self.damaged_players = damaged_players
         self.dead_players = dead_players
         self.lost_treasure_players = lost_treasure_players
