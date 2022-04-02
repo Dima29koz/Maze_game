@@ -116,6 +116,8 @@ def turn_handler(room: GameRoom, room_name: str, player_name: str, action: str, 
                  'next_player_name': next_player.name,
                  'turns_end_resp': f'{player_name} wins' if not room.game.is_running else '',
                  'field': room.game.field.get_field_list(),
+                 'treasures': room.game.field.get_treasures_list(),
+                 'players': room.game.field.get_players_list(),
              },
              room=room_name)
     return next_player

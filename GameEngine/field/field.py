@@ -66,6 +66,14 @@ class Field:
     def get_field_pattern_list(self):
         return [[{'x': cell.x, 'y': cell.y} if cell else None for cell in row] for row in self.field]
 
+    def get_treasures_list(self):
+        return [{'x': treasure.cell.x, 'y': treasure.cell.y, 'type': treasure.t_type.name}
+                for treasure in self.treasures]
+
+    def get_players_list(self):
+        return [{'x': player.cell.x, 'y': player.cell.y, 'name': player.name}
+                for player in self.players if player.is_alive]
+
     def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
         action_to_handler = {
             Actions.swap_treasure: self._treasure_swap_handler,
