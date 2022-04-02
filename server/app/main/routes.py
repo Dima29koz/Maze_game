@@ -100,6 +100,7 @@ def room_create():
         room.set_creator(current_user.user_name)
         room.add_player(current_user.user_name)
         room.add()
+        room.add_game()
         return redirect(url_for("main.game_room", room=room.name))
     return render_template('create.html', form=form)
 

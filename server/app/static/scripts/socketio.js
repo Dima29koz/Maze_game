@@ -15,6 +15,14 @@ document.addEventListener('DOMContentLoaded', () => {
         drawBtn(data);
     });
 
+    socket.on('get_spawn', data => {
+        drawSpawnMap(data.field);
+    });
+
+    socket.on('set_spawn', data => {
+        drawBtn(data);
+    });
+
     //redirect всех игроков в комнате в игру
     socket.on('start', () => {
         window.location.href = '/game?room='+room;
@@ -77,6 +85,56 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.onclick = () => socket.emit('start', {'room': room});
             btn.disabled = !data.is_ready;
             div.append(btn);
+        }
+    }
+
+    function drawSpawnMap(field) {
+        const drawingCanvas = document.getElementById('map');
+        const div = document.getElementById('map-container');
+        width = div.clientWidth;
+        height = div.clientHeight;
+        tile_size = height < width ? height / field.length : width / field[0].length;
+        if(drawingCanvas && drawingCanvas.getContext) {
+            let context = drawingCanvas.getContext('2d');
+            context.canvas.width  = width;
+            context.canvas.height = tile_size * field.length;
+            let cells = drawField(context);
+
+            drawingCanvas.onclick = e => {
+                cells.forEach(cell_obj => {
+                    if (cell_obj !== null) {
+                        if(context.isPointInPath(cell_obj, e.offsetX, e.offsetY)){
+                            socket.emit('set_spawn', {'room': room, 'spawn': cell_obj.data});
+                            drawingCanvas.onclick = null;
+                            drawCell(cell_obj.data, context, true)
+                        }
+                    }
+                })
+            }
+        }
+
+        function drawField(context) {
+            let cells = [];
+            for (row of field) {
+                for (cell of row) {
+                    cells.push(drawCell(cell, context));
+                }
+            }
+            return cells;
+        }
+
+        function drawCell(cell, context, is_pressed=false) {
+            if (cell !== null) {
+                let cell_obj = new Path2D();
+                x = cell.x * tile_size;
+                y = cell.y * tile_size;
+                cell_obj.rect(x+2, y+2, tile_size-4, tile_size-4);
+                cell_obj.data = { 'x': cell.x, 'y': cell.y };
+                context.fillStyle = is_pressed ? '#453E26' : '#6b623c';
+                context.fill(cell_obj);
+                return cell_obj;
+            }
+
         }
     }
 });

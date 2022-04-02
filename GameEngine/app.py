@@ -1,8 +1,9 @@
+from operator import attrgetter
+
 from GUI.spectator import SpectatorGUI
-from GameEngine.field.field import Field
 from GameEngine.game import Game
-from GameEngine.globalEnv.Exceptions import WinningCondition
 from GameEngine.globalEnv.enums import Actions
+
 
 from rules import rules
 

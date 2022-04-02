@@ -8,12 +8,13 @@ from .. import sio
 @sio.on('join', namespace='/game_room')
 def on_connect(data: dict):
     room_name = data.get('room')
-    print(f'user {current_user.user_name} joins the room {room_name}')
     join_room(room_name)
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
     rules = room.rules
     players_name = [user.user_name for user in room.players]
     players_amount = rules.get('players_amount')
+    players_bots = rules.get('bots_amount') + players_amount
+    ready_cond = len(players_name) == players_amount and len(room.game.field.players) == players_bots
     emit(
         'join',
         {
@@ -22,10 +23,29 @@ def on_connect(data: dict):
             "bots_amount": rules.get('bots_amount'),
             "bots_name": rules.get('bots'),
             "creator": room.creator.user_name,
-            "is_ready": True if len(players_name) == players_amount else False,
+            "is_ready": ready_cond,
         },
         room=room_name
     )
+    emit('get_spawn', {'field': room.game.field.get_field_pattern_list()})
+
+
+@sio.on('set_spawn', namespace='/game_room')
+def on_set_spawn(data):
+    room_name = data.get('room')
+    room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
+    turn = room.players.index(current_user) + 1
+    if room.game.field.spawn_player(data.get('spawn'), current_user.user_name, turn):
+        room.save()
+        rules = room.rules
+        pl_amount = len(room.players) == rules.get('players_amount')
+        spawned_pl_amount = len(room.game.field.players) == rules.get('bots_amount') + rules.get('players_amount')
+        emit('set_spawn',
+             {
+                 'creator': room.creator.user_name,
+                 'is_ready': pl_amount and spawned_pl_amount
+             },
+             room=room_name)
 
 
 @sio.on('disconnect', namespace='/game_room')
@@ -47,7 +67,7 @@ def on_leave(data):
 def on_start(data):
     room_name = data.get('room')
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
-    room.add_game()
+    room.start()
     emit('start', room=room_name)
 
 
@@ -55,7 +75,6 @@ def on_start(data):
 def on_connect_game(data):
     room_name = data.get('room')
     join_room(room_name)
-    print(current_user.user_name, "connected to room", room_name)
     emit('join', {'current_user': current_user.user_name})
 
 
@@ -73,7 +92,7 @@ def turn_handler(room: GameRoom, room_name: str, player_name: str, action: str, 
     turn_resp, next_player = room.game.make_turn(
         player_name, action, direction)
     room.game.check_win_condition(room.rules)
-    room.save(room.game)
+    room.save()
     if turn_resp:
         turn_info_dict = turn_resp.get_turn_info()
         turn_info = TurnInfo(game_room_id=room.id, player_name=turn_info_dict.get('player_name'))

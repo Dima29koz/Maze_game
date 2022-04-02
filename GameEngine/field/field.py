@@ -1,4 +1,6 @@
 from functools import partial
+from operator import attrgetter
+from random import choice
 
 from GameEngine.field_generator.field_generator import FieldGenerator
 from GameEngine.field import response as r, cell as c
@@ -18,14 +20,25 @@ class Field:
         self.players: list[Player] = []
         self._active_player_idx = 0
 
-    def spawn_players(self, players_: list[str], bots_: list[str]):  # fixme
+    def spawn_bots(self, bots: list[str]):  # fixme
         players = []
-        for player in players_:
-            players.append(Player(self.field[1][1], player))
-        for bot in bots_:
-            players.append(Player(self.field[1][1], bot, True))
-        players[0].is_active = True
+        for bot in bots:
+            spawn_cell = None
+            while spawn_cell is None:
+                spawn_cell = choice(choice(self.field))
+            players.append(Player(spawn_cell, bot, True))
         return players
+
+    def spawn_player(self, spawn_point: dict, name: str, turn):
+        player = Player(self.field[spawn_point.get('y')][spawn_point.get('x')], name, turn=turn)
+        if player not in self.players:
+            self.players.append(player)
+            return True
+        return False
+
+    def sort_players(self):
+        self.players.sort(key=attrgetter('is_bot', 'turn'))
+        self.players[0].is_active = True
 
     def get_alive_pl_amount(self) -> int:
         return len([player for player in self.players if player.is_alive])
@@ -39,7 +52,7 @@ class Field:
         is_treasures_under = True if self._treasures_on_cell(player.cell) else False
         return player.get_allowed_abilities(is_treasures_under)
 
-    def get_treasures_on_exit(self):
+    def get_treasures_on_exit(self) -> list[Treasure] | None:
         treasures = self._treasures_on_cell(self.exit_cell)
         [self.treasures.remove(treasure) for treasure in treasures]
         return treasures
@@ -49,6 +62,9 @@ class Field:
 
     def get_field_list(self):
         return [[cell.to_dict() for cell in row] for row in self.field]
+
+    def get_field_pattern_list(self):
+        return [[{'x': cell.x, 'y': cell.y} if cell else None for cell in row] for row in self.field]
 
     def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
         action_to_handler = {
@@ -66,11 +82,11 @@ class Field:
         response.update_turn_info(player.name, action.name, direction.name if direction else '')
         return response
 
-    def _check_players(self, current_cell: Cell) -> list[Player]:
+    def _check_players(self, current_cell: Cell) -> list[Player] | None:
         return [player for player in self.players
                 if player.cell == current_cell and not player.is_active and player.is_alive]
 
-    def _treasures_on_cell(self, cell: Cell) -> list[Treasure]:
+    def _treasures_on_cell(self, cell: Cell) -> list[Treasure] | None:
         return [treasure for treasure in self.treasures if cell == treasure.cell]
 
     def _treasure_swap_handler(self, player: Player, direction: Directions = None):
@@ -139,7 +155,6 @@ class Field:
         return r.RespHandlerMoving(wall_type, cell, new_pl_cell)
 
     def _cell_mechanics_activator(self, player: Player, cell):
-        # todo необходимо сообщать о типе вынесенного сокровища
         cell_type_to_player_handler = {
             c.CellExit: partial(self._update_treasures_exit, player),
             c.CellClinic: player.heal,

@@ -1,13 +1,12 @@
 from GameEngine.entities.treasure import Treasure
 from GameEngine.field.cell import Cell
-from GameEngine.globalEnv.Exceptions import PlayerDeath, WinningCondition
 from GameEngine.globalEnv.enums import Actions, TreasureTypes
 
 from GameEngine.rules import rules
 
 
 class Player:
-    def __init__(self, cell: Cell, name: str, is_bot: bool = False):
+    def __init__(self, cell: Cell, name: str, is_bot: bool = False, turn: int = 0):
         self.name = name
         self.cell = cell
         self.health_max = rules.get('player_stat').get('max_health')
@@ -20,6 +19,7 @@ class Player:
         self.is_alive = True
         self.is_active = False
         self.is_bot = is_bot
+        self.turn = turn
 
     def get_allowed_abilities(self, is_tr_under: bool) -> dict[Actions, bool]:
         return {
@@ -85,3 +85,6 @@ class Player:
             'bombs': self.bombs,
             'has_treasure': True if self.treasure else False,
         }
+
+    def __eq__(self, other):
+        return self.name == other.name

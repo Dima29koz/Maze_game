@@ -96,14 +96,19 @@ class GameRoom(db.Model):
         self.creator_id = user.id
 
     def add_game(self):
-        self.rules['players'] = [player.user_name for player in self.players]
         self.game = Game(self.rules)
-        self.rules = copy(self.rules)
-        self.is_running = True
         db.session.commit()
 
-    def save(self, game):
-        self.game = copy(game)  # fixme это затычка
+    def save(self):
+        self.game = copy(self.game)  # fixme это затычка
+        db.session.commit()
+
+    def start(self):
+        self.rules['players'] = [player.user_name for player in self.players]
+        self.rules = copy(self.rules)
+        self.game.field.sort_players()
+        self.game = copy(self.game)
+        self.is_running = True
         db.session.commit()
 
 
