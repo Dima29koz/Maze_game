@@ -28,6 +28,7 @@ class Player:
             Actions.throw_bomb: True if self.bombs > 0 else False,
             Actions.swap_treasure: True if (self.can_take_treasure() and is_tr_under) else False,
             Actions.skip: True,
+            Actions.info: True,
         }
 
     def can_take_treasure(self):

@@ -36,6 +36,7 @@ class Actions(Enum):
     shoot_bow = auto()
     throw_bomb = auto()
     swap_treasure = auto()
+    info = auto()
 
 
 class TreasureTypes(Enum):

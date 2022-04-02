@@ -68,6 +68,16 @@ def on_start(data):
     room_name = data.get('room')
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
     room.start()
+    response = []
+    for player in room.game.field.players:
+        resp, next_player = room.game.make_turn(player.name, 'info')
+        response.append(resp)
+    room.save()
+    for resp in response:
+        turn_info_dict = resp.get_turn_info()
+        turn_info = TurnInfo(game_room_id=room.id, player_name=turn_info_dict.get('player_name'))
+        turn_info.add_turn(turn_info_dict, resp.get_info())
+
     emit('start', room=room_name)
 
 

@@ -73,6 +73,7 @@ class Field:
             Actions.throw_bomb: self._bomb_throw_handler,
             Actions.skip: self._pass_handler,
             Actions.move: self._movement_handler,
+            Actions.info: self._info_handler,
         }
 
         player = self.players[self._active_player_idx]
@@ -153,6 +154,10 @@ class Field:
 
         self._pass_turn_to_next_player()
         return r.RespHandlerMoving(wall_type, cell, new_pl_cell)
+
+    def _info_handler(self, active_player: Player, movement_direction: Directions):
+        self._pass_turn_to_next_player()
+        return r.RespHandlerInfo()
 
     def _cell_mechanics_activator(self, player: Player, cell):
         cell_type_to_player_handler = {

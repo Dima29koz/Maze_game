@@ -137,3 +137,11 @@ class RespHandlerMoving(RespHandler):
                    f'{self._translate(type(self.cell_after_wall_check))}, ' \
                    f'{self._translate(type(self.cell_at_the_turn_ends))}' + \
                    super().get_info()
+
+
+class RespHandlerInfo(RespHandler):
+    def __init__(self):
+        super().__init__()
+
+    def get_info(self):
+        return self._translate(self.cell_type) + super().get_info()
