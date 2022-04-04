@@ -4,6 +4,12 @@
 Профиль пользователя
 {% endblock %}
 
-{% block body %}
+{% block main %}
+<main class="container my-3">
     <p>Профиль пользователя {{ current_user.user_name }}</p>
+    <p>Сыграно игр: {{ current_user.played_games }}</p>
+    <p>Побед: {{ current_user.win_games }}</p>
+</main>
+
+
 {% endblock %}

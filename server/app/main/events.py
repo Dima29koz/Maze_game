@@ -1,7 +1,7 @@
 from flask_login import current_user
 from flask_socketio import send, emit, join_room, leave_room
 
-from .models import GameRoom, TurnInfo
+from .models import GameRoom, TurnInfo, User
 from .. import sio
 
 
@@ -93,34 +93,48 @@ def on_action(data):
     room_name = data.get('room')
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
 
-    next_player = turn_handler(room, room_name, current_user.user_name, data.get('action'), data.get('direction'))
-    while next_player.is_bot:
-        next_player = turn_handler(room, room_name, next_player.name, 'skip')
+    next_player, is_win_condition = turn_handler(room, room_name, current_user.user_name,
+                                                 data.get('action'), data.get('direction'))
+    while next_player.is_bot and not is_win_condition:
+        next_player, is_win_condition = turn_handler(room, room_name, next_player.name, 'skip')
 
 
 def turn_handler(room: GameRoom, room_name: str, player_name: str, action: str, direction: str | None = None):
     turn_resp, next_player = room.game.make_turn(
         player_name, action, direction)
-    room.game.check_win_condition(room.rules)
+    is_win_condition = room.game.is_win_condition(room.rules)
     room.save()
     if turn_resp:
         turn_info_dict = turn_resp.get_turn_info()
         turn_info = TurnInfo(game_room_id=room.id, player_name=turn_info_dict.get('player_name'))
         turn_info.add_turn(turn_info_dict, turn_resp.get_info())
-        emit('turn_info',
-             {
-                 'player': turn_info.player_name,
-                 'action': turn_info.action,
-                 'direction': turn_info.direction,
-                 'response': turn_info.turn_response,
-                 'next_player_name': next_player.name,
-                 'turns_end_resp': f'{player_name} wins' if not room.game.is_running else '',
-                 'field': room.game.field.get_field_list(),
-                 'treasures': room.game.field.get_treasures_list(),
-                 'players': room.game.field.get_players_list(),
-             },
-             room=room_name)
-    return next_player
+        data = {
+            'player': turn_info.player_name,
+            'action': turn_info.action,
+            'direction': turn_info.direction,
+            'response': turn_info.turn_response,
+            'next_player_name': next_player.name,
+            'field': room.game.field.get_field_list(),
+            'treasures': room.game.field.get_treasures_list(),
+            'players': room.game.field.get_players_list(),
+        }
+
+        emit('turn_info', data, room=room_name)
+
+        if is_win_condition:
+            room.is_running = False
+            room.is_ended = True
+            for player in room.players:
+                player.set_stat(player == current_user)
+            turn_info = TurnInfo(game_room_id=room.id, player_name='System')
+            turn_info.add_turn({'action': 'win'}, player_name)
+            emit('sys_msg',
+                 {
+                     'player':  turn_info.player_name,
+                     'response': player_name,
+                 },
+                 room=room_name)
+    return next_player, is_win_condition
 
 
 @sio.on('check_active', namespace='/game')
@@ -130,6 +144,7 @@ def on_check_active(data):
     active_player = room.game.get_current_player()
     emit('set_active',
          {
+             'is_ended': room.is_ended,
              'is_active': True if current_user.user_name == active_player.name else False,
              'allowed_abilities': room.game.get_allowed_abilities_str(active_player),
          })

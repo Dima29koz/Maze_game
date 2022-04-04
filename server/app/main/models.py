@@ -16,7 +16,6 @@ login_manager.login_message_category = "error"
 
 @login_manager.user_loader
 def load_user(user_id):
-    print(db.session.query(User).get(user_id))
     return db.session.query(User).get(user_id)
 
 
@@ -33,6 +32,8 @@ class User(db.Model, UserMixin):
     user_name = db.Column(db.String(50), unique=True)
     pwd = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
+    played_games = db.Column(db.Integer, default=0)
+    win_games = db.Column(db.Integer, default=0)
     game_room = db.relationship('GameRoom', backref='creator', lazy=True)
 
     def __repr__(self):
@@ -50,7 +51,11 @@ class User(db.Model, UserMixin):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            print('Error - добавление в бд', e)
+
+    def set_stat(self, is_winner=False):
+        if is_winner:
+            self.win_games += 1
+        self.played_games += 1
 
 
 class GameRoom(db.Model):
@@ -63,6 +68,7 @@ class GameRoom(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     game = db.Column(db.PickleType)
     is_running = db.Column(db.Boolean, default=False)
+    is_ended = db.Column(db.Boolean, default=False)
     players = db.relationship("User", secondary=user_room)
     turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
 
@@ -78,7 +84,6 @@ class GameRoom(db.Model):
             db.session.commit()
         except Exception as e:
             db.session.rollback()
-            print('Error - добавление в бд', e)
 
     def add_player(self, user_name):
         user: User = User.query.filter_by(user_name=user_name).first()
@@ -122,10 +127,13 @@ class TurnInfo(db.Model):
     turn_response = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def add_turn(self, info: dict[str, str], response):
+    def add_turn(self, info: dict[str, str], response: str):
         self.action = info.get('action')
         self.direction = info.get('direction')
         self.turn_response = response
+        self.save()
+
+    def save(self):
         db.session.add(self)
         db.session.commit()
 

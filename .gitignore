@@ -1,6 +1,5 @@
 # created by virtualenv automatically
 /venv/
 /.idea/
-/needToBeDelleted/
 /server/app/templates/tmp.html
 /.vs/

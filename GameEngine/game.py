@@ -8,7 +8,6 @@ class Game:
     def __init__(self, rules):
         self.field = Field(rules=rules)
         self.field.players = self.field.spawn_bots(rules['bots'])
-        self.is_running = False
 
     def get_current_player(self) -> Player:
         return self.field.get_active_player()
@@ -30,18 +29,15 @@ class Game:
         resp = self.field.action_handler(Actions[action], Directions[direction] if direction else None)
         return resp, self.get_current_player()
 
-    def check_win_condition(self, rules):
+    def is_win_condition(self, rules):
         if self.field.get_alive_pl_amount() == 1 and rules['gameplay_rules']['fast_win']:
-            self.is_running = False
-            print('players dead')
+            return True
 
-        # todo необходимо сообщать о типе вынесенного сокровища
         treasures = self.field.get_treasures_on_exit()
         if treasures:
             for treasure in treasures:
                 if treasure.t_type is TreasureTypes.very:
-                    self.is_running = False
-                print(f'treasure {treasure.t_type}')
+                    return True
 
     def get_players_data(self):
         return self.field.get_players_stat()

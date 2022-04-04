@@ -78,7 +78,7 @@ def room_join():
     if form.validate_on_submit():
         room: GameRoom | None = GameRoom.query.filter_by(name=form.name.data).first()
         if room.add_player(current_user.user_name):
-            if room.is_running:
+            if room.is_running or room.is_ended:
                 return redirect(url_for("main.game", room=room.name))
             return redirect(url_for("main.game_room", room=room.name))
         flash("Комната полностью заполнена", "error")

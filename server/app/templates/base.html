@@ -12,23 +12,41 @@
     {% block script %}{% endblock %}
 </head>
 <body>
-    <div class="container d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
-      <a href="{{ url_for('main.index') }}" class="d-flex align-items-center text-dark text-decoration-none">
-        <span class="fs-4">Maze Game</span>
-      </a>
-
-      <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-        <a class="me-3 py-2 text-dark text-decoration-none" href="{{ url_for('main.play') }}">Играть</a>
-        <a class="me-3 py-2 text-dark text-decoration-none" href="{{ url_for('main.rules') }}">Правила</a>
-        {% if current_user.is_authenticated %}
-            <a class="me-3 py-2 text-dark text-decoration-none" href="{{ url_for('main.profile') }}">Профиль</a>
-            <a class="me-3 py-2 text-dark text-decoration-none" href="{{ url_for('main.logout') }}">Выйти</a>
-        {% else %}
-            <a class="me-3 py-2 text-dark text-decoration-none" href="{{ url_for('main.login') }}">Авторизация</a>
-        {% endif %}
-
-      </nav>
+<header class="navbar navbar-expand-sm navbar-dark bg-dark" aria-label="Header">
+    <div class="container">
+        <a href="{{ url_for('main.index') }}" class="navbar-brand">Maze Game</a>
+        <button class="navbar-toggler p-0 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#header" aria-controls="header">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end bg-dark cropped" data-bs-scroll="true" tabindex="-1" id="header" aria-labelledby="headerLable">
+            <ul class="navbar-nav ms-sm-auto mb-2 mx-3 mx-sm-0 mb-sm-0">
+                <li class="nav-item">
+                    <a class="nav-link active text-decoration-none" href="{{ url_for('main.play') }}">Играть</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active text-decoration-none" href="{{ url_for('main.rules') }}">Правила</a>
+                </li>
+                {% if current_user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a href="#" class="d-flex ms-sm-auto nav-link active text-decoration-none " id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ url_for('static', filename='images/default_avatar.jpg') }}" alt="" width="32" height="32" class="rounded-circle me-2">
+                        <p class="my-0 dropdown-toggle">{{ current_user.user_name }}</p>
+                    </a>
+                    <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser">
+                            <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Профиль</a></li>
+                            <li><hr class="dropdown-divider "></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.logout') }}">Выйти</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link active text-decoration-none" href="{{ url_for('main.login') }}">Авторизация</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-    {% block body %}{% endblock %}
+</header>
+<div id="content">{% block main %}{% endblock %}</div>
 </body>
 </html>

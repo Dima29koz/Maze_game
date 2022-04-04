@@ -87,7 +87,7 @@ class Field:
         player = self.players[self._active_player_idx]
 
         response = action_to_handler[action](player, direction)
-        response.update_cell_info(len(self._treasures_on_cell(player.cell)), type(player.cell))
+        response.set_info(player.cell, [treasure.t_type for treasure in self._treasures_on_cell(player.cell)])
         response.update_turn_info(player.name, action.name, direction.name if direction else '')
         return response
 
@@ -122,8 +122,8 @@ class Field:
             current_cell = current_cell.neighbours[shot_direction]
 
         lost_treasure_players, dead_players = self._player_take_dmg_handler(damaged_players)
-        new_pl_location = self._pass_handler(active_player).new_location
-        return r.RespHandlerShootBow(damaged_players, dead_players, lost_treasure_players, new_pl_location)
+        self._pass_handler(active_player)
+        return r.RespHandlerShootBow(damaged_players, dead_players, lost_treasure_players)
 
     def _player_take_dmg_handler(self, damaged_players: list[Player]):
         lost_treasure_players = []
@@ -142,15 +142,15 @@ class Field:
     def _bomb_throw_handler(self, active_player: Player, throwing_direction: Directions):
         active_player.throw_bomb()
         wall = active_player.cell.break_wall(throwing_direction)
-        new_pl_location = self._pass_handler(active_player).new_location
-        return r.RespHandlerBombing(wall, new_pl_location)
+        self._pass_handler(active_player)
+        return r.RespHandlerBombing(wall)
 
     def _pass_handler(self, active_player: Player, direction: Directions = None):
         new_pl_cell = active_player.cell.idle(active_player.cell)
         active_player.move(new_pl_cell)
         self._cell_mechanics_activator(active_player, new_pl_cell)
         self._pass_turn_to_next_player()
-        return r.RespHandlerSkip(type(new_pl_cell))
+        return r.RespHandlerSkip()
 
     def _movement_handler(self, active_player: Player, movement_direction: Directions):
         current_cell = active_player.cell
@@ -161,7 +161,7 @@ class Field:
         self._cell_mechanics_activator(active_player, new_pl_cell)
 
         self._pass_turn_to_next_player()
-        return r.RespHandlerMoving(wall_type, cell, new_pl_cell)
+        return r.RespHandlerMoving(wall_type, cell)
 
     def _info_handler(self, active_player: Player, movement_direction: Directions):
         self._pass_turn_to_next_player()

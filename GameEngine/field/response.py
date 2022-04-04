@@ -1,6 +1,8 @@
 from typing import Type
 
 from GameEngine.entities.player import Player
+from GameEngine.entities.treasure import Treasure
+from GameEngine.globalEnv.enums import TreasureTypes
 from GameEngine.field.cell import *
 from GameEngine.field.wall import *
 
@@ -18,25 +20,26 @@ info = {
     WallConcrete: {'name': {'ru': 'стена'}, 'mechanics': {'ru': ''}},
     WallOuter: {'name': {'ru': 'внешняя стена'}, 'mechanics': {'ru': ''}},
     WallRubber: {'name': {'ru': 'резиновая стена'}, 'mechanics': {'ru': ''}},
-    WallExit: {'name': {'ru': 'выход'}, 'mechanics': {'ru': ''}},
-    WallEntrance: {'name': {'ru': 'вход'}, 'mechanics': {'ru': ''}},
+    WallExit: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
+    WallEntrance: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
+
+    TreasureTypes.very: {'name': {'ru': 'истинный'}, },
+    TreasureTypes.spurious: {'name': {'ru': 'ложный'}, },
+    TreasureTypes.mined: {'name': {'ru': 'заминированный'}, },
 }
 
 
 class RespHandler:
     def __init__(self):
-        self.treasures = False
-        self.treasures_amount = 0
-        self.cell_type = None
-        self.player_name = ''
-        self.action = ''
-        self.direction = ''
+        self.treasures: list[TreasureTypes] = []
+        self.cell_at_end_of_turn: Cell | None = None
+        self.player_name: str = ''
+        self.action: str = ''
+        self.direction: str = ''
 
-    def update_cell_info(self, treasures_amount: int, cell_type: Type[Cell]):
-        if treasures_amount:
-            self.treasures = True
-            self.treasures_amount = treasures_amount
-        self.cell_type = cell_type
+    def set_info(self, turn_end_cell: Cell, treasures: list[TreasureTypes]):
+        self.cell_at_end_of_turn = turn_end_cell
+        self.treasures = treasures
 
     def update_turn_info(self, player_name: str, action_name: str, direction_name: str):
         self.player_name = player_name
@@ -44,31 +47,33 @@ class RespHandler:
         self.direction = direction_name
 
     def get_info(self):
-        if self.treasures:
-            res = f', клад ({self.treasures_amount}шт.)'
-        else:
-            res = ''
-        return res + f', {self._translate(self.cell_type, "mechanics")}'
+        res = ''
+        if len(self.treasures) > 0:
+            if type(self.cell_at_end_of_turn) == CellExit:
+                treasure = self.treasures[0]
+                res = f', вынесен {self._translate(treasure)} клад'
+            else:
+                res = f', клад ({len(self.treasures)}шт.)'
+        mechanics_resp = self._translate(type(self.cell_at_end_of_turn), "mechanics")
+        if mechanics_resp:
+            res += f', {mechanics_resp}'
+        return res
 
     def get_turn_info(self):
         return {'player_name': self.player_name, 'action': self.action, 'direction': self.direction}
 
     @staticmethod
-    def _translate(obj, rtype='name', lang='ru'):
+    def _translate(obj: Type[Cell | WallEmpty] | TreasureTypes, rtype='name', lang='ru'):
         return info[obj][rtype][lang]
 
 
 class RespHandlerSkip(RespHandler):
-    def __init__(self, new_location: Type[Cell] = None):
+    def __init__(self):
         super().__init__()
-        self.new_location = new_location
 
     def get_info(self):
-        res = self._translate(self.new_location)
-        tr = super().get_info()
-        if tr:
-            res += f', {tr}'
-        return res
+        res = self._translate(type(self.cell_at_end_of_turn))
+        return res + super().get_info()
 
 
 class RespHandlerSwapTreasure(RespHandler):
@@ -84,59 +89,51 @@ class RespHandlerShootBow(RespHandlerSkip):
     def __init__(self,
                  damaged_players: list[Player] = None,
                  dead_players: list[Player] = None,
-                 lost_treasure_players: list[Player] = None,
-                 new_location: Type[Cell] = None):
-        super().__init__(new_location)
+                 lost_treasure_players: list[Player] = None):
+        super().__init__()
         self.hit = True if damaged_players else False
         self.damaged_players = damaged_players
         self.dead_players = dead_players
         self.lost_treasure_players = lost_treasure_players
 
     def get_info(self):
-        if self.hit:
-            dmg_pl_names = [player.name for player in self.damaged_players]
-            tr_lost_pl_names = [player.name for player in self.lost_treasure_players]
-            dead_pl_names = [player.name for player in self.dead_players]
+        if not self.hit:
+            return 'не попал, ' + super().get_info()
 
-            dmg_pl = f' игроки {dmg_pl_names} ранены,' if dmg_pl_names else ''
-            dead_pl = f' игроки {dead_pl_names} убиты,' if dead_pl_names else ''
-            drop_pl = f' игроки {tr_lost_pl_names} выронили клад' if tr_lost_pl_names else ''
-            res = f'попал,{dmg_pl}{dead_pl}{drop_pl}'
-        else:
-            res = f'не попал,'
-        return res + ' ' + super().get_info()
+        dmg_pl_names = [player.name for player in self.damaged_players]
+        tr_lost_pl_names = [player.name for player in self.lost_treasure_players]
+        dead_pl_names = [player.name for player in self.dead_players]
+
+        dmg_pl = f' игроки {dmg_pl_names} ранены,' if dmg_pl_names else ''
+        dead_pl = f' игроки {dead_pl_names} убиты,' if dead_pl_names else ''
+        drop_pl = f' игроки {tr_lost_pl_names} выронили клад,' if tr_lost_pl_names else ''
+        res = f'попал,{dmg_pl}{dead_pl}{drop_pl} '
+
+        return res + super().get_info()
 
 
 class RespHandlerBombing(RespHandlerSkip):
-    def __init__(self, damaged_wall_type: WallEmpty, new_location: Type[Cell] = None):
-        super().__init__(new_location)
+    def __init__(self, damaged_wall_type: WallEmpty):
+        super().__init__()
         self.damaged_wall = damaged_wall_type
 
     def get_info(self):
-        res = 'взорвал' if self.damaged_wall.breakable else 'не взорвал'
-        return res + ', ' + super().get_info()
+        res = 'взорвал, ' if self.damaged_wall.breakable else 'не взорвал, '
+        return res + super().get_info()
 
 
 class RespHandlerMoving(RespHandler):
-    def __init__(self, wall_type: WallEmpty, cell_after_wall_check: Cell, cell_at_the_turn_ends: Cell):
+    def __init__(self, wall_type: Type[WallEmpty], cell_after_wall_check: Cell):
         super().__init__()
         self.wall_type = wall_type
         self.cell_after_wall_check = cell_after_wall_check
-        self.cell_at_the_turn_ends = cell_at_the_turn_ends
 
     def get_info(self):
-        if type(self.cell_after_wall_check) == Cell:
-            return f'{self._translate(self.wall_type)}' + \
-                   super().get_info()
-        if self.cell_after_wall_check == self.cell_at_the_turn_ends:
-            return f'{self._translate(self.wall_type)}, ' \
-                   f'{self._translate(type(self.cell_at_the_turn_ends))}' + \
-                   super().get_info()
-        else:
-            return f'{self._translate(self.wall_type)}, ' \
-                   f'{self._translate(type(self.cell_after_wall_check))}, ' \
-                   f'{self._translate(type(self.cell_at_the_turn_ends))}' + \
-                   super().get_info()
+        res = f'{self._translate(self.wall_type)}'
+        if not self.cell_after_wall_check == self.cell_at_end_of_turn:
+            res += f', {self._translate(type(self.cell_after_wall_check))}'
+        res += f', {self._translate(type(self.cell_at_end_of_turn))}'
+        return res + super().get_info()
 
 
 class RespHandlerInfo(RespHandler):
@@ -144,4 +141,4 @@ class RespHandlerInfo(RespHandler):
         super().__init__()
 
     def get_info(self):
-        return self._translate(self.cell_type) + super().get_info()
+        return self._translate(type(self.cell_at_end_of_turn)) + super().get_info()

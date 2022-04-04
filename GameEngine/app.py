@@ -13,15 +13,16 @@ from rules import rules
 
 
 def main():
-    rules['players'] = ['Skipper']
     rules['generator_rules']['river_rules'] = []
     game = Game(rules=rules)
     field = game.field
+    field.spawn_player({'x': 1, 'y': 1}, 'Skipper', 1)
+    # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
     gui = SpectatorGUI(field)
 
     state = Actions.move
-
-    while game.is_running:
+    is_running = True
+    while is_running:
         act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
         gui.draw(act_pl_abilities)
         act, state = gui.get_action(act_pl_abilities, state)
@@ -30,7 +31,8 @@ def main():
             response = game.field.action_handler(*act)
 
             print(response.get_turn_info(), response.get_info())
-            game.check_win_condition(rules)
+            if game.is_win_condition(rules):
+                is_running = False
 
     gui.close()
 

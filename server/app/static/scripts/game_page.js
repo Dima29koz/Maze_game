@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const room = document.querySelector('#get-room-name').innerHTML;
-    //const current_user = document.querySelector('#get-user-name').innerHTML;
     let is_active = false;
+    let is_ended = false;
     let current_user = '';
     // Connect to websocket
     let socket = io('/game');
@@ -27,8 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.emit('get_players_stat', {'room': room});
     });
 
+    socket.on('sys_msg', data => {
+        drawTurnMessage(data);
+        scrollDownChatWindow();
+    });
+
     socket.on('set_active', data => {
         is_active = data.is_active;
+        is_ended = data.is_ended;
         drawButtons(data.allowed_abilities);
     });
 
@@ -43,7 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawButtons(allowed_abilities) {
         let div = document.getElementById('control');
         div.innerHTML = '';
-
+        if (is_ended) {
+            return;
+        }
         let dirs = [
             ['top', '⬆'],
             ['left', '⬅'],
@@ -149,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const span_turn_info = document.createElement('span');
         const br = document.createElement('br')
 
-        if (typeof turn_data.player == 'undefined') { printSysMsg(turn_data.msg); }
+        if (typeof turn_data.player == 'undefined' || turn_data.player == 'System') { printSysMsg(turn_data.response); }
         else {
             // user's own message
             if (turn_data.player == current_user) {
@@ -187,10 +195,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Print system messages
-    function printSysMsg(msg) {
+    function printSysMsg(winner) {
         const p = document.createElement('p');
         p.setAttribute("class", "system-msg");
-        p.innerHTML = msg;
+        p.innerHTML = `${winner} wins`;
         document.getElementById('game-info').append(p);
     }
 
