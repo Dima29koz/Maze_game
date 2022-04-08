@@ -13,7 +13,7 @@ from rules import rules
 
 
 def main():
-    rules['generator_rules']['river_rules'] = []
+    # rules['generator_rules']['river_rules'] = []
     game = Game(rules=rules)
     field = game.field
     field.spawn_player({'x': 1, 'y': 1}, 'Skipper', 1)

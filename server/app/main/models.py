@@ -116,8 +116,56 @@ class GameRoom(db.Model):
         self.is_running = True
         db.session.commit()
 
+    def on_turn(self, player_name: str, action: str, direction: str | None = None):
+        turn_resp, next_player = self.game.make_turn(player_name, action, direction)
+        is_win_condition = self.game.is_win_condition(self.rules)
+        self.save()
+        turn_data = {}
+        win_data = {}
+        if turn_resp:
+            turn_info = TurnInfo(self.id, turn_resp.get_turn_info(), turn_resp.get_info())
+            turn_info.save()
+            turn_data = {
+                'player': turn_info.player_name,
+                'action': turn_info.action,
+                'direction': turn_info.direction,
+                'response': turn_info.turn_response,
+                'next_player_name': next_player.name,
+                'field': self.game.field.get_field_list(),
+                'treasures': self.game.field.get_treasures_list(),
+                'players': self.game.field.get_players_list(),
+            }
+
+            if is_win_condition:
+                win_data = self.on_win(player_name)
+
+        return next_player, turn_data, win_data
+
+    def on_win(self, player_name):
+        self.is_running = False
+        self.is_ended = True
+        for player in self.players:
+            player.set_stat(player.user_name == player_name)
+        turn_info = TurnInfo(self.id, {'player_name': 'System', 'action': 'win'}, player_name)
+        turn_info.save()
+        win_data = {
+            'player': turn_info.player_name,
+            'response': turn_info.turn_response,
+        }
+        return win_data
+
+    def get_turns(self):
+        return [turn.to_dict() for turn in self.turn_info]
+
 
 class TurnInfo(db.Model):
+    def __init__(self, room_id: int, info: dict, response: str):
+        self.game_room_id = room_id
+        self.player_name = info.get('player_name')
+        self.action = info.get('action')
+        self.direction = info.get('direction')
+        self.turn_response = response
+
     __tablename__ = 'turn_info'
     id = db.Column(db.Integer, primary_key=True)
     player_name = db.Column(db.String(50), nullable=False)
@@ -126,12 +174,6 @@ class TurnInfo(db.Model):
     direction = db.Column(db.String(50))
     turn_response = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def add_turn(self, info: dict[str, str], response: str):
-        self.action = info.get('action')
-        self.direction = info.get('direction')
-        self.turn_response = response
-        self.save()
 
     def save(self):
         db.session.add(self)
