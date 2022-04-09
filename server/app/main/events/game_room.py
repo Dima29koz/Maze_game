@@ -9,23 +9,8 @@ class GameRoomNamespace(Namespace):
         room_name = data.get('room')
         join_room(room_name)
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
-        rules = room.rules
-        players_name = [user.user_name for user in room.players]
-        players_amount = rules.get('players_amount')
-        players_bots = rules.get('bots_amount') + players_amount
-        ready_cond = len(players_name) == players_amount and len(room.game.field.players) == players_bots
-        emit(
-            'join',
-            {
-                "players": players_name,
-                "players_amount": players_amount,
-                "bots_amount": rules.get('bots_amount'),
-                "bots_name": rules.get('bots'),
-                "creator": room.creator.user_name,
-                "is_ready": ready_cond,
-            },
-            room=room_name
-        )
+        room_data = room.on_join()
+        emit('join', room_data, room=room_name)
         emit('get_spawn', {'field': room.game.field.get_field_pattern_list()})
 
     def on_set_spawn(self, data):
@@ -58,10 +43,7 @@ class GameRoomNamespace(Namespace):
     def on_start(self, data):
         room_name = data.get('room')
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
-        room.start()
-        for player in room.game.field.players:
-            room.on_turn(player.name, 'info')
-
+        room.on_start()
         emit('start', room=room_name)
 
 

@@ -7,8 +7,6 @@ from . import main
 from .forms import RegistrationForm, LoginForm, RulesForm, LoginRoomForm
 from .models import User, GameRoom
 
-from GameEngine.rules import rules as default_rules
-
 
 @main.errorhandler(404)
 def handle_404(err):
@@ -51,9 +49,7 @@ def login():
 def registration():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(user_name=form.username.data)
-        user.set_pwd(form.pwd.data)
-        user.add()
+        User(form.username.data, form.pwd.data)
         return redirect(url_for('main.login'))
     return render_template('registration.html', form=form)
 
@@ -91,16 +87,12 @@ def room_join():
 def room_create():
     form = RulesForm()
     if form.validate_on_submit():
-        room = GameRoom(name=form.room_name.data)
-        room.set_pwd(form.pwd.data)
-        room.rules = default_rules  # fixme
-        room.rules['players_amount'] = form.players_amount.data
-        room.rules['bots_amount'] = form.bots_amount.data
-        room.rules['bots'] = [f'Bot{i}' for i in range(room.rules['bots_amount'])]  # fixme
-        room.set_creator(current_user.user_name)
-        room.add_player(current_user.user_name)
-        room.add()
-        room.add_game()
+        room = GameRoom(
+            form.room_name.data,
+            form.pwd.data,
+            form.players_amount.data,
+            form.bots_amount.data,
+            current_user.user_name)
         return redirect(url_for("main.game_room", room=room.name))
     return render_template('create.html', form=form)
 

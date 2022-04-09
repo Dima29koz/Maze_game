@@ -27,9 +27,7 @@ def create_app():
             print(e)
 
     from .main import main as main_blueprint
-    import server.app.general.controllers as general
 
-    app.register_blueprint(general.module)
     app.register_blueprint(main_blueprint)
 
     sio.init_app(app)

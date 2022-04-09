@@ -50,7 +50,5 @@ class LoginRoomForm(FlaskForm):
 
     def validate_pwd(self, pwd):
         room_obj: GameRoom = GameRoom.query.filter_by(name=self.name.data).first()
-        if not room_obj:
-            raise ValidationError('Комнаты с таким именем не существует')
-        if not room_obj.check_password(pwd.data):
+        if not room_obj or not room_obj.check_password(pwd.data):
             raise ValidationError('Неверная пара название/пароль')

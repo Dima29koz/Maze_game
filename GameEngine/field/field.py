@@ -29,7 +29,7 @@ class Field:
             players.append(Player(spawn_cell, bot, True))
         return players
 
-    def spawn_player(self, spawn_point: dict, name: str, turn):
+    def spawn_player(self, spawn_point: dict, name: str, turn: int):
         player = Player(self.field[spawn_point.get('y')][spawn_point.get('x')], name, turn=turn)
         if player not in self.players:
             self.players.append(player)

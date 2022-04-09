@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .. import db, login_manager
 
 from GameEngine.game import Game
+from GameEngine.rules import rules as default_rules
 
 
 login_manager.login_view = 'main.login'
@@ -27,6 +28,11 @@ user_room = db.Table(
 
 
 class User(db.Model, UserMixin):
+    def __init__(self, user_name: str, pwd: str):
+        self.user_name = user_name
+        self.pwd = generate_password_hash(pwd)
+        self.add()
+
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(50), unique=True)
@@ -39,10 +45,7 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User %r>' % self.id
 
-    def set_pwd(self, password):
-        self.pwd = generate_password_hash(password)
-
-    def check_password(self, password):
+    def check_password(self, password: str):
         return check_password_hash(self.pwd, password)
 
     def add(self):
@@ -52,13 +55,24 @@ class User(db.Model, UserMixin):
         except Exception as e:
             db.session.rollback()
 
-    def set_stat(self, is_winner=False):
+    def set_stat(self, is_winner: bool = False):
         if is_winner:
             self.win_games += 1
         self.played_games += 1
 
 
 class GameRoom(db.Model):
+    def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator_name: str):
+        self.name = name
+        self.pwd = generate_password_hash(pwd)
+        self.rules = default_rules
+        self.rules['players_amount'] = players_amount
+        self.rules['bots_amount'] = bots_amount
+        self.rules['bots'] = [f'Bot{i}' for i in range(bots_amount)]  # fixme
+        self.set_creator(creator_name)
+        self.add()
+        self.add_game()
+
     __tablename__ = 'game_room'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), unique=True)
@@ -72,10 +86,7 @@ class GameRoom(db.Model):
     players = db.relationship("User", secondary=user_room)
     turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
 
-    def set_pwd(self, password):
-        self.pwd = generate_password_hash(password)
-
-    def check_password(self, password):
+    def check_password(self, password: str):
         return check_password_hash(self.pwd, password)
 
     def add(self):
@@ -85,7 +96,7 @@ class GameRoom(db.Model):
         except Exception as e:
             db.session.rollback()
 
-    def add_player(self, user_name):
+    def add_player(self, user_name: str):
         user: User = User.query.filter_by(user_name=user_name).first()
         if user in self.players:
             return True
@@ -96,9 +107,10 @@ class GameRoom(db.Model):
         db.session.commit()
         return True
 
-    def set_creator(self, user_name):
+    def set_creator(self, user_name: str):
         user: User = User.query.filter_by(user_name=user_name).first()
         self.creator_id = user.id
+        self.add_player(user_name)
 
     def add_game(self):
         self.game = Game(self.rules)
@@ -108,12 +120,28 @@ class GameRoom(db.Model):
         self.game = copy(self.game)  # fixme это затычка
         db.session.commit()
 
-    def start(self):
+    def on_join(self) -> dict:
+        players_amount = self.rules.get('players_amount')
+        players_bots = self.rules.get('bots_amount') + players_amount
+        ready_cond = len(self.players) == players_amount and len(self.game.field.players) == players_bots
+
+        return {
+            "players": [user.user_name for user in self.players],
+            "players_amount": players_amount,
+            "bots_amount": self.rules.get('bots_amount'),
+            "bots_name": self.rules.get('bots'),
+            "creator": self.creator.user_name,
+            "is_ready": ready_cond,
+        }
+
+    def on_start(self):
         self.rules['players'] = [player.user_name for player in self.players]
         self.rules = copy(self.rules)
         self.game.field.sort_players()
         self.game = copy(self.game)
         self.is_running = True
+        for player in self.game.field.players:
+            self.on_turn(player.name, 'info')
         db.session.commit()
 
     def on_turn(self, player_name: str, action: str, direction: str | None = None):
@@ -141,7 +169,7 @@ class GameRoom(db.Model):
 
         return next_player, turn_data, win_data
 
-    def on_win(self, player_name):
+    def on_win(self, player_name: str):
         self.is_running = False
         self.is_ended = True
         for player in self.players:
