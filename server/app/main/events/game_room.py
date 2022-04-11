@@ -11,7 +11,8 @@ class GameRoomNamespace(Namespace):
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
         room_data = room.on_join()
         emit('join', room_data, room=room_name)
-        emit('get_spawn', {'field': room.game.field.get_field_pattern_list()})
+        emit('get_spawn', {'field': room.game.field.get_field_pattern_list(),
+                           'spawn_info': room.game.get_spawn_point(current_user.user_name)})
 
     def on_set_spawn(self, data):
         room_name = data.get('room')

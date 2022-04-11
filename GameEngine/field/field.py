@@ -1,6 +1,6 @@
 from functools import partial
 from operator import attrgetter
-from random import choice
+from random import choice, sample
 
 from GameEngine.field_generator.field_generator import FieldGenerator
 from GameEngine.field import response as r, cell as c
@@ -20,14 +20,16 @@ class Field:
         self.players: list[Player] = []
         self._active_player_idx = 0
 
-    def spawn_bots(self, bots: list[str]):  # fixme
-        players = []
-        for bot in bots:
+    def spawn_bots(self, bots_amount: int):  # fixme
+        bots = []
+        bot_names = [f'Bot{i}' for i in range(bots_amount)]
+        # todo написать случайный выбор из заранее заданного списка имен
+        for i in range(bots_amount):
             spawn_cell = None
             while spawn_cell is None:
                 spawn_cell = choice(choice(self.field))
-            players.append(Player(spawn_cell, bot, True))
-        return players
+            bots.append(Player(spawn_cell, bot_names[i], True))
+        return bots
 
     def spawn_player(self, spawn_point: dict, name: str, turn: int):
         player = Player(self.field[spawn_point.get('y')][spawn_point.get('x')], name, turn=turn)

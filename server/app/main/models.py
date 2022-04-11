@@ -52,7 +52,7 @@ class User(db.Model, UserMixin):
         try:
             db.session.add(self)
             db.session.commit()
-        except Exception as e:
+        except Exception as _:
             db.session.rollback()
 
     def set_stat(self, is_winner: bool = False):
@@ -68,7 +68,6 @@ class GameRoom(db.Model):
         self.rules = default_rules
         self.rules['players_amount'] = players_amount
         self.rules['bots_amount'] = bots_amount
-        self.rules['bots'] = [f'Bot{i}' for i in range(bots_amount)]  # fixme
         self.set_creator(creator_name)
         self.add()
         self.add_game()
@@ -93,14 +92,14 @@ class GameRoom(db.Model):
         try:
             db.session.add(self)
             db.session.commit()
-        except Exception as e:
+        except Exception as _:
             db.session.rollback()
 
     def add_player(self, user_name: str):
         user: User = User.query.filter_by(user_name=user_name).first()
         if user in self.players:
             return True
-        if not len(self.players) < self.rules.get('players_amount'):
+        if len(self.players) >= self.rules.get('players_amount'):
             return False
 
         self.players.append(user)
@@ -129,14 +128,12 @@ class GameRoom(db.Model):
             "players": [user.user_name for user in self.players],
             "players_amount": players_amount,
             "bots_amount": self.rules.get('bots_amount'),
-            "bots_name": self.rules.get('bots'),
+            "bots_name": [player.name for player in self.game.field.players if player.is_bot],
             "creator": self.creator.user_name,
             "is_ready": ready_cond,
         }
 
     def on_start(self):
-        self.rules['players'] = [player.user_name for player in self.players]
-        self.rules = copy(self.rules)
         self.game.field.sort_players()
         self.game = copy(self.game)
         self.is_running = True

@@ -1,7 +1,6 @@
 from typing import Type
 
 from GameEngine.entities.player import Player
-from GameEngine.entities.treasure import Treasure
 from GameEngine.globalEnv.enums import TreasureTypes
 from GameEngine.field.cell import *
 from GameEngine.field.wall import *
@@ -130,7 +129,7 @@ class RespHandlerMoving(RespHandler):
 
     def get_info(self):
         res = f'{self._translate(self.wall_type)}'
-        if not self.cell_after_wall_check == self.cell_at_end_of_turn:
+        if self.cell_after_wall_check != self.cell_at_end_of_turn:
             res += f', {self._translate(type(self.cell_after_wall_check))}'
         res += f', {self._translate(type(self.cell_at_end_of_turn))}'
         return res + super().get_info()

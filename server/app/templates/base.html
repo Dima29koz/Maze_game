@@ -30,7 +30,7 @@
                 <li class="nav-item dropdown">
                     <a href="#" class="d-flex ms-sm-auto nav-link active text-decoration-none " id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{{ url_for('static', filename='images/default_avatar.jpg') }}" alt="" width="32" height="32" class="rounded-circle me-2">
-                        <p class="my-0 dropdown-toggle">{{ current_user.user_name }}</p>
+                        <p id="get-user-name" class="my-0 dropdown-toggle">{{ current_user.user_name }}</p>
                     </a>
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser">
                             <li><a class="dropdown-item" href="{{ url_for('main.profile') }}">Профиль</a></li>

@@ -7,7 +7,7 @@ from GameEngine.globalEnv.enums import Actions, Directions, TreasureTypes
 class Game:
     def __init__(self, rules):
         self.field = Field(rules=rules)
-        self.field.players = self.field.spawn_bots(rules['bots'])
+        self.field.players = self.field.spawn_bots(rules['bots_amount'])
 
     def get_current_player(self) -> Player:
         return self.field.get_active_player()
@@ -41,3 +41,8 @@ class Game:
 
     def get_players_data(self):
         return self.field.get_players_stat()
+
+    def get_spawn_point(self, player_name):
+        for player in self.field.players:
+            if player.name == player_name:
+                return {'x': player.cell.x, 'y': player.cell.y}

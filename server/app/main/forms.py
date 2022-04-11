@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
-from wtforms.validators import DataRequired, EqualTo, ValidationError
+from wtforms.validators import DataRequired, EqualTo, ValidationError, InputRequired
 
 from server.app.main.models import User, GameRoom
 
@@ -29,7 +29,10 @@ class RulesForm(FlaskForm):
     room_name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])
     pwd = PasswordField("Пароль: ", validators=[DataRequired('Поле не заполнено')])
     players_amount = IntegerField("Число игроков", validators=[DataRequired('Поле не заполнено')], default=2)
-    bots_amount = IntegerField("Число ботов", validators=[DataRequired('Поле не заполнено')], default=0)
+    bots_amount = IntegerField("Число ботов",
+                               validators=[],
+                               default=0,
+                               render_kw={'disabled': False})
     submit = SubmitField("Создать")
 
     def validate_room_name(self, room_name):

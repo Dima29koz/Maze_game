@@ -12,14 +12,15 @@
 {% block main %}
 <main>
     <h1>Комната: <span id="get-room-name">{{ request.args.get('room') }}</span></h1>
-    <div id="control"></div>
-    <div id="players" class="list-group list-group-flush border-bottom scrollarea">
-        <span id="get-user-name">{{ current_user.user_name }}</span>
+    <div class="container">
+        <div id="control"></div>
+        <div id="players" class="list-group list-group-flush border-bottom scrollarea"></div>
+        <div id="bots" class="list-group list-group-flush border-bottom scrollarea"></div>
+        <div id="map-container" class="container d-flex justify-content-center mt-4">
+            <canvas class="border" id="map"></canvas>
+        </div>
     </div>
-    <div id="bots" class="list-group list-group-flush border-bottom scrollarea"></div>
-    <div id="map-container" class="container d-flex justify-content-center mt-4">
-        <canvas class="border" id="map"></canvas>
-    </div>
+
 </main>
 
 

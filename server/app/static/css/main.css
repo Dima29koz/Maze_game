@@ -35,6 +35,10 @@
     background: #ffd700;
 }
 
+.current {
+    color: green;
+}
+
 .others-msg {
     border-color: grey;
     background-color: #C2DBFB;
