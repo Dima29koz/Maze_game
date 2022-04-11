@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, sample, randint
 
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.entities.treasure import Treasure, TreasureTypes
@@ -14,6 +14,7 @@ class FieldGenerator:
         self.cols = generator_rules['cols']
         self.pattern: list[list[PatternCell]] = [[]]
         self.ground_cells: list[Cell] = []
+        self.rivers: list[list[CellRiver]] = []
         self.field: list[list[Cell | None]] = [[]]
         self.treasures: list[Treasure] = []
         self.exit_cell: CellExit | None = None
@@ -31,13 +32,13 @@ class FieldGenerator:
     def generate_field(self, rules):
         self.generate_pattern(rules['is_rect'])
         self.generate_base_field()
-        self.generate_rivers(rules['river_rules'])
+        self.rivers = self.generate_rivers(rules['river_rules'])
         self.generate_armory(rules['armory'])
         self.generate_clinic()
         self.treasures = self.spawn_treasures(rules['treasures'])
         self.generate_connections()
-        self.generate_walls(rules['walls'])
         outer_cells = self.generate_outer_walls()
+        self.generate_walls(rules['walls'])
         self.exit_cell = self.create_exit(outer_cells)
 
     def generate_pattern(self, is_rect: bool):
@@ -64,7 +65,7 @@ class FieldGenerator:
 
     def generate_rivers(self, river_rules: list[int]):
         rg = RiverGenerator(self.cols, self.rows, self.pattern, self.field, self.ground_cells)
-        rg.spawn_rivers(river_rules)
+        return rg.spawn_rivers(river_rules)
 
     def generate_armory(self, armory_rules: bool):
         """
@@ -102,7 +103,27 @@ class FieldGenerator:
                     self.field[row][col].change_neighbours(neighbours)
 
     def generate_walls(self, wall_rules):  # todo
-        pass
+        if not wall_rules.get('has_walls'):
+            return
+        cells = []
+        for row in self.field:
+            for cell in row:
+                if cell:
+                    cells.append(cell)
+        cells_walls = sample(cells, int(len(cells) * 0.6))
+        for cell in cells_walls:
+            directions = sample(list(Directions), randint(1, 2))
+            for direction in directions:
+                if not isinstance(cell.walls[direction], WallOuter):
+                    cell.add_wall(direction, WallConcrete())
+                    cell.neighbours[direction].add_wall(-direction, WallConcrete())
+        self.wall_fix()
+
+    def wall_fix(self):
+        for river in self.rivers:
+            for i in range(len(river)-1):
+                direction = river[i] - river[i+1]
+                river[i].break_wall(direction)
 
     def generate_outer_walls(self):
         outer_cells = set()

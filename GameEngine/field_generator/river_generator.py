@@ -15,20 +15,24 @@ class RiverGenerator:
         self.__field = field
         self.__ground_cells = ground_cells
 
-    def spawn_rivers(self, river_lengths):
+    def spawn_rivers(self, river_lengths) -> list[list[CellRiver]]:
+        rivers = []
         for length in river_lengths:
-            self.generate_river(length)
+            river = self.generate_river(length)
+            if river:
+                rivers.append(river)
+        return rivers
 
-    def generate_river(self, length):
+    def generate_river(self, length) -> list[CellRiver] | None:
         river_tmp = self.__gen_river(length)
         if not river_tmp:
-            return False
+            return
         river = [CellRiver(riv_cell.x, riv_cell.y) for riv_cell in river_tmp]
         river[-1] = CellRiverMouth(river[-1].x, river[-1].y)
         for riv_cell in river:
             riv_cell.add_river_list(river)
             self.__field[riv_cell.y][riv_cell.x] = riv_cell
-        return True
+        return river
 
     def __gen_river(self, length) -> list[Cell] | None:
         shuffle(self.__ground_cells)

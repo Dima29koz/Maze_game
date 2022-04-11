@@ -3,3 +3,4 @@
 /.idea/
 /server/app/templates/tmp.html
 /.vs/
+/GameEngine/tmp.py

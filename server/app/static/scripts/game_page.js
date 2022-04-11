@@ -298,11 +298,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function drawField(context) {
+            console.log(field);
             let cells = [];
             for (row of field) {
                 for (cell of row) {
-                    cells.push(drawCell(cell, context));
-                    drawWalls(cell.walls, context);
+                    if (cell.type) {
+                        cells.push(drawCell(cell, context));
+                        drawWalls(cell.walls, context);
+                    }
                 }
             }
             return cells;

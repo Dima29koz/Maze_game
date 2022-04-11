@@ -56,6 +56,19 @@ class Cell:
             'walls': {direction.name: wall.__class__.__name__ for direction, wall in self.walls.items()}
         }
 
+    def __sub__(self, other) -> Directions:
+        """
+        :return: direction between adjacent cells
+        """
+        if self.x > other.x:
+            return Directions.left
+        if self.x < other.x:
+            return Directions.right
+        if self.y > other.y:
+            return Directions.top
+        if self.y < other.y:
+            return Directions.bottom
+
 
 class CellRiver(Cell):
     def __init__(self, x, y):
@@ -95,14 +108,7 @@ class CellRiver(Cell):
         except IndexError:
             direction = 'mouth'
         else:
-            if self.x > next_river_cell.x:
-                direction = 'left'
-            elif self.x < next_river_cell.x:
-                direction = 'right'
-            elif self.y > next_river_cell.y:
-                direction = 'top'
-            else:
-                direction = 'bottom'
+            direction = (self - next_river_cell).name
 
         riv_dict = {'river_dir': direction}
         sup |= riv_dict

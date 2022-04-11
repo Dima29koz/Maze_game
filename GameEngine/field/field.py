@@ -63,7 +63,7 @@ class Field:
         return [player.to_dict() for player in self.players]
 
     def get_field_list(self):
-        return [[cell.to_dict() for cell in row] for row in self.field]
+        return [[cell.to_dict() if cell else {} for cell in row] for row in self.field]
 
     def get_field_pattern_list(self):
         return [[{'x': cell.x, 'y': cell.y} if cell else None for cell in row] for row in self.field]
