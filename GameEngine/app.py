@@ -1,15 +1,10 @@
-from operator import attrgetter
+"""runs game local for testing GameEngine"""
 
 from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions
 
-
-from rules import rules
-
-"""
-Сломано! Но работает
-"""
+from .rules import rules
 
 
 def main():
