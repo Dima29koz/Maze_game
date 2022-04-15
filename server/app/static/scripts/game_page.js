@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('turn_info', data => {
         drawTurnMessage(data);
         scrollDownChatWindow();
-        drawMap(data.field, data.treasures, data.players, current_user);
         socket.emit('check_active', {'room': room});
         socket.emit('get_players_stat', {'room': room});
     });

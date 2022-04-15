@@ -1,6 +1,13 @@
 function drawMap(field, treasures, players, current_user) {
-    const drawingCanvas = document.getElementById('map-debug');
-    const div = document.getElementById('map-debug-container');
+    const div_map = document.getElementById('div-map');
+    const div = document.createElement('div');
+    div.className = 'py-3 h-75';
+    div.id = 'map-debug-container';
+    const drawingCanvas = document.createElement('canvas');
+    drawingCanvas.className = 'border';
+    div.append(drawingCanvas);
+    div_map.append(div);
+
     width = div.clientWidth;
     height = div.clientHeight;
     tile_size = height < width ? height / field.length : width / field[0].length;

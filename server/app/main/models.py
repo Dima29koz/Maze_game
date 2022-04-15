@@ -156,15 +156,19 @@ class GameRoom(db.Model):
                 'direction': turn_info.direction,
                 'response': turn_info.turn_response,
                 'next_player_name': next_player.name,
-                'field': self.game.field.get_field_list(),
-                'treasures': self.game.field.get_treasures_list(),
-                'players': self.game.field.get_players_list(),
             }
 
             if is_win_condition:
                 win_data = self.on_win(player_name)
 
         return next_player, turn_data, win_data
+
+    def on_get_field(self):
+        return {
+            'field': self.game.field.get_field_list(),
+            'treasures': self.game.field.get_treasures_list(),
+            'players': self.game.field.get_players_list(),
+        }
 
     def on_win(self, player_name: str):
         self.is_running = False

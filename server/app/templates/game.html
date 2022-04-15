@@ -24,17 +24,12 @@ Maze Game - {{ request.args.get('room') }}
                 <div class="container-fluid overflow-auto h-25">
                     <div id="player-stats" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-3"></div>
                 </div>
-                <div class="container-fluid h-75">
+                <div id="div-map" class="container-fluid h-75">
                     <div class="py-3">Game Map</div>
                     <div id="map-container" class="py-3 h-75">
                         <canvas class="border" id="map"></canvas>
                     </div>
-                    <div id="map-debug-container" class="py-3 h-75">
-                        <canvas class="border" id="map-debug"></canvas>
-                    </div>
-
                 </div>
-
             </div>
         </div>
     </div>
