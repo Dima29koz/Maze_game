@@ -10,7 +10,7 @@
     <form method="post" class="form-contact">
         {{ form.hidden_tag() }}
         <h1 class="h3 mb-3 fw-normal">Установите настройки игры:</h1>
-        {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] %}
+        {% for field in form if field.name not in ['csrf_token', 'submit'] %}
             <div class="form-floating">
                 {% if field.errors %}
                     {{ field(class="form-control") }}
@@ -30,7 +30,6 @@
                  {% endif %}
             </div>
         {% endfor %}
-
         <div>{{ form.submit(class="w-100 btn btn-lg btn-primary") }}</div>
     </form>
 </main>

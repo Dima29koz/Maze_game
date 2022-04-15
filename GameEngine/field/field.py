@@ -8,6 +8,7 @@ from GameEngine.entities.player import Player
 from GameEngine.entities.treasure import Treasure
 from GameEngine.globalEnv.enums import Actions, Directions
 from GameEngine.field.cell import Cell
+from GameEngine.bot_names import bots as data_bots
 
 
 class Field:
@@ -20,10 +21,9 @@ class Field:
         self.players: list[Player] = []
         self._active_player_idx = 0
 
-    def spawn_bots(self, bots_amount: int):  # fixme
+    def spawn_bots(self, bots_amount: int):
         bots = []
-        bot_names = [f'Bot{i}' for i in range(bots_amount)]
-        # todo написать случайный выбор из заранее заданного списка имен
+        bot_names = sample(data_bots, bots_amount)
         for i in range(bots_amount):
             spawn_cell = None
             while spawn_cell is None:
