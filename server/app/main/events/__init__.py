@@ -1,3 +1,5 @@
+"""initialization of socketIO eventHandlerNamespace"""
+
 from ... import sio
 from .game_room import GameRoomNamespace
 from .game import GameNamespace

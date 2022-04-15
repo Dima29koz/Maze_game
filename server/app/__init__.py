@@ -9,7 +9,13 @@ login_manager = LoginManager()
 sio = SocketIO(logger=True)
 
 
-def create_app():
+def create_app() -> Flask:
+    """
+    Creates app and register Blueprints
+
+    :returns: app
+    :rtype: Flask
+    """
     app = Flask(__name__)
     app.config.from_object('config.DevelopmentConfig')
 

@@ -6,19 +6,50 @@ from server.app.main.models import User, GameRoom
 
 
 class RegistrationForm(FlaskForm):
+    """
+    Registration form
+
+    :param username: user nickname
+    :type username: StringField
+    :param pwd: user password
+    :type pwd: PasswordField
+    :param pwd2: user password repeat
+    :type pwd2: PasswordField
+    :param submit: submit field
+    :type submit: SubmitField
+    """
     username = StringField('Никнейм: ')
     pwd = PasswordField('Пароль: ', validators=[DataRequired()])
     pwd2 = PasswordField('Повторите пароль: ', validators=[DataRequired(),
                                                            EqualTo('pwd', message='Пароли не совпадают')])
     submit = SubmitField("Регистрация")
 
-    def validate_username(self, username):
+    def validate_username(self, username: StringField):
+        """
+        username validator
+
+        :param username: user nickname
+        :type username: StringField
+        :raises ValidationError: if nickname is already taken
+        """
         user_obj = User.query.filter_by(user_name=username.data).first()
         if user_obj:
             raise ValidationError('Пользователь с таким ником уже существует')
 
 
 class LoginForm(FlaskForm):
+    """
+    Login form
+
+    :param name: user nickname
+    :type name: StringField
+    :param pwd: user password
+    :type pwd: PasswordField
+    :param remember: remembers users for the duration of the session
+    :type remember: BooleanField
+    :param submit: submit field
+    :type submit: SubmitField
+    """
     name = StringField("Никнейм: ", validators=[DataRequired('Поле не заполнено')])
     pwd = PasswordField("Пароль: ", validators=[DataRequired('Поле не заполнено')])
     remember = BooleanField(" Запомнить ", default=False)
@@ -26,6 +57,20 @@ class LoginForm(FlaskForm):
 
 
 class RulesForm(FlaskForm):
+    """
+    Rules form
+
+    :param room_name: room name
+    :type room_name: StringField
+    :param pwd: room password
+    :type pwd: PasswordField
+    :param players_amount: amount of players in a room
+    :type players_amount: IntegerField
+    :param bots_amount: amount of players in a room
+    :type bots_amount: IntegerField
+    :param submit: submit field
+    :type submit: SubmitField
+    """
     room_name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])
     pwd = PasswordField("Пароль: ", validators=[DataRequired('Поле не заполнено')])
     players_amount = IntegerField("Число игроков", validators=[DataRequired('Поле не заполнено')], default=2)
@@ -35,23 +80,54 @@ class RulesForm(FlaskForm):
                                render_kw={'disabled': False})
     submit = SubmitField("Создать")
 
-    def validate_room_name(self, room_name):
+    def validate_room_name(self, room_name: StringField):
+        """
+        room_name validator
+
+        :param room_name: room name
+        :type room_name: StringField
+        :raises ValidationError: if room_name is already taken
+        """
         room_obj = GameRoom.query.filter_by(name=room_name.data).first()
         if room_obj:
             raise ValidationError('Комната с таким именем уже существует')
 
 
 class LoginRoomForm(FlaskForm):
+    """
+    LoginRoom form
+
+    :param name: room name
+    :type name: StringField
+    :param pwd: room password
+    :type pwd: PasswordField
+    :param submit: submit field
+    :type submit: SubmitField
+    """
     name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])
     pwd = PasswordField("Пароль: ", validators=[DataRequired('Поле не заполнено')])
     submit = SubmitField("Войти")
 
-    def validate_name(self, name):
+    def validate_name(self, name: StringField):
+        """
+        room_name validator
+
+        :param name: room name
+        :type name: StringField
+        :raises ValidationError: if room_name is incorrect
+        """
         room_obj = GameRoom.query.filter_by(name=name.data).first()
         if not room_obj:
             raise ValidationError('Комнаты с таким именем не существует')
 
-    def validate_pwd(self, pwd):
+    def validate_pwd(self, pwd: PasswordField):
+        """
+        room password validator
+
+        :param pwd: room password
+        :type pwd: PasswordField
+        :raises ValidationError: if room_name or password is incorrect
+        """
         room_obj: GameRoom = GameRoom.query.filter_by(name=self.name.data).first()
         if not room_obj or not room_obj.check_password(pwd.data):
             raise ValidationError('Неверная пара название/пароль')

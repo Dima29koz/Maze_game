@@ -1,0 +1,8 @@
+Maze_game
+=========
+
+.. toctree::
+   :maxdepth: 4
+
+   server
+   GameEngine

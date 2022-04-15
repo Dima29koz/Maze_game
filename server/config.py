@@ -4,6 +4,9 @@ app_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 class BaseConfig:
+    """
+    Base flask-app config object
+    """
     DEBUG = False
     CSRF_ENABLED = True
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'A SECRET KEY'
@@ -12,5 +15,8 @@ class BaseConfig:
 
 
 class DevelopmentConfig(BaseConfig):
+    """
+    Development flask-app config object
+    """
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///maze.db'

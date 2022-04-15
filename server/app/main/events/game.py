@@ -5,12 +5,22 @@ from server.app.main.models import GameRoom
 
 
 class GameNamespace(Namespace):
-    def on_join(self, data):
+    """Handle events on game page"""
+
+    def on_join(self, data: dict):
+        """
+        added user to room;
+        emits `join`
+        """
         room_name = data.get('room')
         join_room(room_name)
         emit('join', {'current_user': current_user.user_name})
 
-    def on_action(self, data):
+    def on_action(self, data: dict):
+        """
+        calculates player turn;
+        emits `turn_info`, `sys_msg`
+        """
         room_name = data.get('room')
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
         next_player, turn_data, win_data = room.on_turn(
@@ -26,7 +36,11 @@ class GameNamespace(Namespace):
             if win_data:
                 emit('sys_msg', win_data, room=room_name)
 
-    def on_check_active(self, data):
+    def on_check_active(self, data: dict):
+        """
+        check users allowed abilities;
+        emits `set_active`
+        """
         room_name = data.get('room')
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
         active_player = room.game.get_current_player()
@@ -37,7 +51,11 @@ class GameNamespace(Namespace):
                  'allowed_abilities': room.game.get_allowed_abilities_str(active_player),
              })
 
-    def on_get_history(self, data):
+    def on_get_history(self, data: dict):
+        """
+        loads game turns from db;
+        emits `set_history`
+        """
         room_name = data.get('room')
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
         emit('set_history',
@@ -45,7 +63,11 @@ class GameNamespace(Namespace):
                  'turns': room.get_turns(),
              })
 
-    def on_get_players_stat(self, data):
+    def on_get_players_stat(self, data: dict):
+        """
+        loads players stat;
+        emits `set_players_stat`
+        """
         room_name = data.get('room')
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
         emit('set_players_stat',

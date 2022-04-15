@@ -28,6 +28,20 @@ user_room = db.Table(
 
 
 class User(db.Model, UserMixin):
+    """
+    This is a User Model
+
+    :param user_name: users nickname
+    :type user_name: str
+    :param pwd: users password
+    :type user_name: str
+    :param date: date of account creation
+    :type date: DateTime
+    :param played_games: amount of user ended games
+    :type played_games: int
+    :param win_games: amount of user won games
+    :type win_games: int
+    """
     def __init__(self, user_name: str, pwd: str):
         self.user_name = user_name
         self.pwd = generate_password_hash(pwd)
@@ -46,9 +60,18 @@ class User(db.Model, UserMixin):
         return '<User %r>' % self.id
 
     def check_password(self, password: str):
+        """
+        Verified users password
+
+        :param password: user passwod
+        :type password: str
+        :return: result of verification
+        :rtype: bool
+        """
         return check_password_hash(self.pwd, password)
 
     def add(self):
+        """added user to DB"""
         try:
             db.session.add(self)
             db.session.commit()
@@ -56,12 +79,33 @@ class User(db.Model, UserMixin):
             db.session.rollback()
 
     def set_stat(self, is_winner: bool = False):
+        """Updates user stat after game"""
         if is_winner:
             self.win_games += 1
         self.played_games += 1
 
 
 class GameRoom(db.Model):
+    """
+    This is a Game Room model. Its contains information about game
+
+    :param name: name of a room
+    :type name: str
+    :param pwd: password of a room
+    :type pwd: str
+    :param rules: rules of a room
+    :type rules: dict
+    :param date: date of room creation
+    :type date: DateTime
+    :param creator_id: id of room creator
+    :type creator_id: int
+    :param game: game object
+    :type game: Game
+    :param is_running: running state
+    :type is_running: bool
+    :param is_ended: ended state
+    :type is_ended: bool
+    """
     def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator_name: str):
         self.name = name
         self.pwd = generate_password_hash(pwd)
@@ -86,9 +130,18 @@ class GameRoom(db.Model):
     turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
 
     def check_password(self, password: str):
+        """
+        Verified room password
+
+        :param password: room passwod
+        :type password: str
+        :return: result of verification
+        :rtype: bool
+        """
         return check_password_hash(self.pwd, password)
 
     def add(self):
+        """add room to DB"""
         try:
             db.session.add(self)
             db.session.commit()
@@ -96,6 +149,12 @@ class GameRoom(db.Model):
             db.session.rollback()
 
     def add_player(self, user_name: str):
+        """
+        add player to room
+
+        :return: False if there is no empty slots in a room, else True
+        :rtype: bool
+        """
         user: User = User.query.filter_by(user_name=user_name).first()
         if user in self.players:
             return True
@@ -107,19 +166,35 @@ class GameRoom(db.Model):
         return True
 
     def set_creator(self, user_name: str):
+        """set room creator"""
         user: User = User.query.filter_by(user_name=user_name).first()
         self.creator_id = user.id
         self.add_player(user_name)
 
     def add_game(self):
+        """creates Game() and add it to DB"""
         self.game = Game(self.rules)
         db.session.commit()
 
     def save(self):
+        """updates game object state in DB"""
         self.game = copy(self.game)  # fixme это затычка
         db.session.commit()
 
     def on_join(self) -> dict:
+        """
+        triggers when player (client) joins room
+
+        :return: {
+            "players": [ player.name ],
+            "players_amount": 2,
+            "bots_amount": 2,
+            "bots_name": [ bot.name ],
+            "creator": creator.name,
+            "is_ready": ready_cond,
+        }
+        :rtype: dict
+        """
         players_amount = self.rules.get('players_amount')
         players_bots = self.rules.get('bots_amount') + players_amount
         ready_cond = len(self.players) == players_amount and len(self.game.field.players) == players_bots
@@ -134,6 +209,7 @@ class GameRoom(db.Model):
         }
 
     def on_start(self):
+        """Update room state to `running`, make initial turn for each player"""
         self.game.field.sort_players()
         self.game = copy(self.game)
         self.is_running = True
@@ -142,6 +218,13 @@ class GameRoom(db.Model):
         db.session.commit()
 
     def on_turn(self, player_name: str, action: str, direction: str | None = None):
+        """
+        calculates turn feedback;
+        append turn info to DB
+
+        :returns: next player name, turn_data, win_data[Optional]
+        :rtype: (Player, dict, dict | None)
+        """
         turn_resp, next_player = self.game.make_turn(player_name, action, direction)
         is_win_condition = self.game.is_win_condition(self.rules)
         self.save()
@@ -163,14 +246,20 @@ class GameRoom(db.Model):
 
         return next_player, turn_data, win_data
 
-    def on_get_field(self):
+    def on_get_field(self) -> dict:
+        """returns field data"""
         return {
             'field': self.game.field.get_field_list(),
             'treasures': self.game.field.get_treasures_list(),
             'players': self.game.field.get_players_list(),
         }
 
-    def on_win(self, player_name: str):
+    def on_win(self, player_name: str) -> dict:
+        """
+        Switch game state to ended;
+        update player stat
+        makes `system turn`
+        """
         self.is_running = False
         self.is_ended = True
         for player in self.players:
@@ -183,11 +272,28 @@ class GameRoom(db.Model):
         }
         return win_data
 
-    def get_turns(self):
+    def get_turns(self) -> list[dict]:
+        """returns list of game turns"""
         return [turn.to_dict() for turn in self.turn_info]
 
 
 class TurnInfo(db.Model):
+    """
+    This is a TurnInfo model
+
+    :param player_name: current player name
+    :type player_name: str
+    :param game_room_id: current room id
+    :type game_room_id: int
+    :param action: current player action
+    :type action: str
+    :param direction: current player direction
+    :type direction: str
+    :param turn_response: turns feedback
+    :type turn_response: str
+    :param date: date of turn
+    :type date: DateTime
+    """
     def __init__(self, room_id: int, info: dict, response: str):
         self.game_room_id = room_id
         self.player_name = info.get('player_name')
@@ -205,10 +311,12 @@ class TurnInfo(db.Model):
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def save(self):
+        """save turn to DB"""
         db.session.add(self)
         db.session.commit()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """returns turn info converted to dict"""
         return {
             'player': self.player_name,
             'action': self.action,

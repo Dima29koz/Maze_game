@@ -1,3 +1,7 @@
+"""
+Initialization of BluePrints
+"""
+
 from flask import Blueprint
 
 main = Blueprint('main', __name__)
