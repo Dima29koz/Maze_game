@@ -1,6 +1,14 @@
 GameEngine package
 ==================
 
+.. toctree::
+   :maxdepth: 4
+
+   GameEngine.entities
+   GameEngine.field
+   GameEngine.field_generator
+   GameEngine.globalEnv
+
 GameEngine.app module
 ---------------------
 
