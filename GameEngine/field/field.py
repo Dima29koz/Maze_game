@@ -12,6 +12,22 @@ from GameEngine.bot_names import bots as data_bots
 
 
 class Field:
+    """
+    This is a Field object.
+
+    It contains logic for interaction with game objects
+
+    :param gameplay_rules: gameplay rules
+    :type gameplay_rules: dict
+    :param field: game field
+    :type field: list[list[Cell | None]]
+    :param exit_cell: exit cell object
+    :type exit_cell: Cell
+    :param treasures: treasures dropped on filed
+    :type treasures: list[Treasure]
+    :param players: players
+    :type players: list[Player]
+    """
     def __init__(self, rules: dict):
         self.gameplay_rules = rules['gameplay_rules']
         generator = FieldGenerator(rules['generator_rules'])
@@ -21,7 +37,12 @@ class Field:
         self.players: list[Player] = []
         self._active_player_idx = 0
 
-    def spawn_bots(self, bots_amount: int):
+    def spawn_bots(self, bots_amount: int) -> list[Player]:
+        """
+        spawn bots by bots_amount.
+
+        Each bot has random spawn point
+        """
         bots = []
         bot_names = sample(data_bots, bots_amount)
         for i in range(bots_amount):
@@ -31,7 +52,13 @@ class Field:
             bots.append(Player(spawn_cell, bot_names[i], True))
         return bots
 
-    def spawn_player(self, spawn_point: dict, name: str, turn: int):
+    def spawn_player(self, spawn_point: dict, name: str, turn: int) -> bool:
+        """
+        Spawns player object with given spawn point, name, and turn order
+
+        :returns: True if player can be spawned, else False
+        :rtype: bool
+        """
         player = Player(self.field[spawn_point.get('y')][spawn_point.get('x')], name, turn=turn)
         if player not in self.players:
             self.players.append(player)
@@ -39,22 +66,27 @@ class Field:
         return False
 
     def sort_players(self):
+        """sort players by turn order and .is_bot attribute"""
         self.players.sort(key=attrgetter('is_bot', 'turn'))
         self.players[0].is_active = True
 
     def get_alive_pl_amount(self) -> int:
+        """returns amount of alive players"""
         return len([player for player in self.players if player.is_alive])
 
     def get_active_player(self) -> Player:
+        """returns active Player object"""
         return self.players[self._active_player_idx]
 
     def get_player_allowed_abilities(self, player: Player) -> dict[Actions, bool] | None:
+        """returns dict of player abilities"""
         if player != self.get_active_player():
             return
         is_treasures_under = True if self._treasures_on_cell(player.cell) else False
         return player.get_allowed_abilities(is_treasures_under)
 
     def get_treasures_on_exit(self) -> list[Treasure] | None:
+        """returns list of treasures on exit cell"""
         treasures = self._treasures_on_cell(self.exit_cell)
         [self.treasures.remove(treasure) for treasure in treasures]
         return treasures
@@ -77,6 +109,7 @@ class Field:
                 for player in self.players if player.is_alive]
 
     def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
+        """handle player action"""
         action_to_handler = {
             Actions.swap_treasure: self._treasure_swap_handler,
             Actions.shoot_bow: self._shooting_handler,

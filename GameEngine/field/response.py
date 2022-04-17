@@ -29,6 +29,20 @@ info = {
 
 
 class RespHandler:
+    """
+    Base Response handler object
+
+    :param treasures: list of treasures on turn-end cell
+    :type treasures: list[TreasureTypes]
+    :param cell_at_end_of_turn: players location cell on turn-end
+    :type cell_at_end_of_turn: Cell | None
+    :param player_name: name of active player
+    :type player_name: str
+    :param action: players action
+    :type action: str
+    :param direction: players direction
+    :type direction: str
+    """
     def __init__(self):
         self.treasures: list[TreasureTypes] = []
         self.cell_at_end_of_turn: Cell | None = None
@@ -37,15 +51,18 @@ class RespHandler:
         self.direction: str = ''
 
     def set_info(self, turn_end_cell: Cell, treasures: list[TreasureTypes]):
+        """Update location and treasures"""
         self.cell_at_end_of_turn = turn_end_cell
         self.treasures = treasures
 
     def update_turn_info(self, player_name: str, action_name: str, direction_name: str):
+        """Update player name, action, direction"""
         self.player_name = player_name
         self.action = action_name
         self.direction = direction_name
 
-    def get_info(self):
+    def get_info(self) -> str:
+        """returns turn info converted to str"""
         res = ''
         if len(self.treasures) > 0:
             if type(self.cell_at_end_of_turn) == CellExit:
@@ -58,7 +75,8 @@ class RespHandler:
             res += f', {mechanics_resp}'
         return res
 
-    def get_turn_info(self):
+    def get_turn_info(self) -> dict:
+        """returns turn info converted to dict"""
         return {'player_name': self.player_name, 'action': self.action, 'direction': self.direction}
 
     @staticmethod
@@ -67,6 +85,9 @@ class RespHandler:
 
 
 class RespHandlerSkip(RespHandler):
+    """
+    Response handler object for action Skip
+    """
     def __init__(self):
         super().__init__()
 
@@ -76,6 +97,9 @@ class RespHandlerSkip(RespHandler):
 
 
 class RespHandlerSwapTreasure(RespHandler):
+    """
+    Response handler object for action SwapTreasure
+    """
     def __init__(self, has_treasure: bool):
         super().__init__()
         self.has_treasure = has_treasure
@@ -85,6 +109,9 @@ class RespHandlerSwapTreasure(RespHandler):
 
 
 class RespHandlerShootBow(RespHandlerSkip):
+    """
+    Response handler object for action ShootBow
+    """
     def __init__(self,
                  damaged_players: list[Player] = None,
                  dead_players: list[Player] = None,
@@ -112,6 +139,9 @@ class RespHandlerShootBow(RespHandlerSkip):
 
 
 class RespHandlerBombing(RespHandlerSkip):
+    """
+    Response handler object for action Bombing
+    """
     def __init__(self, damaged_wall_type: WallEmpty):
         super().__init__()
         self.damaged_wall = damaged_wall_type
@@ -122,6 +152,9 @@ class RespHandlerBombing(RespHandlerSkip):
 
 
 class RespHandlerMoving(RespHandler):
+    """
+    Response handler object for action Move
+    """
     def __init__(self, wall_type: Type[WallEmpty], cell_after_wall_check: Cell):
         super().__init__()
         self.wall_type = wall_type
@@ -136,6 +169,9 @@ class RespHandlerMoving(RespHandler):
 
 
 class RespHandlerInfo(RespHandler):
+    """
+    Response handler object for action Info
+    """
     def __init__(self):
         super().__init__()
 

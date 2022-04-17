@@ -1,8 +1,23 @@
+from typing import Type
+
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.field.wall import WallEmpty, WallOuter, WallEntrance
 
 
 class Cell:
+    """
+    Base Cell object
+
+    :param x: x coordinate of cell
+    :type x: int
+    :param y: y coordinate of cell
+    :type y: int
+    :param neighbours: neighbours of cell
+    :type neighbours: dict[Directions, Cell | None]
+    :param walls: walls of cell
+    :type walls: dict[Directions, WallEmpty]
+
+    """
     def __init__(self, x: int, y: int):
         self.x, self.y = x, y
         self.neighbours: dict[Directions, Cell | None] = {
@@ -16,17 +31,19 @@ class Cell:
             Directions.bottom: WallEmpty(),
             Directions.left: WallEmpty()}
 
-    def change_neighbours(self, neighbours):
+    def change_neighbours(self, neighbours: dict):
+        """set cell neighbours"""
         self.neighbours = neighbours
 
-    def add_wall(self, direction, wall):
+    def add_wall(self, direction: Directions, wall: WallEmpty):
+        """add wall by direction"""
         self.walls[direction] = wall
 
     def break_wall(self, direction: Directions) -> WallEmpty:
         """
-        Уничтожает стену в заданном направлении если стена разрушима
+        Break wall by direction if wall is breakable
 
-        :return: hit wall
+        :return: wall that was broken
         """
         wall = self.walls[direction]
         if self.walls[direction].breakable:
@@ -37,18 +54,23 @@ class Cell:
         return wall
 
     def idle(self, previous_cell):
+        """idle handler"""
         return self
 
     def active(self, previous_cell):
+        """active handler"""
         return self.idle(previous_cell)
 
     def treasure_movement(self):
+        """treasure movement handler"""
         return self
 
-    def check_wall(self, direction: Directions):
+    def check_wall(self, direction: Directions) -> tuple[bool, bool, Type[WallEmpty]]:
+        """return wall attributes"""
         return self.walls[direction].handler()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """converts cell to dict"""
         return {
             'type': self.__class__.__name__,
             'x': self.x,
@@ -71,7 +93,8 @@ class Cell:
 
 
 class CellRiver(Cell):
-    def __init__(self, x, y):
+    """River cell object"""
+    def __init__(self, x: int, y: int):
         super().__init__(x, y)
         self.river = []
 
@@ -116,7 +139,8 @@ class CellRiver(Cell):
 
 
 class CellRiverMouth(CellRiver):
-    def __init__(self, x, y):
+    """River Mouth cell object"""
+    def __init__(self, x: int, y: int):
         super().__init__(x, y)
 
     def idle(self, previous_cell):
@@ -130,7 +154,8 @@ class CellRiverMouth(CellRiver):
 
 
 class CellExit(Cell):
-    def __init__(self, x, y, direction, cell):
+    """Exit cell object"""
+    def __init__(self, x: int, y: int, direction: Directions, cell):
         super().__init__(x, y)
         self.neighbours[direction] = cell
         self.walls = {
@@ -146,7 +171,8 @@ class CellExit(Cell):
 
 
 class CellClinic(Cell):
-    def __init__(self, x, y):
+    """Clinic cell object"""
+    def __init__(self, x: int, y: int):
         super().__init__(x, y)
 
     def idle(self, previous_cell):
@@ -157,7 +183,8 @@ class CellClinic(Cell):
 
 
 class CellArmory(Cell):
-    def __init__(self, x, y):
+    """Armory cell object"""
+    def __init__(self, x: int, y: int):
         super().__init__(x, y)
 
     def idle(self, previous_cell):
@@ -168,7 +195,8 @@ class CellArmory(Cell):
 
 
 class CellArmoryWeapon(CellArmory):
-    def __init__(self, x, y):
+    """Armory Weapon cell object"""
+    def __init__(self, x: int, y: int):
         super().__init__(x, y)
 
     def idle(self, previous_cell):
@@ -179,7 +207,8 @@ class CellArmoryWeapon(CellArmory):
 
 
 class CellArmoryExplosive(CellArmory):
-    def __init__(self, x, y):
+    """Armory Explosive cell object"""
+    def __init__(self, x: int, y: int):
         super().__init__(x, y)
 
     def idle(self, previous_cell):

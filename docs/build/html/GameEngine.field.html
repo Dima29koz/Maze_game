@@ -272,70 +272,75 @@
 <dt class="sig sig-object py" id="GameEngine.field.field.Field">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.field.</span></span><span class="sig-name descname"><span class="pre">Field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a Field object.</p>
+<p>It contains logic for interaction with game objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gameplay_rules</strong> (<em>dict</em>) – gameplay rules</p></li>
+<li><p><strong>field</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a><em> | </em><em>None</em><em>]</em><em>]</em>) – game field</p></li>
+<li><p><strong>exit_cell</strong> (<a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a>) – exit cell object</p></li>
+<li><p><strong>treasures</strong> (<em>list</em><em>[</em><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.treasure.Treasure" title="GameEngine.entities.treasure.Treasure"><em>Treasure</em></a><em>]</em>) – treasures dropped on filed</p></li>
+<li><p><strong>players</strong> (<em>list</em><em>[</em><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><em>Player</em></a><em>]</em>) – players</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.action_handler">
 <span class="sig-name descname"><span class="pre">action_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Actions" title="GameEngine.globalEnv.enums.Actions"><span class="pre">GameEngine.globalEnv.enums.Actions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><span class="pre">GameEngine.field.response.RespHandler</span></a></span></span><a class="headerlink" href="#GameEngine.field.field.Field.action_handler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>handle player action</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.get_active_player">
 <span class="sig-name descname"><span class="pre">get_active_player</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></span><a class="headerlink" href="#GameEngine.field.field.Field.get_active_player" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns active Player object</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.get_alive_pl_amount">
 <span class="sig-name descname"><span class="pre">get_alive_pl_amount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#GameEngine.field.field.Field.get_alive_pl_amount" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.field.Field.get_field_list">
-<span class="sig-name descname"><span class="pre">get_field_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.get_field_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.field.Field.get_field_pattern_list">
-<span class="sig-name descname"><span class="pre">get_field_pattern_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.get_field_pattern_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns amount of alive players</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.get_player_allowed_abilities">
 <span class="sig-name descname"><span class="pre">get_player_allowed_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Actions" title="GameEngine.globalEnv.enums.Actions"><span class="pre">GameEngine.globalEnv.enums.Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#GameEngine.field.field.Field.get_player_allowed_abilities" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.field.Field.get_players_list">
-<span class="sig-name descname"><span class="pre">get_players_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.get_players_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.field.Field.get_players_stat">
-<span class="sig-name descname"><span class="pre">get_players_stat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GameEngine.field.field.Field.get_players_stat" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.field.Field.get_treasures_list">
-<span class="sig-name descname"><span class="pre">get_treasures_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.get_treasures_list" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns dict of player abilities</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.get_treasures_on_exit">
 <span class="sig-name descname"><span class="pre">get_treasures_on_exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.treasure.Treasure" title="GameEngine.entities.treasure.Treasure"><span class="pre">GameEngine.entities.treasure.Treasure</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#GameEngine.field.field.Field.get_treasures_on_exit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns list of treasures on exit cell</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.sort_players">
 <span class="sig-name descname"><span class="pre">sort_players</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.sort_players" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>sort players by turn order and .is_bot attribute</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.spawn_bots">
-<span class="sig-name descname"><span class="pre">spawn_bots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bots_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.spawn_bots" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">spawn_bots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bots_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GameEngine.field.field.Field.spawn_bots" title="Permalink to this definition">¶</a></dt>
+<dd><p>spawn bots by bots_amount.</p>
+<p>Each bot has random spawn point</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.spawn_player">
-<span class="sig-name descname"><span class="pre">spawn_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spawn_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.spawn_player" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">spawn_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spawn_point</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#GameEngine.field.field.Field.spawn_player" title="Permalink to this definition">¶</a></dt>
+<dd><p>Spawns player object with given spawn point, name, and turn order</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if player can be spawned, else False</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -346,25 +351,41 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandler">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandler</span></span><a class="headerlink" href="#GameEngine.field.response.RespHandler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base Response handler object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>treasures</strong> (<em>list</em><em>[</em><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.TreasureTypes" title="GameEngine.globalEnv.enums.TreasureTypes"><em>TreasureTypes</em></a><em>]</em>) – list of treasures on turn-end cell</p></li>
+<li><p><strong>cell_at_end_of_turn</strong> (<a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a><em> | </em><em>None</em>) – players location cell on turn-end</p></li>
+<li><p><strong>player_name</strong> (<em>str</em>) – name of active player</p></li>
+<li><p><strong>action</strong> (<em>str</em>) – players action</p></li>
+<li><p><strong>direction</strong> (<em>str</em>) – players direction</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandler.get_info">
-<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandler.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#GameEngine.field.response.RespHandler.get_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandler.get_turn_info">
-<span class="sig-name descname"><span class="pre">get_turn_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandler.get_turn_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">get_turn_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#GameEngine.field.response.RespHandler.get_turn_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns turn info converted to dict</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandler.set_info">
 <span class="sig-name descname"><span class="pre">set_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">turn_end_cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><span class="pre">GameEngine.field.cell.Cell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">treasures</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.TreasureTypes" title="GameEngine.globalEnv.enums.TreasureTypes"><span class="pre">GameEngine.globalEnv.enums.TreasureTypes</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandler.set_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update location and treasures</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandler.update_turn_info">
 <span class="sig-name descname"><span class="pre">update_turn_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandler.update_turn_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update player name, action, direction</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -372,10 +393,12 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerBombing">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandlerBombing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">damaged_wall_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GameEngine.field.wall.WallEmpty" title="GameEngine.field.wall.WallEmpty"><span class="pre">GameEngine.field.wall.WallEmpty</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerBombing" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.response.RespHandlerSkip" title="GameEngine.field.response.RespHandlerSkip"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.response.RespHandlerSkip</span></code></a></p>
+<p>Response handler object for action Bombing</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerBombing.get_info">
 <span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerBombing.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -383,10 +406,12 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerInfo">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandlerInfo</span></span><a class="headerlink" href="#GameEngine.field.response.RespHandlerInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.response.RespHandler</span></code></a></p>
+<p>Response handler object for action Info</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerInfo.get_info">
 <span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerInfo.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -394,10 +419,12 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerMoving">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandlerMoving</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wall_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#GameEngine.field.wall.WallEmpty" title="GameEngine.field.wall.WallEmpty"><span class="pre">GameEngine.field.wall.WallEmpty</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_after_wall_check</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><span class="pre">GameEngine.field.cell.Cell</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerMoving" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.response.RespHandler</span></code></a></p>
+<p>Response handler object for action Move</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerMoving.get_info">
 <span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerMoving.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -405,10 +432,12 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerShootBow">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandlerShootBow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">damaged_players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dead_players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lost_treasure_players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerShootBow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.response.RespHandlerSkip" title="GameEngine.field.response.RespHandlerSkip"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.response.RespHandlerSkip</span></code></a></p>
+<p>Response handler object for action ShootBow</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerShootBow.get_info">
 <span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerShootBow.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -416,10 +445,12 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerSkip">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandlerSkip</span></span><a class="headerlink" href="#GameEngine.field.response.RespHandlerSkip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.response.RespHandler</span></code></a></p>
+<p>Response handler object for action Skip</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerSkip.get_info">
 <span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerSkip.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -427,10 +458,12 @@
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerSwapTreasure">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.response.</span></span><span class="sig-name descname"><span class="pre">RespHandlerSwapTreasure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">has_treasure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerSwapTreasure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.response.RespHandler</span></code></a></p>
+<p>Response handler object for action SwapTreasure</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GameEngine.field.response.RespHandlerSwapTreasure.get_info">
 <span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.response.RespHandlerSwapTreasure.get_info" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>returns turn info converted to str</p>
+</dd></dl>
 
 </dd></dl>
 
