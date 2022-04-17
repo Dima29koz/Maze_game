@@ -9,6 +9,11 @@ from GameEngine.field.wall import *
 
 
 class FieldGenerator:
+    """
+    This is Field generator object
+
+    Its generate game-field with given rules
+    """
     def __init__(self, generator_rules: dict):
         self.rows = generator_rules['rows']
         self.cols = generator_rules['cols']
@@ -18,30 +23,33 @@ class FieldGenerator:
         self.field: list[list[Cell | None]] = [[]]
         self.treasures: list[Treasure] = []
         self.exit_cell: CellExit | None = None
-        self.generate_field(rules=generator_rules)
+        self._generate_field(rules=generator_rules)
 
     def get_field(self):
+        """returns generated field"""
         return self.field
 
     def get_treasures(self):
+        """returns generated treasures"""
         return self.treasures
 
     def get_exit_cell(self):
+        """returns generated exit-cell"""
         return self.exit_cell
 
-    def generate_field(self, rules):
-        self.generate_pattern(rules['is_rect'])
-        self.generate_base_field()
-        self.rivers = self.generate_rivers(rules['river_rules'])
-        self.generate_armory(rules['armory'])
-        self.generate_clinic()
-        self.treasures = self.spawn_treasures(rules['treasures'])
-        self.generate_connections()
-        outer_cells = self.generate_outer_walls()
-        self.generate_walls(rules['walls'])
-        self.exit_cell = self.create_exit(outer_cells)
+    def _generate_field(self, rules):
+        self._generate_pattern(rules['is_rect'])
+        self._generate_base_field()
+        self.rivers = self._generate_rivers(rules['river_rules'])
+        self._generate_armory(rules['armory'])
+        self._generate_clinic()
+        self.treasures = self._spawn_treasures(rules['treasures'])
+        self._generate_connections()
+        outer_cells = self._generate_outer_walls()
+        self._generate_walls(rules['walls'])
+        self.exit_cell = self._create_exit(outer_cells)
 
-    def generate_pattern(self, is_rect: bool):
+    def _generate_pattern(self, is_rect: bool):
         """
         Создает форму уровня
         """
@@ -52,7 +60,7 @@ class FieldGenerator:
             self.pattern[3][4].is_not_none = False
             self.pattern[1][2].is_not_none = False
 
-    def generate_base_field(self):
+    def _generate_base_field(self):
         self.field = [[Cell(col, row) if self.pattern[row][col].is_not_none else None
                        for col in range(self.cols)] for row in range(self.rows)]
 
@@ -63,11 +71,11 @@ class FieldGenerator:
                     ground_cells.append(self.field[row][col])
         self.ground_cells = ground_cells
 
-    def generate_rivers(self, river_rules: list[int]):
+    def _generate_rivers(self, river_rules: list[int]):
         rg = RiverGenerator(self.cols, self.rows, self.pattern, self.field, self.ground_cells)
         return rg.spawn_rivers(river_rules)
 
-    def generate_armory(self, armory_rules: bool):
+    def _generate_armory(self, armory_rules: bool):
         """
         :param armory_rules: True if needed 2 different types
         """
@@ -83,12 +91,12 @@ class FieldGenerator:
             self.field[cell.y][cell.x] = CellArmory(cell.x, cell.y)
             self.ground_cells.remove(cell)
 
-    def generate_clinic(self):
+    def _generate_clinic(self):
         cell = choice(self.ground_cells)
         self.field[cell.y][cell.x] = CellClinic(cell.x, cell.y)
         self.ground_cells.remove(cell)
 
-    def generate_connections(self):
+    def _generate_connections(self):
         for row in range(0, self.rows):
             for col in range(0, self.cols):
                 if self.field[row][col] is not None:
@@ -102,7 +110,7 @@ class FieldGenerator:
 
                     self.field[row][col].change_neighbours(neighbours)
 
-    def generate_walls(self, wall_rules):  # todo
+    def _generate_walls(self, wall_rules):  # todo
         if not wall_rules.get('has_walls'):
             return
         cells = []
@@ -117,15 +125,15 @@ class FieldGenerator:
                 if not isinstance(cell.walls[direction], WallOuter):
                     cell.add_wall(direction, WallConcrete())
                     cell.neighbours[direction].add_wall(-direction, WallConcrete())
-        self.wall_fix()
+        self._wall_fix()
 
-    def wall_fix(self):
+    def _wall_fix(self):
         for river in self.rivers:
             for i in range(len(river)-1):
                 direction = river[i] - river[i+1]
                 river[i].break_wall(direction)
 
-    def generate_outer_walls(self):
+    def _generate_outer_walls(self):
         outer_cells = set()
         for row in range(0, self.rows):
             for col in range(0, self.cols):
@@ -138,7 +146,7 @@ class FieldGenerator:
         return list(outer_cells)
 
     @staticmethod
-    def create_exit(outer_cells):
+    def _create_exit(outer_cells):
         cell = choice(outer_cells)
         dirs = []
         for direction in Directions:
@@ -150,7 +158,7 @@ class FieldGenerator:
         cell.neighbours.update({direction: exit_cell})
         return exit_cell
 
-    def spawn_treasures(self, treasures_rules: list[int]):
+    def _spawn_treasures(self, treasures_rules: list[int]):
         treasures = []
 
         treasure_cells = set()
