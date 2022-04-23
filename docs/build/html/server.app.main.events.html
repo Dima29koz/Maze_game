@@ -17,7 +17,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="GameEngine package" href="GameEngine.html" />
+    <link rel="next" title="server.app.api package" href="server.app.api.html" />
     <link rel="prev" title="server.app.main package" href="server.app.main.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="GameEngine.html" title="GameEngine package"
+          <a href="server.app.api.html" title="server.app.api package"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="server.app.main.html" title="server.app.main package"
@@ -60,35 +60,20 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_action">
 <span class="sig-name descname"><span class="pre">on_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculates player turn;
-emits <cite>turn_info</cite>, <cite>sys_msg</cite></p>
+<dd><p>handle player`s turn;
+emits <cite>turn_info</cite>, <cite>win_msg</cite></p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_check_active">
-<span class="sig-name descname"><span class="pre">on_check_active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_check_active" title="Permalink to this definition">¶</a></dt>
-<dd><p>check users allowed abilities;
-emits <cite>set_active</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_get_history">
-<span class="sig-name descname"><span class="pre">on_get_history</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_get_history" title="Permalink to this definition">¶</a></dt>
-<dd><p>loads game turns from db;
-emits <cite>set_history</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_get_players_stat">
-<span class="sig-name descname"><span class="pre">on_get_players_stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_get_players_stat" title="Permalink to this definition">¶</a></dt>
-<dd><p>loads players stat;
-emits <cite>set_players_stat</cite></p>
+<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_get_allowed_abilities">
+<span class="sig-name descname"><span class="pre">on_get_allowed_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_get_allowed_abilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>emits <cite>set_allowed_abilities</cite> with data[is_active, allowed_abilities]</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_join">
 <span class="sig-name descname"><span class="pre">on_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_join" title="Permalink to this definition">¶</a></dt>
-<dd><p>added user to room;
+<dd><p>added user to socketIO room;
 emits <cite>join</cite></p>
 </dd></dl>
 
@@ -164,8 +149,8 @@ emits <cite>start</cite></p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="GameEngine.html"
-                          title="next chapter">GameEngine package</a></p>
+    <p class="topless"><a href="server.app.api.html"
+                          title="next chapter">server.app.api package</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -198,7 +183,7 @@ emits <cite>start</cite></p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="GameEngine.html" title="GameEngine package"
+          <a href="server.app.api.html" title="server.app.api package"
              >next</a> |</li>
         <li class="right" >
           <a href="server.app.main.html" title="server.app.main package"
