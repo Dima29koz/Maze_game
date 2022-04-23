@@ -9,13 +9,13 @@ class RegistrationForm(FlaskForm):
     """
     Registration form
 
-    :param username: user nickname
+    :cvar username: user nickname
     :type username: StringField
-    :param pwd: user password
+    :cvar pwd: user password
     :type pwd: PasswordField
-    :param pwd2: user password repeat
+    :cvar pwd2: user password repeat
     :type pwd2: PasswordField
-    :param submit: submit field
+    :cvar submit: submit field
     :type submit: SubmitField
     """
     username = StringField('Никнейм: ')
@@ -41,13 +41,13 @@ class LoginForm(FlaskForm):
     """
     Login form
 
-    :param name: user nickname
+    :cvar name: user nickname
     :type name: StringField
-    :param pwd: user password
+    :cvar pwd: user password
     :type pwd: PasswordField
-    :param remember: remembers users for the duration of the session
+    :cvar remember: remembers users for the duration of the session
     :type remember: BooleanField
-    :param submit: submit field
+    :cvar submit: submit field
     :type submit: SubmitField
     """
     name = StringField("Никнейм: ", validators=[DataRequired('Поле не заполнено')])
@@ -60,15 +60,15 @@ class RulesForm(FlaskForm):
     """
     Rules form
 
-    :param room_name: room name
+    :cvar room_name: room name
     :type room_name: StringField
-    :param pwd: room password
+    :cvar pwd: room password
     :type pwd: PasswordField
-    :param players_amount: amount of players in a room
+    :cvar players_amount: amount of players in a room
     :type players_amount: IntegerField
-    :param bots_amount: amount of players in a room
+    :cvar bots_amount: amount of players in a room
     :type bots_amount: IntegerField
-    :param submit: submit field
+    :cvar submit: submit field
     :type submit: SubmitField
     """
     room_name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])
@@ -97,11 +97,11 @@ class LoginRoomForm(FlaskForm):
     """
     LoginRoom form
 
-    :param name: room name
+    :cvar name: room name
     :type name: StringField
-    :param pwd: room password
+    :cvar pwd: room password
     :type pwd: PasswordField
-    :param submit: submit field
+    :cvar submit: submit field
     :type submit: SubmitField
     """
     name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])

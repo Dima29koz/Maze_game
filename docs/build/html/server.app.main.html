@@ -67,12 +67,12 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
 <p>Login form</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>StringField</em>) – user nickname</p></li>
-<li><p><strong>pwd</strong> (<em>PasswordField</em>) – user password</p></li>
-<li><p><strong>remember</strong> (<em>BooleanField</em>) – remembers users for the duration of the session</p></li>
-<li><p><strong>submit</strong> (<em>SubmitField</em>) – submit field</p></li>
+<li><p><strong>name</strong> – user nickname</p></li>
+<li><p><strong>pwd</strong> – user password</p></li>
+<li><p><strong>remember</strong> – remembers users for the duration of the session</p></li>
+<li><p><strong>submit</strong> – submit field</p></li>
 </ul>
 </dd>
 </dl>
@@ -84,11 +84,11 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
 <p>LoginRoom form</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>StringField</em>) – room name</p></li>
-<li><p><strong>pwd</strong> (<em>PasswordField</em>) – room password</p></li>
-<li><p><strong>submit</strong> (<em>SubmitField</em>) – submit field</p></li>
+<li><p><strong>name</strong> – room name</p></li>
+<li><p><strong>pwd</strong> – room password</p></li>
+<li><p><strong>submit</strong> – submit field</p></li>
 </ul>
 </dd>
 </dl>
@@ -128,12 +128,12 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
 <p>Registration form</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>username</strong> (<em>StringField</em>) – user nickname</p></li>
-<li><p><strong>pwd</strong> (<em>PasswordField</em>) – user password</p></li>
-<li><p><strong>pwd2</strong> (<em>PasswordField</em>) – user password repeat</p></li>
-<li><p><strong>submit</strong> (<em>SubmitField</em>) – submit field</p></li>
+<li><p><strong>username</strong> – user nickname</p></li>
+<li><p><strong>pwd</strong> – user password</p></li>
+<li><p><strong>pwd2</strong> – user password repeat</p></li>
+<li><p><strong>submit</strong> – submit field</p></li>
 </ul>
 </dd>
 </dl>
@@ -159,13 +159,13 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
 <p>Rules form</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>room_name</strong> (<em>StringField</em>) – room name</p></li>
-<li><p><strong>pwd</strong> (<em>PasswordField</em>) – room password</p></li>
-<li><p><strong>players_amount</strong> (<em>IntegerField</em>) – amount of players in a room</p></li>
-<li><p><strong>bots_amount</strong> (<em>IntegerField</em>) – amount of players in a room</p></li>
-<li><p><strong>submit</strong> (<em>SubmitField</em>) – submit field</p></li>
+<li><p><strong>room_name</strong> – room name</p></li>
+<li><p><strong>pwd</strong> – room password</p></li>
+<li><p><strong>players_amount</strong> – amount of players in a room</p></li>
+<li><p><strong>bots_amount</strong> – amount of players in a room</p></li>
+<li><p><strong>submit</strong> – submit field</p></li>
 </ul>
 </dd>
 </dl>
@@ -198,12 +198,16 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – name of a room</p></li>
 <li><p><strong>pwd</strong> (<em>str</em>) – password of a room</p></li>
-<li><p><strong>rules</strong> (<em>dict</em>) – rules of a room</p></li>
-<li><p><strong>date</strong> (<em>DateTime</em>) – date of room creation</p></li>
-<li><p><strong>creator_id</strong> (<em>int</em>) – id of room creator</p></li>
-<li><p><strong>game</strong> (<a class="reference internal" href="GameEngine.html#GameEngine.game.Game" title="GameEngine.game.Game"><em>Game</em></a>) – game object</p></li>
-<li><p><strong>is_running</strong> (<em>bool</em>) – running state</p></li>
-<li><p><strong>is_ended</strong> (<em>bool</em>) – ended state</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>rules</strong> – rules of a room</p></li>
+<li><p><strong>date</strong> – date of room creation</p></li>
+<li><p><strong>creator_id</strong> – id of room creator</p></li>
+<li><p><strong>game</strong> – game object</p></li>
+<li><p><strong>is_running</strong> – running state</p></li>
+<li><p><strong>is_ended</strong> – ended state</p></li>
 </ul>
 </dd>
 </dl>
@@ -268,18 +272,12 @@
 <dd><p>triggers when player (client) joins room</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><p>{
-“players”: [ player.name ],
-“players_amount”: 2,
-“bots_amount”: 2,
-“bots_name”: [ bot.name ],
-“creator”: creator.name,
-“is_ready”: ready_cond,</p>
-</p>
+<dd class="field-odd"><p>room data dict</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
 </dd>
 </dl>
-<p>}
-:rtype: dict</p>
 </dd></dl>
 
 <dl class="py method">
@@ -331,14 +329,14 @@ makes <cite>system turn</cite></p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Model</span></code></p>
 <p>This is a TurnInfo model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>player_name</strong> (<em>str</em>) – current player name</p></li>
-<li><p><strong>game_room_id</strong> (<em>int</em>) – current room id</p></li>
-<li><p><strong>action</strong> (<em>str</em>) – current player action</p></li>
-<li><p><strong>direction</strong> (<em>str</em>) – current player direction</p></li>
-<li><p><strong>turn_response</strong> (<em>str</em>) – turns feedback</p></li>
-<li><p><strong>date</strong> (<em>DateTime</em>) – date of turn</p></li>
+<li><p><strong>player_name</strong> – current player name</p></li>
+<li><p><strong>game_room_id</strong> – current room id</p></li>
+<li><p><strong>action</strong> – current player action</p></li>
+<li><p><strong>direction</strong> – current player direction</p></li>
+<li><p><strong>turn_response</strong> – turns feedback</p></li>
+<li><p><strong>date</strong> – date of turn</p></li>
 </ul>
 </dd>
 </dl>
@@ -366,9 +364,13 @@ makes <cite>system turn</cite></p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_name</strong> (<em>str</em>) – users nickname</p></li>
 <li><p><strong>pwd</strong> – users password</p></li>
-<li><p><strong>date</strong> (<em>DateTime</em>) – date of account creation</p></li>
-<li><p><strong>played_games</strong> (<em>int</em>) – amount of user ended games</p></li>
-<li><p><strong>win_games</strong> (<em>int</em>) – amount of user won games</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>date</strong> – date of account creation</p></li>
+<li><p><strong>played_games</strong> – amount of user ended games</p></li>
+<li><p><strong>win_games</strong> – amount of user won games</p></li>
 </ul>
 </dd>
 </dl>

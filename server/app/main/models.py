@@ -35,11 +35,11 @@ class User(db.Model, UserMixin):
     :type user_name: str
     :param pwd: users password
     :type user_name: str
-    :param date: date of account creation
+    :cvar date: date of account creation
     :type date: DateTime
-    :param played_games: amount of user ended games
+    :cvar played_games: amount of user ended games
     :type played_games: int
-    :param win_games: amount of user won games
+    :cvar win_games: amount of user won games
     :type win_games: int
     """
     def __init__(self, user_name: str, pwd: str):
@@ -61,9 +61,9 @@ class User(db.Model, UserMixin):
 
     def check_password(self, password: str):
         """
-        Verified users password
+        Verified users password.
 
-        :param password: user passwod
+        :param password: user password
         :type password: str
         :return: result of verification
         :rtype: bool
@@ -93,17 +93,17 @@ class GameRoom(db.Model):
     :type name: str
     :param pwd: password of a room
     :type pwd: str
-    :param rules: rules of a room
+    :cvar rules: rules of a room
     :type rules: dict
-    :param date: date of room creation
+    :cvar date: date of room creation
     :type date: DateTime
-    :param creator_id: id of room creator
+    :cvar creator_id: id of room creator
     :type creator_id: int
-    :param game: game object
+    :cvar game: game object
     :type game: Game
-    :param is_running: running state
+    :cvar is_running: running state
     :type is_running: bool
-    :param is_ended: ended state
+    :cvar is_ended: ended state
     :type is_ended: bool
     """
     def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator_name: str):
@@ -133,7 +133,7 @@ class GameRoom(db.Model):
         """
         Verified room password
 
-        :param password: room passwod
+        :param password: room password
         :type password: str
         :return: result of verification
         :rtype: bool
@@ -185,14 +185,7 @@ class GameRoom(db.Model):
         """
         triggers when player (client) joins room
 
-        :return: {
-            "players": [ player.name ],
-            "players_amount": 2,
-            "bots_amount": 2,
-            "bots_name": [ bot.name ],
-            "creator": creator.name,
-            "is_ready": ready_cond,
-        }
+        :return: room data dict
         :rtype: dict
         """
         players_amount = self.rules.get('players_amount')
@@ -281,17 +274,17 @@ class TurnInfo(db.Model):
     """
     This is a TurnInfo model
 
-    :param player_name: current player name
+    :cvar player_name: current player name
     :type player_name: str
-    :param game_room_id: current room id
+    :cvar game_room_id: current room id
     :type game_room_id: int
-    :param action: current player action
+    :cvar action: current player action
     :type action: str
-    :param direction: current player direction
+    :cvar direction: current player direction
     :type direction: str
-    :param turn_response: turns feedback
+    :cvar turn_response: turns feedback
     :type turn_response: str
-    :param date: date of turn
+    :cvar date: date of turn
     :type date: DateTime
     """
     def __init__(self, room_id: int, info: dict, response: str):
