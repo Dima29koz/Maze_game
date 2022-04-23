@@ -1,12 +1,21 @@
 function drawMap(field, treasures, players, current_user) {
     const div_map = document.getElementById('div-map');
-    const div = document.createElement('div');
-    div.className = 'py-3 h-75';
-    div.id = 'map-debug-container';
-    const drawingCanvas = document.createElement('canvas');
-    drawingCanvas.className = 'border';
-    div.append(drawingCanvas);
-    div_map.append(div);
+    let div = '';
+    let drawingCanvas = '';
+    if (document.getElementById('map-debug-container') == null) {
+        div = document.createElement('div');
+        div.className = 'py-3 h-75';
+        div.id = 'map-debug-container';
+        drawingCanvas = document.createElement('canvas');
+        drawingCanvas.className = 'border';
+        drawingCanvas.id = 'map-debug';
+        div.append(drawingCanvas);
+        div_map.append(div);
+    }
+    else {
+        div = document.getElementById('map-debug-container');
+        drawingCanvas = document.getElementById('map-debug');
+    }
 
     width = div.clientWidth;
     height = div.clientHeight;

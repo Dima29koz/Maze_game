@@ -1,50 +1,58 @@
 document.addEventListener('DOMContentLoaded', () => {
     const room = document.querySelector('#get-room-name').innerHTML;
-    let is_active = false;
     let is_ended = false;
     let current_user = '';
     // Connect to websocket
     let socket = io('/game');
     //let socket = io(location.protocol + '//' + document.domain + ':' + location.port + '/game_room');
     socket.on('connect', () => {
-        drawMapInteractive(getMapContext(4, 5));
+        drawMapInteractive(getMapContext(4, 5)); // fixme
         socket.emit('join', {'room': room});
     });
 
     socket.on('join', data => {
         current_user = data.current_user;
-        socket.emit('check_active', {'room': room});
-        socket.emit('get_history', {'room': room});
-        socket.emit('get_players_stat', {'room': room});
+
+        let response = fetch(`./api/game_data/${room}`)
+            .then(response => response.json())
+            .then(response_json => {
+                is_ended = response_json.is_ended;
+                drawTurnMessages(response_json.turns);
+                socket.emit('get_allowed_abilities', {'room': room});
+            });
+
+        response = fetch(`./api/players_stat/${room}`)
+            .then(response => response.json())
+            .then(stats_json => drawPlayersStat(stats_json));
     });
 
     socket.on('turn_info', data => {
+        drawTurnMessage(data.turn_data);
+        scrollDownChatWindow();
+        drawPlayersStat(data.players_stat);
+        socket.emit('get_allowed_abilities', {'room': room});
+
+        // del it after testing
+        let response = fetch(`./api/game_field/${room}`)
+            .then(response => response.json())
+            .then(response_json => {
+                drawMap(response_json.field, response_json.treasures, response_json.players, current_user);
+            });
+        // -------------
+    });
+
+    socket.on('win_msg', data => {
         drawTurnMessage(data);
         scrollDownChatWindow();
-        socket.emit('check_active', {'room': room});
-        socket.emit('get_players_stat', {'room': room});
+        is_ended = true;
+        drawButtons();
     });
 
-    socket.on('sys_msg', data => {
-        drawTurnMessage(data);
-        scrollDownChatWindow();
+    socket.on('set_allowed_abilities', data => {
+        drawButtons(data.allowed_abilities, data.is_active);
     });
 
-    socket.on('set_active', data => {
-        is_active = data.is_active;
-        is_ended = data.is_ended;
-        drawButtons(data.allowed_abilities);
-    });
-
-    socket.on('set_history', data => {
-        drawTurnMessages(data.turns);
-    });
-
-    socket.on('set_players_stat', data => {
-        drawPlayersStat(data.players_data);
-    });
-
-    function drawButtons(allowed_abilities) {
+    function drawButtons(allowed_abilities = null, is_active=false) {
         let div = document.getElementById('control');
         div.innerHTML = '';
         if (is_ended) {
