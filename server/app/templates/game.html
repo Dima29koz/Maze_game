@@ -12,28 +12,28 @@ Maze Game - {{ request.args.get('room') }}
 {% endblock %}
 
 {% block main %}
-<main>
-    <div class="container-fluid" style="height: 90vh">
-        <h4>Game <span id="get-room-name">{{ request.args.get('room') }}</span></h4>
-        <div class="row" style="height: 95%">
-            <div class="col-md-4 col-sm-5">
-                <div id="game-info" class="container-fluid border overflow-auto chat"></div>
-                <div id="control" class="container d-flex justify-content-center my-2"></div>
+
+<div class="container-fluid" style="height: 90vh">
+    <h4>Game <span id="get-room-name">{{ request.args.get('room') }}</span></h4>
+    <div class="row" style="height: 95%">
+        <div class="col-md-4 col-sm-5">
+            <div id="game-info" class="container-fluid border overflow-auto chat"></div>
+            <div id="control" class="container d-flex justify-content-center my-2"></div>
+        </div>
+        <div class="col-md-8 col-sm-7 h-100">
+            <div class="container-fluid overflow-auto h-25">
+                <div id="player-stats" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-3"></div>
             </div>
-            <div class="col-md-8 col-sm-7 h-100">
-                <div class="container-fluid overflow-auto h-25">
-                    <div id="player-stats" class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-3"></div>
-                </div>
-                <div id="div-map" class="container-fluid h-75">
-                    <div class="py-3">Game Map</div>
-                    <div id="map-container" class="py-3 h-75">
-                        <canvas class="border" id="map"></canvas>
-                    </div>
+            <div id="div-map" class="container-fluid h-75">
+                <div class="py-3">Game Map</div>
+                <div id="map-container" class="py-3 h-75">
+                    <canvas class="border" id="map"></canvas>
                 </div>
             </div>
         </div>
     </div>
-</main>
+</div>
+
 
 
 

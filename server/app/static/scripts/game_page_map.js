@@ -25,7 +25,7 @@ function drawMapInteractive(data) {
         data() {
             return { 'x': this.x, 'y': this.y };
         }
-}
+    }
 
     class Cell {
         constructor(x, y, type='empty') {

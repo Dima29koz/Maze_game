@@ -9,9 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.emit('join', {'room': room});
     });
 
+    document.querySelector("#logout-room-btn").onclick = () => {
+        socket.emit('leave', {'room': room});
+    };
+
     socket.on('join', data => {
-        drawPlayerSection(data);
-        drawBotsSection(data);
+        drawPlayers(data);
         drawBtn(data);
     });
 
@@ -19,64 +22,106 @@ document.addEventListener('DOMContentLoaded', () => {
         drawSpawnMap(data);
     });
 
-    socket.on('set_spawn', data => {
-        drawBtn(data);
-    });
-
     //redirect всех игроков в комнате в игру
     socket.on('start', () => {
         window.location.href = '/game?room='+room;
     });
 
-    function drawPlayerSection(data) {
-        let players = data.players;
-        let players_amount = data.players_amount;
-        let creator_name = data.creator;
-
-        let div = document.getElementById('players');
-        div.innerHTML = '';
-        let p = document.createElement('p');
-        p.innerHTML = 'Игроки'
-        div.append(p);
-        for (let player of players) {
-            p = document.createElement('p');
-            p.className  = 'list-group-item py-3 lh-tight';
-            if (player == creator_name) {
-                p.classList.add('creator');
-            }
-            if (player == current_user) {
-                p.classList.add('current');
-            }
-            p.innerHTML = player;
-            div.append(p);
+    class Player {
+        constructor(player_data, creator_name) {
+            this.name = player_data.name;
+            //this.is_online = player_data.is_online;
+            this.is_spawned = player_data.is_spawned;
+            this.is_creator = player_data.name == creator_name;
         }
-        for (let i=0; i < players_amount - players.length; i++) {
-            p = document.createElement('p');
-            p.className  = 'list-group-item py-3 lh-tight';
-            div.append(p);
+
+        create_card() {
+            let card = document.createElement('div');
+            card.className = 'card bg-secondary my-1 border border-4';
+            if (this.name == current_user) {
+                card.className += ' border-warning';
+            }
+
+            let card_body = document.createElement('div');
+            card_body.className = 'card-body d-flex py-2 align-items-center';
+
+            let div_img = document.createElement('div');
+            div_img.className = 'my-0 pe-2';
+
+            let img = document.createElement('img');
+            img.src = `./img/${this.name}`;
+            img.alt = 'ave';
+            img.width = 32;
+            img.height = 32;
+            img.className = "img-fluid rounded-circle ";
+            div_img.append(img);
+            card_body.append(div_img);
+
+            if (this.is_creator) {
+                let div_creator = document.createElement('div');
+                div_creator.className = 'my-0 pe-2';
+                div_creator.innerText = '⭐';
+                card_body.append(div_creator);
+            }
+
+//            let div_online = document.createElement('div');
+//            div_online.className = 'my-0 pe-2';
+//            div_online.innerText = this.is_online ? '🟢' : '🔴';
+//            card_body.append(div_online);
+
+            let div_name = document.createElement('h5');
+            div_name.className = 'my-0';
+            div_name.innerText = this.name;
+            card_body.append(div_name);
+
+            let div_spawned = document.createElement('div');
+            div_spawned.className = 'ms-auto my-0';
+            div_spawned.innerText = this.is_spawned ? '🟢' : '🔴';
+            card_body.append(div_spawned);
+
+            card.append(card_body);
+
+            return card;
         }
     }
 
-    function drawBotsSection(data) {
-        let bots = data.bots_name;
+    function drawPlayers(data) {
+        const players = data.players;
+        const slots_amount = data.players_amount;
+        const bots = data.bots;
 
-        let div = document.getElementById('bots');
-        if (div == null) {
-            return;
-        }
-        if (data.bots_amount == 0 && div != null) {
-            div.remove();
-            return;
-        }
+        let div = document.getElementById('players');
         div.innerHTML = '';
-        let p = document.createElement('p');
-        p.innerHTML = 'Боты'
-        div.append(p);
+
+        for (let player of players) {
+            player_obj = new Player(player, data.creator);
+            div.append(player_obj.create_card());
+        }
+
+        for (let i=0; i < slots_amount - players.length; i++) {
+            let div_slot = document.createElement('div');
+            div_slot.className = 'card bg-secondary my-1';
+            let card_body = document.createElement('div');
+            card_body.className = 'card-body d-flex py-2 justify-content-center h5 my-0';
+            card_body.innerText = 'Empty slot';
+            div_slot.append(card_body);
+            div.append(div_slot);
+        }
+
+        let div_bots = document.getElementById('bots');
+        if (div_bots == null) {
+            return;
+        }
+        if (data.bots.length == 0 && div_bots != null) {
+            div_bots.remove();
+            return;
+        }
+        div_bots.innerHTML = '';
+        div_bots.className = 'pt-2'
+
         for (let bot of bots) {
-            p = document.createElement('p');
-            p.className  = 'list-group-item py-3 lh-tight';
-            p.innerHTML = bot;
-            div.append(p);
+            bot_obj = new Player(bot, data.creator);
+            div_bots.append(bot_obj.create_card());
         }
     }
 

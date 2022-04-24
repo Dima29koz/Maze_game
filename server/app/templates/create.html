@@ -6,7 +6,7 @@
 
 
 {% block main %}
-<main class="form-signin text-center">
+<div class="form-signin text-center">
     <form method="post" class="form-contact">
         {{ form.hidden_tag() }}
         <h1 class="h3 mb-3 fw-normal">Установите настройки игры:</h1>
@@ -32,6 +32,6 @@
         {% endfor %}
         <div>{{ form.submit(class="w-100 btn btn-lg btn-primary") }}</div>
     </form>
-</main>
+</div>
 
 {% endblock %}

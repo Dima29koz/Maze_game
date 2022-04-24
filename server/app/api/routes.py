@@ -28,6 +28,6 @@ def get_players_stat(room_name):
 @api.route('/api/game_field/<room_name>')
 @login_required
 def get_game_field(room_name):
-    """returns json with game_field data. use if only for testing"""
+    """returns json with game_field data. use it only for testing"""
     room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
     return jsonify(room.on_get_field())

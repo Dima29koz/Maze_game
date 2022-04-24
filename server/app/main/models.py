@@ -165,6 +165,24 @@ class GameRoom(db.Model):
         db.session.commit()
         return True
 
+    def remove_player(self, user_name: str):
+        """
+        remove player from room
+
+        :return: True if removed, else False
+        :rtype: bool
+        """
+        user: User = User.query.filter_by(user_name=user_name).first()
+        if user not in self.players:
+            return False
+
+        self.players.remove(user)
+        for player in self.game.field.players:
+            if player.name == user.user_name:
+                self.game.field.players.remove(player)
+        self.save()
+        return True
+
     def set_creator(self, user_name: str):
         """set room creator"""
         user: User = User.query.filter_by(user_name=user_name).first()
@@ -188,17 +206,22 @@ class GameRoom(db.Model):
         :return: room data dict
         :rtype: dict
         """
-        players_amount = self.rules.get('players_amount')
-        players_bots = self.rules.get('bots_amount') + players_amount
-        ready_cond = len(self.players) == players_amount and len(self.game.field.players) == players_bots
-
+        field = self.game.field
+        is_all_players_joined = len(self.players) == self.rules.get('players_amount')
+        is_all_players_spawned = len(field.players) == self.rules.get('bots_amount') + self.rules.get('players_amount')
         return {
-            "players": [user.user_name for user in self.players],
-            "players_amount": players_amount,
+            "players_amount": self.rules.get('players_amount'),
             "bots_amount": self.rules.get('bots_amount'),
-            "bots_name": [player.name for player in self.game.field.players if player.is_bot],
             "creator": self.creator.user_name,
-            "is_ready": ready_cond,
+            "is_ready": is_all_players_joined and is_all_players_spawned,
+            "players": [{
+                'name': player.user_name,
+                'is_spawned': player.user_name in [player.name for player in self.game.field.players],
+            } for player in self.players],
+            "bots": [{
+                'name': bot.name,
+                'is_spawned': True,
+            } for bot in self.game.field.players if bot.is_bot],
         }
 
     def on_start(self):
