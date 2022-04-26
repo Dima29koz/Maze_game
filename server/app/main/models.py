@@ -169,7 +169,7 @@ class GameRoom(db.Model):
         """
         remove player from room
 
-        :return: True if removed, else False
+        :return: True if removed and room still exists, else False
         :rtype: bool
         """
         user: User = User.query.filter_by(user_name=user_name).first()
@@ -180,6 +180,14 @@ class GameRoom(db.Model):
         for player in self.game.field.players:
             if player.name == user.user_name:
                 self.game.field.players.remove(player)
+
+        if user.id == self.creator_id:
+            try:
+                self.creator_id = self.players[0].id
+            except IndexError:
+                db.session.delete(self)
+                db.session.commit()
+                return False
         self.save()
         return True
 

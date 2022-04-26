@@ -37,8 +37,8 @@ class GameRoomNamespace(Namespace):
         room_name = data.get('room')
         leave_room(room_name)
         room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
-        room.remove_player(current_user.user_name)
-        emit('join', room.on_join(), room=room_name)
+        if room.remove_player(current_user.user_name):
+            emit('join', room.on_join(), room=room_name)
 
     def on_disconnect(self):
         """User disconnect from a room"""
