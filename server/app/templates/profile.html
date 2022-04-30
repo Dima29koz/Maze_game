@@ -11,8 +11,8 @@
 {% block main %}
 <div class="container my-3">
     <h2>Профиль пользователя {{ current_user.user_name }}</h2>
-    <p>Сыграно игр: {{ current_user.played_games }}</p>
-    <p>Побед: {{ current_user.win_games }}</p>
+    <p>Сыграно игр: <span id="games-total"></span>{{ current_user.played_games }}</p>
+    <p>Побед: <span id="games-won"></span>{{ current_user.win_games }}</p>
     <div id="history">
         <h3>История игр</h3>
         <table class="table table-hover">

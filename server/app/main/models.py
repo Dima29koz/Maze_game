@@ -33,13 +33,9 @@ class User(db.Model, UserMixin):
     :param user_name: users nickname
     :type user_name: str
     :param pwd: users password
-    :type user_name: str
+    :type pwd: str
     :cvar date: date of account creation
     :type date: DateTime
-    :cvar played_games: amount of user ended games
-    :type played_games: int
-    :cvar win_games: amount of user won games
-    :type win_games: int
     """
 
     def __init__(self, user_name: str, pwd: str):
@@ -52,9 +48,6 @@ class User(db.Model, UserMixin):
     user_name = db.Column(db.String(50), unique=True)
     pwd = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    played_games = db.Column(db.Integer, default=0)
-    win_games = db.Column(db.Integer, default=0)
-    game_room = db.relationship('GameRoom', backref='creator', lazy=True)
 
     def __repr__(self):
         return '<User %r>' % self.id
@@ -77,12 +70,6 @@ class User(db.Model, UserMixin):
             db.session.commit()
         except Exception as _:
             db.session.rollback()
-
-    def set_stat(self, is_winner: bool = False):
-        """Updates user stat after game"""
-        if is_winner:
-            self.win_games += 1
-        self.played_games += 1
 
 
 class GameRoom(db.Model):
@@ -123,11 +110,15 @@ class GameRoom(db.Model):
     pwd = db.Column(db.String(50), nullable=False)
     rules = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     game = db.Column(db.PickleType)
     is_running = db.Column(db.Boolean, default=False)
     is_ended = db.Column(db.Boolean, default=False)
-    players = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    winner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    creator = db.relationship("User", foreign_keys=[creator_id])
+    winner = db.relationship("User", foreign_keys=[winner_id])
+    players: list[User] = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
     turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
 
     def check_password(self, password: str):
@@ -283,13 +274,12 @@ class GameRoom(db.Model):
     def on_win(self, player_name: str) -> dict:
         """
         Switch game state to ended;
-        update player stat
         makes `system turn`
         """
         self.is_running = False
         self.is_ended = True
-        for player in self.players:
-            player.set_stat(player.user_name == player_name)
+        user = User.query.filter_by(user_name=player_name).first()
+        self.winner_id = user.id if user else None  # todo need to rework for bot-wins case
         turn_info = TurnInfo(self.id, {'player_name': 'System', 'action': 'win'}, player_name)
         turn_info.save()
         win_data = {

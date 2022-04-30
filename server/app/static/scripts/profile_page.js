@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let response = fetch(`./api/user_games`)
             .then(response => response.json())
             .then(response_json => {
-                drawGames(response_json);
+                drawStat(response_json.games_total, response_json.games_won);
+                drawGames(response_json.games);
             });
     function drawGames(games) {
         for (let game of games) {
@@ -59,5 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.append(td_link);
             div_table_body.append(tr);
         }
+    }
+
+    function drawStat(games_total, games_won) {
+        let span_total = document.getElementById('games-total');
+        let span_won = document.getElementById('games-won');
+        span_total.innerText = games_total;
+        span_won.innerText = games_won;
     }
 });
