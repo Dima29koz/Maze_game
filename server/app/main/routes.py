@@ -5,7 +5,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 from . import main
 from .forms import RegistrationForm, LoginForm, RulesForm, LoginRoomForm
-from .models import User, GameRoom
+from .models import User, GameRoom, get_not_ended_room_by_name
 
 
 @main.errorhandler(404)
@@ -100,11 +100,11 @@ def room_join():
     """
     form = LoginRoomForm()
     if form.validate_on_submit():
-        room: GameRoom | None = GameRoom.query.filter_by(name=form.name.data).first()
+        room = get_not_ended_room_by_name(form.name.data)
         if room.add_player(current_user.user_name):
             if room.is_running or room.is_ended:
-                return redirect(url_for("main.game", room=room.name))
-            return redirect(url_for("main.game_room", room=room.name))
+                return redirect(url_for("main.game", room=room.name, room_id=room.id))
+            return redirect(url_for("main.game_room", room=room.name, room_id=room.id))
         flash("Комната полностью заполнена", "error")
 
     return render_template('join.html', form=form)
@@ -127,7 +127,7 @@ def room_create():
             form.players_amount.data,
             form.bots_amount.data,
             current_user.user_name)
-        return redirect(url_for("main.game_room", room=room.name))
+        return redirect(url_for("main.game_room", room=room.name, room_id=room.id))
     return render_template('create.html', form=form)
 
 

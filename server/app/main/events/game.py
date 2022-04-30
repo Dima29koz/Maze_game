@@ -1,7 +1,7 @@
 from flask_login import current_user
 from flask_socketio import Namespace, join_room, emit
 
-from server.app.main.models import GameRoom
+from server.app.main.models import GameRoom, get_not_ended_room_by_name
 
 
 class GameNamespace(Namespace):
@@ -22,7 +22,7 @@ class GameNamespace(Namespace):
         emits `turn_info`, `win_msg`
         """
         room_name = data.get('room')
-        room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
+        room = get_not_ended_room_by_name(room_name)
         next_player, turn_data, win_data = room.on_turn(
             current_user.user_name, data.get('action'), data.get('direction'))
         if turn_data:
@@ -51,7 +51,7 @@ class GameNamespace(Namespace):
         emits `set_allowed_abilities` with data[is_active, allowed_abilities]
         """
         room_name = data.get('room')
-        room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
+        room = get_not_ended_room_by_name(room_name)
         active_player = room.game.get_current_player()
         emit('set_allowed_abilities',
              {

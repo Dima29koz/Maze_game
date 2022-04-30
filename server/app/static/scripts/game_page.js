@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const room = document.querySelector('#get-room-name').innerHTML;
+    const room_id = document.querySelector('#get-room-id').innerHTML;
+
     let is_ended = false;
     let current_user = '';
     // Connect to websocket
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('join', data => {
         current_user = data.current_user;
 
-        let response = fetch(`./api/game_data/${room}`)
+        let response = fetch(`./api/game_data/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
                 is_ended = response_json.is_ended;
@@ -21,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.emit('get_allowed_abilities', {'room': room});
             });
 
-        response = fetch(`./api/players_stat/${room}`)
+        response = fetch(`./api/players_stat/${room_id}`)
             .then(response => response.json())
             .then(stats_json => drawPlayersStat(stats_json));
     });
@@ -33,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.emit('get_allowed_abilities', {'room': room});
 
         // del it after testing
-        let response = fetch(`./api/game_field/${room}`)
+        let response = fetch(`./api/game_field/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
                 drawMap(response_json.field, response_json.treasures, response_json.players, current_user);

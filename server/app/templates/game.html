@@ -15,6 +15,7 @@ Maze Game - {{ request.args.get('room') }}
 
 <div class="container-fluid" style="height: 90vh">
     <h4>Game <span id="get-room-name">{{ request.args.get('room') }}</span></h4>
+    <span id="get-room-id" hidden>{{ request.args.get('room_id') }}</span>
     <div class="row" style="height: 95%">
         <div class="col-md-4 col-sm-5">
             <div id="game-info" class="container-fluid border overflow-auto chat"></div>

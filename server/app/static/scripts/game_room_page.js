@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const room = document.querySelector('#get-room-name').innerHTML;
+    const room_id = document.querySelector('#get-room-id').innerHTML;
     const current_user = document.querySelector('#get-user-name').innerHTML;
 
     // Connect to websocket
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     //redirect всех игроков в комнате в игру
     socket.on('start', () => {
-        window.location.href = '/game?room='+room;
+        window.location.href = '/game?room='+room+'&room_id='+room_id;
     });
 
     class Player {

@@ -9,7 +9,6 @@ from .. import db, login_manager
 from GameEngine.game import Game
 from GameEngine.rules import rules as default_rules
 
-
 login_manager.login_view = 'main.login'
 login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
 login_manager.login_message_category = "error"
@@ -42,6 +41,7 @@ class User(db.Model, UserMixin):
     :cvar win_games: amount of user won games
     :type win_games: int
     """
+
     def __init__(self, user_name: str, pwd: str):
         self.user_name = user_name
         self.pwd = generate_password_hash(pwd)
@@ -106,6 +106,7 @@ class GameRoom(db.Model):
     :cvar is_ended: ended state
     :type is_ended: bool
     """
+
     def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator_name: str):
         self.name = name
         self.pwd = generate_password_hash(pwd)
@@ -118,7 +119,7 @@ class GameRoom(db.Model):
 
     __tablename__ = 'game_room'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True)
+    name = db.Column(db.String(50), nullable=False)
     pwd = db.Column(db.String(50), nullable=False)
     rules = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
@@ -126,7 +127,7 @@ class GameRoom(db.Model):
     game = db.Column(db.PickleType)
     is_running = db.Column(db.Boolean, default=False)
     is_ended = db.Column(db.Boolean, default=False)
-    players = db.relationship("User", secondary=user_room)
+    players = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
     turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
 
     def check_password(self, password: str):
@@ -147,6 +148,7 @@ class GameRoom(db.Model):
             db.session.commit()
         except Exception as _:
             db.session.rollback()
+            print(_)
 
     def add_player(self, user_name: str):
         """
@@ -318,6 +320,7 @@ class TurnInfo(db.Model):
     :cvar date: date of turn
     :type date: DateTime
     """
+
     def __init__(self, room_id: int, info: dict, response: str):
         self.game_room_id = room_id
         self.player_name = info.get('player_name')
@@ -347,3 +350,13 @@ class TurnInfo(db.Model):
             'direction': self.direction,
             'response': self.turn_response,
         }
+
+
+def get_not_ended_room_by_name(room_name: str) -> GameRoom | None:
+    """returns not ended game room by name if room exists"""
+    return GameRoom.query.filter_by(name=room_name, is_ended=False).first()
+
+
+def get_room_by_id(room_id: int) -> GameRoom | None:
+    """returns game room by id if room exists"""
+    return GameRoom.query.filter_by(id=room_id).first()

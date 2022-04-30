@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, InputRequired
 
-from server.app.main.models import User, GameRoom
+from server.app.main.models import User, GameRoom, get_not_ended_room_by_name
 
 
 class RegistrationForm(FlaskForm):
@@ -88,8 +88,7 @@ class RulesForm(FlaskForm):
         :type room_name: StringField
         :raises ValidationError: if room_name is already taken
         """
-        room_obj = GameRoom.query.filter_by(name=room_name.data).first()
-        if room_obj:
+        if get_not_ended_room_by_name(room_name.data):
             raise ValidationError('Комната с таким именем уже существует')
 
 
@@ -116,7 +115,7 @@ class LoginRoomForm(FlaskForm):
         :type name: StringField
         :raises ValidationError: if room_name is incorrect
         """
-        room_obj = GameRoom.query.filter_by(name=name.data).first()
+        room_obj = get_not_ended_room_by_name(name.data)
         if not room_obj:
             raise ValidationError('Комнаты с таким именем не существует')
 
@@ -128,6 +127,6 @@ class LoginRoomForm(FlaskForm):
         :type pwd: PasswordField
         :raises ValidationError: if room_name or password is incorrect
         """
-        room_obj: GameRoom = GameRoom.query.filter_by(name=self.name.data).first()
+        room_obj = get_not_ended_room_by_name(self.name.data)
         if not room_obj or not room_obj.check_password(pwd.data):
             raise ValidationError('Неверная пара название/пароль')

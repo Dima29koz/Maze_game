@@ -13,6 +13,7 @@
 <div class="container">
     <div class="d-flex justify-content-between py-2">
         <h1>Комната: <span id="get-room-name">{{ request.args.get('room') }}</span></h1>
+        <span id="get-room-id" hidden>{{ request.args.get('room_id') }}</span>
         <a id="logout-room-btn" class="btn btn-lg btn-dark" href="{{url_for('main.play')}}">Покинуть игру</a>
     </div>
     <div id="control"></div>
