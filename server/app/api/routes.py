@@ -1,4 +1,6 @@
-from flask import jsonify
+import os
+
+from flask import jsonify, send_file
 from flask_login import login_required, current_user
 
 from . import api
@@ -50,3 +52,12 @@ def get_user_games():
             } for game in user_games]
         }
     )
+
+
+@api.route('/api/img/<user_name>')
+@login_required
+def get_user_avatar(user_name):
+    """API for getting user ave image"""
+    filename = 'default_avatar.jpg'
+    file_path = os.path.join(os.path.split(api.root_path)[0], r'static\images', filename)
+    return send_file(file_path, mimetype='image/jpg')
