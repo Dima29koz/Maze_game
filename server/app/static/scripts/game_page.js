@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //let socket = io(location.protocol + '//' + document.domain + ':' + location.port + '/game_room');
     socket.on('connect', () => {
         drawMapInteractive(getMapContext(4, 5)); // fixme
-        socket.emit('join', {'room': room});
+        socket.emit('join', {'room_id': room_id});
     });
 
     socket.on('join', data => {
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response_json => {
                 is_ended = response_json.is_ended;
                 drawTurnMessages(response_json.turns);
-                socket.emit('get_allowed_abilities', {'room': room});
+                socket.emit('get_allowed_abilities');
             });
 
         response = fetch(`./api/players_stat/${room_id}`)
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         drawTurnMessage(data.turn_data);
         scrollDownChatWindow();
         drawPlayersStat(data.players_stat);
-        socket.emit('get_allowed_abilities', {'room': room});
+        socket.emit('get_allowed_abilities');
 
         // del it after testing
         let response = fetch(`./api/game_field/${room_id}`)
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (action == null) {
                 action = document.querySelector('input[name="action"]:checked').value;
             }
-            socket.emit('action', {'room': room, 'action': action, 'direction': direction});
+            socket.emit('action', {'action': action, 'direction': direction});
         }
 
         function createRadioBtn(args, is_allowed=true) {

@@ -7,11 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let socket = io('/game_room');
     //let socket = io(location.protocol + '//' + document.domain + ':' + location.port + '/game_room');
     socket.on('connect', () => {
-        socket.emit('join', {'room': room});
+        socket.emit('join', {'room_id': room_id});
     });
 
     document.querySelector("#logout-room-btn").onclick = () => {
-        socket.emit('leave', {'room': room});
+        socket.emit('leave');
     };
 
     socket.on('join', data => {
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             div_img.className = 'my-0 pe-2';
 
             let img = document.createElement('img');
-            img.src = `./img/${this.name}`;
+            img.src = `./api/img/${this.name}`;
             img.alt = 'ave';
             img.width = 32;
             img.height = 32;
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let btn = document.createElement('button');
             btn.className = 'w-100 btn btn-lg btn-primary';
             btn.innerHTML = 'Начать игру';
-            btn.onclick = () => socket.emit('start', {'room': room});
+            btn.onclick = () => socket.emit('start');
             btn.disabled = !data.is_ready;
             div.append(btn);
         }
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     cells.forEach(cell_obj => {
                         if (cell_obj !== null) {
                             if(context.isPointInPath(cell_obj, e.offsetX, e.offsetY)){
-                                socket.emit('set_spawn', {'room': room, 'spawn': cell_obj.data});
+                                socket.emit('set_spawn', {'room_id': room_id, 'spawn': cell_obj.data});
                                 drawingCanvas.onclick = null;
                                 drawCell(cell_obj.data, context, true);
                             }
