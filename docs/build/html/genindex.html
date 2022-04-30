@@ -270,12 +270,12 @@
 </li>
       <li><a href="server.app.main.html#server.app.main.models.GameRoom">GameRoom (class in server.app.main.models)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace">GameRoomNamespace (class in server.app.main.events.game_room)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_active_player">get_active_player() (GameEngine.field.field.Field method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_alive_pl_amount">get_alive_pl_amount() (GameEngine.field.field.Field method)</a>
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.get_allowed_abilities">get_allowed_abilities() (GameEngine.entities.player.Player method)</a>
@@ -312,11 +312,17 @@
         <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandlerSwapTreasure.get_info">(GameEngine.field.response.RespHandlerSwapTreasure method)</a>
 </li>
       </ul></li>
+      <li><a href="server.app.main.html#server.app.main.models.get_not_ended_room_by_id">get_not_ended_room_by_id() (in module server.app.main.models)</a>
+</li>
+      <li><a href="server.app.main.html#server.app.main.models.get_not_ended_room_by_name">get_not_ended_room_by_name() (in module server.app.main.models)</a>
+</li>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_player_allowed_abilities">get_player_allowed_abilities() (GameEngine.field.field.Field method)</a>
 </li>
       <li><a href="GameEngine.html#GameEngine.game.Game.get_players_data">get_players_data() (GameEngine.game.Game method)</a>
 </li>
       <li><a href="server.app.api.html#server.app.api.routes.get_players_stat">get_players_stat() (in module server.app.api.routes)</a>
+</li>
+      <li><a href="server.app.main.html#server.app.main.models.get_room_by_id">get_room_by_id() (in module server.app.main.models)</a>
 </li>
       <li><a href="GameEngine.html#GameEngine.game.Game.get_spawn_point">get_spawn_point() (GameEngine.game.Game method)</a>
 </li>
@@ -328,7 +334,9 @@
 </li>
       <li><a href="server.app.main.html#server.app.main.models.GameRoom.get_turns">get_turns() (server.app.main.models.GameRoom method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.routes.get_user_avatar">get_user_avatar() (in module server.app.main.routes)</a>
+      <li><a href="server.app.api.html#server.app.api.routes.get_user_avatar">get_user_avatar() (in module server.app.api.routes)</a>
+</li>
+      <li><a href="server.app.api.html#server.app.api.routes.get_user_games">get_user_games() (in module server.app.api.routes)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -461,8 +469,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_action">on_action() (server.app.main.events.game.GameNamespace method)</a>
 </li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_disconnect">on_disconnect() (server.app.main.events.game_room.GameRoomNamespace method)</a>
+      <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_disconnect">on_disconnect() (server.app.main.events.game.GameNamespace method)</a>
+
+      <ul>
+        <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_disconnect">(server.app.main.events.game_room.GameRoomNamespace method)</a>
 </li>
+      </ul></li>
       <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_get_allowed_abilities">on_get_allowed_abilities() (server.app.main.events.game.GameNamespace method)</a>
 </li>
       <li><a href="server.app.main.html#server.app.main.models.GameRoom.on_get_field">on_get_field() (server.app.main.models.GameRoom method)</a>
@@ -634,8 +646,6 @@
       <li><a href="server.app.main.html#server.app.main.models.GameRoom.set_creator">set_creator() (server.app.main.models.GameRoom method)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandler.set_info">set_info() (GameEngine.field.response.RespHandler method)</a>
-</li>
-      <li><a href="server.app.main.html#server.app.main.models.User.set_stat">set_stat() (server.app.main.models.User method)</a>
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.shoot_bow">shoot_bow() (GameEngine.entities.player.Player method)</a>
 </li>

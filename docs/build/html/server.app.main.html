@@ -305,7 +305,6 @@ append turn info to DB</p>
 <dt class="sig sig-object py" id="server.app.main.models.GameRoom.on_win">
 <span class="sig-name descname"><span class="pre">on_win</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#server.app.main.models.GameRoom.on_win" title="Permalink to this definition">¶</a></dt>
 <dd><p>Switch game state to ended;
-update player stat
 makes <cite>system turn</cite></p>
 </dd></dl>
 
@@ -377,15 +376,11 @@ makes <cite>system turn</cite></p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>user_name</strong> (<em>str</em>) – users nickname</p></li>
-<li><p><strong>pwd</strong> – users password</p></li>
+<li><p><strong>pwd</strong> (<em>str</em>) – users password</p></li>
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>date</strong> – date of account creation</p></li>
-<li><p><strong>played_games</strong> – amount of user ended games</p></li>
-<li><p><strong>win_games</strong> – amount of user won games</p></li>
-</ul>
+<dd class="field-even"><p><strong>date</strong> – date of account creation</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -411,12 +406,24 @@ makes <cite>system turn</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.User.set_stat">
-<span class="sig-name descname"><span class="pre">set_stat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_winner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User.set_stat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates user stat after game</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.models.get_not_ended_room_by_id">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_not_ended_room_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_not_ended_room_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns not ended game room by id if room exists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.models.get_not_ended_room_by_name">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_not_ended_room_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_not_ended_room_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns not ended game room by name if room exists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.models.get_room_by_id">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_room_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_room_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns game room by id if room exists</p>
 </dd></dl>
 
 </section>
@@ -432,12 +439,6 @@ makes <cite>system turn</cite></p>
 <dt class="sig sig-object py" id="server.app.main.routes.game_room">
 <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">game_room</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.game_room" title="Permalink to this definition">¶</a></dt>
 <dd><p>view of <cite>game_room</cite> page</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.get_user_avatar">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">get_user_avatar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.get_user_avatar" title="Permalink to this definition">¶</a></dt>
-<dd><p>API for getting user ave image</p>
 </dd></dl>
 
 <dl class="py function">
