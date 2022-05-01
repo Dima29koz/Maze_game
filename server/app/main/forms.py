@@ -2,7 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
 from wtforms.validators import DataRequired, EqualTo, ValidationError, InputRequired
 
-from server.app.main.models import User, GameRoom, get_not_ended_room_by_name
+from server.app.main.models import User, GameRoom
+from server.app.utils.db_queries import get_not_ended_room_by_name
 
 
 class RegistrationForm(FlaskForm):

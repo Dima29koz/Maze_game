@@ -4,7 +4,7 @@ from flask import jsonify, send_file
 from flask_login import login_required, current_user
 
 from . import api
-from ..main.models import GameRoom, get_not_ended_room_by_name, get_room_by_id
+from ..utils.db_queries import get_room_by_id, get_user_won_games_amount
 
 
 @api.route('/api/game_data/<room_id>')
@@ -41,7 +41,7 @@ def get_user_games():
     """returns json with user games data."""
     user_games = current_user.games
     return jsonify({
-        'games_won': GameRoom.query.filter_by(winner_id=current_user.id).count(),
+        'games_won': get_user_won_games_amount(current_user.id),
         'games_total': len(user_games),  # todo remove running games from result
         'games': [{
             'id': game.id,

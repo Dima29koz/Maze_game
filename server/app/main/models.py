@@ -340,13 +340,3 @@ class TurnInfo(db.Model):
             'direction': self.direction,
             'response': self.turn_response,
         }
-
-
-def get_not_ended_room_by_name(room_name: str) -> GameRoom | None:
-    """returns not ended game room by name if room exists"""
-    return GameRoom.query.filter_by(name=room_name, is_ended=False).first()
-
-
-def get_room_by_id(room_id: int) -> GameRoom | None:
-    """returns game room by id if room exists"""
-    return GameRoom.query.filter_by(id=room_id).first()

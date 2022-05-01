@@ -3,10 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 
+from server import config
+
+conf = config.DevelopmentConfig
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-sio = SocketIO(logger=True)
+sio = SocketIO(logger=conf.LOGGER)
 
 
 def create_app() -> Flask:
@@ -17,7 +20,7 @@ def create_app() -> Flask:
     :rtype: Flask
     """
     app = Flask(__name__)
-    app.config.from_object('config.DevelopmentConfig')
+    app.config.from_object(conf)
 
     db.init_app(app)
     login_manager.init_app(app)

@@ -2,7 +2,8 @@ from flask import session
 from flask_login import current_user
 from flask_socketio import Namespace, join_room, emit, leave_room
 
-from server.app.main.models import GameRoom, get_room_by_id
+from server.app.main.models import GameRoom
+from server.app.utils.db_queries import get_room_by_id
 
 
 class GameNamespace(Namespace):

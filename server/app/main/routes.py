@@ -3,7 +3,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 from . import main
 from .forms import RegistrationForm, LoginForm, RulesForm, LoginRoomForm
-from .models import User, GameRoom, get_not_ended_room_by_name
+from .models import User, GameRoom
+from ..utils.db_queries import get_not_ended_room_by_name
 
 
 @main.errorhandler(404)
