@@ -4,12 +4,11 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from GameEngine.entities.player import Player
 from .. import db, login_manager
-from ..utils import db_queries
 
 from GameEngine.game import Game
 from GameEngine.rules import rules as default_rules
+from GameEngine.entities.player import Player
 
 login_manager.login_view = 'main.login'
 login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
@@ -18,7 +17,7 @@ login_manager.login_message_category = "error"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.query(User).get(user_id)
+    return get_user_by_id(user_id)
 
 
 user_room = db.Table(
@@ -250,7 +249,6 @@ class GameRoom(db.Model):
             turn_info = TurnInfo(self.id, turn_resp.get_turn_info(), turn_resp.get_info())
             turn_info.save()
             turn_data = turn_info.to_dict()
-            turn_data.update({'next_player_name': next_player.name})
 
             if is_win_condition:
                 win_data = self._on_win(player)
@@ -273,7 +271,7 @@ class GameRoom(db.Model):
         self.is_running = False
         self.is_ended = True
         if not winner.is_bot:  # todo None if winner is bot
-            user = db_queries.get_user_by_name(winner.name)
+            user = get_user_by_name(winner.name)
             self.winner_id = user.id if user else None  # todo need to rework for bot-wins case
         else:
             self.winner_id = None
@@ -335,3 +333,28 @@ class TurnInfo(db.Model):
             'direction': self.direction,
             'response': self.turn_response,
         }
+
+
+def get_not_ended_room_by_name(room_name: str) -> GameRoom | None:
+    """returns not ended game room by name if room exists"""
+    return GameRoom.query.filter_by(name=room_name, is_ended=False).first()
+
+
+def get_room_by_id(room_id: int) -> GameRoom | None:
+    """returns game room by id if room exists"""
+    return GameRoom.query.filter_by(id=room_id).first()
+
+
+def get_user_won_games_amount(user_id: int) -> int:
+    """returns amount of user won games"""
+    return GameRoom.query.filter_by(winner_id=user_id).count()
+
+
+def get_user_by_id(user_id: int) -> User | None:
+    """returns user by id if user exists"""
+    return User.query.filter_by(id=user_id).first()
+
+
+def get_user_by_name(user_name: str) -> User | None:
+    """returns user by user_name if user exists"""
+    return User.query.filter_by(user_name=user_name).first()

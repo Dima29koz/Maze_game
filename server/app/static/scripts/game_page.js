@@ -40,14 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollDownChatWindow();
         drawPlayersStat(data.players_stat);
         socket.emit('get_allowed_abilities');
-
-        // del it after testing
-        let response = fetch(`./api/game_field/${room_id}`)
-            .then(response => response.json())
-            .then(response_json => {
-                drawMap(response_json.field, response_json.treasures, response_json.players, current_user);
-            });
-        // -------------
     });
 
     socket.on('win_msg', data => {
@@ -58,6 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('set_allowed_abilities', data => {
+        const sys_div = document.querySelector('#sys-msg');
+        sys_div.innerText = `Ход игрока ${data.next_player_name}`;
         drawButtons(data.allowed_abilities, data.is_active);
     });
 
@@ -170,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
         p.className = "msg";
         const span_username = document.createElement('span');
         const span_turn_info = document.createElement('span');
-        const br = document.createElement('br')
+        const br = document.createElement('br');
 
         if (typeof turn_data.player == 'undefined') { printSysMsg(turn_data.response); }
         else {

@@ -4,7 +4,7 @@ from flask import jsonify, send_file
 from flask_login import login_required, current_user
 
 from . import api
-from ..utils.db_queries import get_room_by_id, get_user_won_games_amount
+from ..main.models import get_room_by_id, get_user_won_games_amount
 
 
 @api.route('/api/game_data/<room_id>')

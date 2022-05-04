@@ -2,7 +2,7 @@ from flask import session
 from flask_login import current_user
 from flask_socketio import Namespace, join_room, emit, leave_room
 
-from server.app.utils import db_queries
+from server.app.main.models import get_room_by_id
 
 
 class GameNamespace(Namespace):
@@ -24,7 +24,7 @@ class GameNamespace(Namespace):
         emits `turn_info`, `win_msg`
         """
         room_id = session.get('room_id', '')
-        room = db_queries.get_room_by_id(room_id)
+        room = get_room_by_id(room_id)
 
         current_player = room.game.get_current_player()
         if current_player.name != current_user.user_name:  # todo bugs if there is bot with same name in room
@@ -58,11 +58,12 @@ class GameNamespace(Namespace):
         emits `set_allowed_abilities` with data[is_active, allowed_abilities]
         """
         room_id = session.get('room_id', '')
-        room = db_queries.get_room_by_id(room_id)
+        room = get_room_by_id(room_id)
         active_player = room.game.get_current_player()
         emit('set_allowed_abilities',
              {
                  'is_active': current_user.user_name == active_player.name,
+                 'next_player_name': active_player.name,
                  'allowed_abilities': room.game.get_allowed_abilities_str(active_player),
              })
 

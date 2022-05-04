@@ -3,8 +3,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 
 from . import main
 from .forms import RegistrationForm, LoginForm, RulesForm, LoginRoomForm
-from .models import User, GameRoom
-from ..utils import db_queries
+from .models import User, GameRoom, get_not_ended_room_by_name, get_user_by_name
 
 
 @main.errorhandler(404)
@@ -46,7 +45,7 @@ def login():
 
     form = LoginForm()
     if form.validate_on_submit():
-        user = db_queries.get_user_by_name(form.name.data)
+        user = get_user_by_name(form.name.data)
         if user and user.check_password(form.pwd.data):
             rm = form.remember.data
             login_user(user, remember=rm)
@@ -99,7 +98,7 @@ def room_join():
     """
     form = LoginRoomForm()
     if form.validate_on_submit():
-        room = db_queries.get_not_ended_room_by_name(form.name.data)
+        room = get_not_ended_room_by_name(form.name.data)
         if room.add_player(current_user):
             if room.is_running or room.is_ended:
                 return redirect(url_for("main.game", room=room.name, room_id=room.id))
@@ -142,3 +141,10 @@ def game_room():
 def game():
     """view of `game` page"""
     return render_template('game.html')
+
+
+@main.route('/admin/map')
+@login_required
+def admin_map():
+    """view of `game_map`"""
+    return render_template('admin_map.html')

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Map</title>
+    <script src="{{ url_for('static', filename='scripts/admin_map.js') }}"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        function updateMap(){
+            let room_id = document.querySelector('#room-id-input').value;
+            let current_user = 'Admin';
+            let response = fetch(`../api/game_field/${room_id}`)
+            .then(response => response.json())
+            .then(response_json => {
+                drawMap(response_json.field, response_json.treasures, response_json.players, current_user);
+            });
+        }
+    </script>
+    <span>Введите id комнаты</span>
+    <input type="number" id="room-id-input">
+    <input type="button" onclick="updateMap()" value="Обновить карту">
+    <div id="div-map">
+        <canvas class="border" id="map-debug" width="1200" height="600"></canvas>
+    </div>
+</body>
+</html>
