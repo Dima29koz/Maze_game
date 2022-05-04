@@ -15,6 +15,7 @@ def get_game_data(room_id):
     return jsonify(
         turns=room.get_turns(),
         is_ended=room.is_ended,
+        winner_name=room.winner.user_name if room.winner_id else 'Bot',
         next_player=room.game.get_current_player().name
     )
 
@@ -47,10 +48,11 @@ def get_user_games():
             'id': game.id,
             'name': game.name,
             'status': 'ended' if game.is_ended else 'running' if game.is_running else 'created',
-            'winner': game.winner.user_name if game.is_ended else '-',
+            'winner': game.winner.user_name if game.is_ended and game.winner_id else 'Bot'
+            if game.is_ended and not game.winner_id else '-',
             'details': 'details',
-            } for game in user_games]
-        }
+        } for game in user_games]
+    }
     )
 
 

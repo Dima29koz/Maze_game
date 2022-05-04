@@ -28,33 +28,34 @@ class Game:
         """returns player allowed abilities converted to dict"""
         return self.field.get_player_allowed_abilities(player)
 
-    def make_turn(self, player: str, action: str, direction: str | None = None) -> tuple[RespHandler | None, Player]:
-        """returns turn response object if turn is available, current player object"""
-        current_player = self.get_current_player()
-        if player != current_player.name:
-            return None, current_player
+    def make_turn(self, action: str, direction: str | None = None) -> tuple[RespHandler | None, Player]:
+        """
+        active player makes turk with provided action and direction
+        checks players ability to make provided action
 
+        :returns: turn response object if action is available, current player object
+        """
+        current_player = self.get_current_player()
         if not self.get_allowed_abilities(current_player).get(Actions[action]):
             return None, current_player
+
         resp = self.field.action_handler(Actions[action], Directions[direction] if direction else None)
         return resp, self.get_current_player()
 
-    def is_win_condition(self, rules) -> bool:
+    def is_win_condition(self, rules: dict) -> bool:
         """checks win condition"""
         if self.field.get_alive_pl_amount() == 1 and rules['gameplay_rules']['fast_win']:
             return True
 
-        treasures = self.field.get_treasures_on_exit()
-        if treasures:
-            for treasure in treasures:
-                if treasure.t_type is TreasureTypes.very:
-                    return True
+        for treasure in self.field.get_treasures_on_exit():
+            if treasure.t_type is TreasureTypes.very:
+                return True
 
     def get_players_data(self) -> list[dict]:
         """returns data for players in game"""
         return self.field.get_players_stat()
 
-    def get_spawn_point(self, player_name) -> dict | None:
+    def get_spawn_point(self, player_name: str) -> dict | None:
         """returns coordinates of player if player is spawned"""
         for player in self.field.players:
             if player.name == player_name:

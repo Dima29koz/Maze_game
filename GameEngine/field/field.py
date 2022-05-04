@@ -87,7 +87,7 @@ class Field:
         is_treasures_under = True if self._treasures_on_cell(player.cell) else False
         return player.get_allowed_abilities(is_treasures_under)
 
-    def get_treasures_on_exit(self) -> list[Treasure] | None:
+    def get_treasures_on_exit(self) -> list[Treasure]:
         """returns list of treasures on exit cell"""
         treasures = self._treasures_on_cell(self.exit_cell)
         [self.treasures.remove(treasure) for treasure in treasures]
@@ -128,11 +128,11 @@ class Field:
         response.update_turn_info(player.name, action.name, direction.name if direction else '')
         return response
 
-    def _check_players(self, current_cell: Cell) -> list[Player] | None:
+    def _check_players(self, current_cell: Cell) -> list[Player]:
         return [player for player in self.players
                 if player.cell == current_cell and not player.is_active and player.is_alive]
 
-    def _treasures_on_cell(self, cell: Cell) -> list[Treasure] | None:
+    def _treasures_on_cell(self, cell: Cell) -> list[Treasure]:
         return [treasure for treasure in self.treasures if cell == treasure.cell]
 
     def _treasure_swap_handler(self, player: Player, direction: Directions = None):

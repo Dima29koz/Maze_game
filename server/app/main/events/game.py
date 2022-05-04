@@ -25,8 +25,13 @@ class GameNamespace(Namespace):
         """
         room_id = session.get('room_id', '')
         room = db_queries.get_room_by_id(room_id)
+
+        current_player = room.game.get_current_player()
+        if current_player.name != current_user.user_name:  # todo bugs if there is bot with same name in room
+            return
+
         next_player, turn_data, win_data = room.on_turn(
-            current_user.user_name, data.get('action'), data.get('direction'))
+            current_player, data.get('action'), data.get('direction'))
         if turn_data:
             emit('turn_info',
                  {
@@ -37,7 +42,7 @@ class GameNamespace(Namespace):
         if win_data:
             emit('win_msg', win_data, room=room_id)
         while next_player.is_bot and not win_data:
-            next_player, turn_data, win_data = room.on_turn(next_player.name, 'skip')
+            next_player, turn_data, win_data = room.on_turn(next_player, 'skip')
             if turn_data:
                 emit('turn_info',
                      {
@@ -46,7 +51,7 @@ class GameNamespace(Namespace):
                      },
                      room=room_id)
             if win_data:
-                emit('sys_msg', win_data, room=room_id)
+                emit('win_msg', win_data, room=room_id)
 
     def on_get_allowed_abilities(self):
         """

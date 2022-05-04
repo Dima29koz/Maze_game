@@ -8,19 +8,27 @@ document.addEventListener('DOMContentLoaded', () => {
     let socket = io('/game');
     //let socket = io(location.protocol + '//' + document.domain + ':' + location.port + '/game_room');
     socket.on('connect', () => {
-        drawMapInteractive(getMapContext(4, 5)); // fixme
         socket.emit('join', {'room_id': room_id});
     });
 
     socket.on('join', data => {
         current_user = data.current_user;
-
+        drawMapInteractive(getMapContext(4, 5)); // fixme
+        // todo перенести сюда рисовалку карты, которая будет загружаться с сервера
         let response = fetch(`./api/game_data/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
+                console.log(response_json);
                 is_ended = response_json.is_ended;
                 drawTurnMessages(response_json.turns);
-                socket.emit('get_allowed_abilities');
+                if (is_ended) {
+                    printWinMsg(response_json.winner_name);
+                    scrollDownChatWindow();
+                    drawButtons();
+                }
+                else {
+                    socket.emit('get_allowed_abilities');
+                }
             });
 
         response = fetch(`./api/players_stat/${room_id}`)
@@ -44,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('win_msg', data => {
-        drawTurnMessage(data);
+        printWinMsg(data.winner_name);
         scrollDownChatWindow();
         is_ended = true;
         drawButtons();
@@ -165,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const span_turn_info = document.createElement('span');
         const br = document.createElement('br')
 
-        if (typeof turn_data.player == 'undefined' || turn_data.player == 'System') { printSysMsg(turn_data.response); }
+        if (typeof turn_data.player == 'undefined') { printSysMsg(turn_data.response); }
         else {
             // user's own message
             if (turn_data.player == current_user) {
@@ -202,11 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Print system messages
-    function printSysMsg(winner) {
+    // Print win messages
+    function printWinMsg(winner) {
         const p = document.createElement('p');
         p.setAttribute("class", "system-msg");
         p.innerHTML = `${winner} wins`;
+        document.getElementById('game-info').append(p);
+    }
+
+    // Print system messages
+    function printSysMsg(msg) {
+        const p = document.createElement('p');
+        p.setAttribute("class", "system-msg");
+        p.innerHTML = msg;
         document.getElementById('game-info').append(p);
     }
 

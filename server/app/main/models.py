@@ -4,6 +4,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from GameEngine.entities.player import Player
 from .. import db, login_manager
 from ..utils import db_queries
 
@@ -17,7 +18,7 @@ login_manager.login_message_category = "error"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db_queries.get_user_by_id(user_id)
+    return db.session.query(User).get(user_id)
 
 
 user_room = db.Table(
@@ -120,7 +121,7 @@ class GameRoom(db.Model):
     creator = db.relationship("User", foreign_keys=[creator_id])
     winner = db.relationship("User", foreign_keys=[winner_id])
     players: list[User] = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
-    turn_info = db.relationship('TurnInfo', backref='turns', lazy=True)
+    turns = db.relationship('TurnInfo', backref='turns', lazy=True)
 
     def check_password(self, password: str):
         """
@@ -229,10 +230,10 @@ class GameRoom(db.Model):
         self.game = copy(self.game)
         self.is_running = True
         for player in self.game.field.players:
-            self.on_turn(player.name, 'info')
+            self.on_turn(player, 'info')
         db.session.commit()
 
-    def on_turn(self, player_name: str, action: str, direction: str | None = None):
+    def on_turn(self, player: Player, action: str, direction: str | None = None):
         """
         calculates turn feedback;
         append turn info to DB
@@ -240,7 +241,7 @@ class GameRoom(db.Model):
         :returns: next player name, turn_data, win_data[Optional]
         :rtype: (Player, dict, dict | None)
         """
-        turn_resp, next_player = self.game.make_turn(player_name, action, direction)
+        turn_resp, next_player = self.game.make_turn(action, direction)
         is_win_condition = self.game.is_win_condition(self.rules)
         self.save()
         turn_data = {}
@@ -257,7 +258,7 @@ class GameRoom(db.Model):
             }
 
             if is_win_condition:
-                win_data = self.on_win(player_name)
+                win_data = self._on_win(player)
 
         return next_player, turn_data, win_data
 
@@ -269,26 +270,24 @@ class GameRoom(db.Model):
             'players': self.game.field.get_players_list(),
         }
 
-    def on_win(self, player_name: str) -> dict:
+    def _on_win(self, winner: Player) -> dict:
         """
         Switch game state to ended;
-        makes `system turn`
+        set winner id
         """
         self.is_running = False
         self.is_ended = True
-        user = db_queries.get_user_by_name(player_name)
+        user = db_queries.get_user_by_name(winner.name)  # todo None if winner is bot
         self.winner_id = user.id if user else None  # todo need to rework for bot-wins case
-        turn_info = TurnInfo(self.id, {'player_name': 'System', 'action': 'win'}, player_name)
-        turn_info.save()
+        self.save()
         win_data = {
-            'player': turn_info.player_name,
-            'response': turn_info.turn_response,
+            'winner_name': winner.name,
         }
         return win_data
 
     def get_turns(self) -> list[dict]:
         """returns list of game turns"""
-        return [turn.to_dict() for turn in self.turn_info]
+        return [turn.to_dict() for turn in self.turns]
 
 
 class TurnInfo(db.Model):
