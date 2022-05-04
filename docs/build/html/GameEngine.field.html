@@ -60,8 +60,12 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>int</em>) – x coordinate of cell</p></li>
 <li><p><strong>y</strong> (<em>int</em>) – y coordinate of cell</p></li>
-<li><p><strong>neighbours</strong> (<em>dict</em><em>[</em><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><em>Directions</em></a><em>, </em><a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a><em> | </em><em>None</em><em>]</em>) – neighbours of cell</p></li>
-<li><p><strong>walls</strong> (<em>dict</em><em>[</em><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><em>Directions</em></a><em>, </em><a class="reference internal" href="#GameEngine.field.wall.WallEmpty" title="GameEngine.field.wall.WallEmpty"><em>WallEmpty</em></a><em>]</em>) – walls of cell</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>neighbours</strong> – neighbours of cell</p></li>
+<li><p><strong>walls</strong> – walls of cell</p></li>
 </ul>
 </dd>
 </dl>
@@ -276,12 +280,15 @@
 <p>It contains logic for interaction with game objects</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gameplay_rules</strong> (<em>dict</em>) – gameplay rules</p></li>
-<li><p><strong>field</strong> (<em>list</em><em>[</em><em>list</em><em>[</em><a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a><em> | </em><em>None</em><em>]</em><em>]</em>) – game field</p></li>
-<li><p><strong>exit_cell</strong> (<a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a>) – exit cell object</p></li>
-<li><p><strong>treasures</strong> (<em>list</em><em>[</em><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.treasure.Treasure" title="GameEngine.entities.treasure.Treasure"><em>Treasure</em></a><em>]</em>) – treasures dropped on filed</p></li>
-<li><p><strong>players</strong> (<em>list</em><em>[</em><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><em>Player</em></a><em>]</em>) – players</p></li>
+<dd class="field-odd"><p><strong>rules</strong> (<em>dict</em>) – rules of game</p>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>gameplay_rules</strong> – gameplay rules</p></li>
+<li><p><strong>field</strong> – game field</p></li>
+<li><p><strong>exit_cell</strong> – exit cell object</p></li>
+<li><p><strong>treasures</strong> – treasures dropped on filed</p></li>
+<li><p><strong>players</strong> – players</p></li>
 </ul>
 </dd>
 </dl>
@@ -353,13 +360,13 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base Response handler object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>treasures</strong> (<em>list</em><em>[</em><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.TreasureTypes" title="GameEngine.globalEnv.enums.TreasureTypes"><em>TreasureTypes</em></a><em>]</em>) – list of treasures on turn-end cell</p></li>
-<li><p><strong>cell_at_end_of_turn</strong> (<a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a><em> | </em><em>None</em>) – players location cell on turn-end</p></li>
-<li><p><strong>player_name</strong> (<em>str</em>) – name of active player</p></li>
-<li><p><strong>action</strong> (<em>str</em>) – players action</p></li>
-<li><p><strong>direction</strong> (<em>str</em>) – players direction</p></li>
+<li><p><strong>treasures</strong> – list of treasures on turn-end cell</p></li>
+<li><p><strong>cell_at_end_of_turn</strong> – players location cell on turn-end</p></li>
+<li><p><strong>player_name</strong> – name of active player</p></li>
+<li><p><strong>action</strong> – players action</p></li>
+<li><p><strong>direction</strong> – players direction</p></li>
 </ul>
 </dd>
 </dl>
@@ -483,12 +490,12 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Base Wall object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>breakable</strong> (<em>bool</em>) – can wall be broken</p></li>
-<li><p><strong>weapon_collision</strong> (<em>bool</em>) – weapon collision with wall</p></li>
-<li><p><strong>player_collision</strong> (<em>bool</em>) – player collision with wall</p></li>
-<li><p><strong>player_state</strong> (<em>bool</em>) – player state after interaction with wall</p></li>
+<li><p><strong>breakable</strong> – can wall be broken</p></li>
+<li><p><strong>weapon_collision</strong> – weapon collision with wall</p></li>
+<li><p><strong>player_collision</strong> – player collision with wall</p></li>
+<li><p><strong>player_state</strong> – player state after interaction with wall</p></li>
 </ul>
 </dd>
 </dl>

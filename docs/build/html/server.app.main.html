@@ -190,7 +190,7 @@
 <span id="server-app-main-models-module"></span><h2>server.app.main.models module<a class="headerlink" href="#module-server.app.main.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="server.app.main.models.GameRoom">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">GameRoom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bots_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">GameRoom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bots_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Model</span></code></p>
 <p>This is a Game Room model. Its contains information about game</p>
 <dl class="field-list simple">
@@ -225,7 +225,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.main.models.GameRoom.add_player">
-<span class="sig-name descname"><span class="pre">add_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.add_player" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">add_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">server.app.main.models.User</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.add_player" title="Permalink to this definition">¶</a></dt>
 <dd><p>add player to room</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -310,7 +310,7 @@ makes <cite>system turn</cite></p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.main.models.GameRoom.remove_player">
-<span class="sig-name descname"><span class="pre">remove_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.remove_player" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">remove_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">server.app.main.models.User</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.remove_player" title="Permalink to this definition">¶</a></dt>
 <dd><p>remove player from room</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -330,7 +330,7 @@ makes <cite>system turn</cite></p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.main.models.GameRoom.set_creator">
-<span class="sig-name descname"><span class="pre">set_creator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.set_creator" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_creator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">server.app.main.models.User</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.set_creator" title="Permalink to this definition">¶</a></dt>
 <dd><p>set room creator</p>
 </dd></dl>
 
@@ -406,24 +406,6 @@ makes <cite>system turn</cite></p>
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.models.get_not_ended_room_by_id">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_not_ended_room_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_not_ended_room_by_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns not ended game room by id if room exists</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.models.get_not_ended_room_by_name">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_not_ended_room_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_not_ended_room_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns not ended game room by name if room exists</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.models.get_room_by_id">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_room_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_room_by_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns game room by id if room exists</p>
 </dd></dl>
 
 </section>

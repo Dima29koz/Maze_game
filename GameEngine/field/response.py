@@ -32,15 +32,15 @@ class RespHandler:
     """
     Base Response handler object
 
-    :param treasures: list of treasures on turn-end cell
+    :ivar treasures: list of treasures on turn-end cell
     :type treasures: list[TreasureTypes]
-    :param cell_at_end_of_turn: players location cell on turn-end
+    :ivar cell_at_end_of_turn: players location cell on turn-end
     :type cell_at_end_of_turn: Cell | None
-    :param player_name: name of active player
+    :ivar player_name: name of active player
     :type player_name: str
-    :param action: players action
+    :ivar action: players action
     :type action: str
-    :param direction: players direction
+    :ivar direction: players direction
     :type direction: str
     """
     def __init__(self):

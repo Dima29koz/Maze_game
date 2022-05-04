@@ -12,9 +12,9 @@ class Cell:
     :type x: int
     :param y: y coordinate of cell
     :type y: int
-    :param neighbours: neighbours of cell
+    :ivar neighbours: neighbours of cell
     :type neighbours: dict[Directions, Cell | None]
-    :param walls: walls of cell
+    :ivar walls: walls of cell
     :type walls: dict[Directions, WallEmpty]
 
     """

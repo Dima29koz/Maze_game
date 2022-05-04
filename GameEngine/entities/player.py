@@ -13,23 +13,23 @@ class Player:
     :type name: str
     :param cell: players location cell
     :type cell: Cell
-    :param health_max: players max health
+    :ivar health_max: players max health
     :type health_max: int
-    :param health: players current health
+    :ivar health: players current health
     :type health: int
-    :param bombs_max: players max bombs
+    :ivar bombs_max: players max bombs
     :type bombs_max: int
-    :param bombs: players current bombs
+    :ivar bombs: players current bombs
     :type bombs: int
-    :param arrows_max: players max arrows
+    :ivar arrows_max: players max arrows
     :type arrows_max: int
-    :param arrows: players current arrows
+    :ivar arrows: players current arrows
     :type arrows: int
-    :param treasure: players treasure
+    :ivar treasure: players treasure
     :type treasure: Treasure | None
-    :param is_alive: describe is player alive
+    :ivar is_alive: describe is player alive
     :type is_alive: bool
-    :param is_active: describe is player active
+    :ivar is_active: describe is player active
     :type is_active: bool
     :param is_bot: describe is player bot
     :type is_bot: bool

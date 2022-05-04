@@ -5,10 +5,10 @@ class Directions(Enum):
     """
     describes directions
 
-    :param top: direction `top`
-    :param right: direction `right`
-    :param bottom: direction `bottom`
-    :param left: direction `left`
+    :cvar top: direction `top`
+    :cvar right: direction `right`
+    :cvar bottom: direction `bottom`
+    :cvar left: direction `left`
     """
     top = 1
     right = 2

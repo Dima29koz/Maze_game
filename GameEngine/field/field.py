@@ -17,15 +17,17 @@ class Field:
 
     It contains logic for interaction with game objects
 
-    :param gameplay_rules: gameplay rules
+    :param rules: rules of game
+    :type rules: dict
+    :ivar gameplay_rules: gameplay rules
     :type gameplay_rules: dict
-    :param field: game field
+    :ivar field: game field
     :type field: list[list[Cell | None]]
-    :param exit_cell: exit cell object
+    :ivar exit_cell: exit cell object
     :type exit_cell: Cell
-    :param treasures: treasures dropped on filed
+    :ivar treasures: treasures dropped on filed
     :type treasures: list[Treasure]
-    :param players: players
+    :ivar players: players
     :type players: list[Player]
     """
     def __init__(self, rules: dict):

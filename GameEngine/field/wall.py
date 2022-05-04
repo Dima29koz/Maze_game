@@ -3,13 +3,13 @@ class WallEmpty:
     """
     Base Wall object
 
-    :param breakable: can wall be broken
+    :ivar breakable: can wall be broken
     :type breakable: bool
-    :param weapon_collision: weapon collision with wall
+    :ivar weapon_collision: weapon collision with wall
     :type weapon_collision: bool
-    :param player_collision: player collision with wall
+    :ivar player_collision: player collision with wall
     :type player_collision: bool
-    :param player_state: player state after interaction with wall
+    :ivar player_state: player state after interaction with wall
     :type player_state: bool
     """
     def __init__(self):

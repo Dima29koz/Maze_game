@@ -8,7 +8,7 @@ class Game:
     """
     This class used for top-level interaction with the game object
 
-    :param field: game field object which contains all logic and game objects
+    :ivar field: game field object which contains all logic and game objects
     :type field: Field
     """
     def __init__(self, rules: dict):
