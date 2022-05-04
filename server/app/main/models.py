@@ -141,7 +141,6 @@ class GameRoom(db.Model):
             db.session.commit()
         except Exception as _:
             db.session.rollback()
-            print(_)
 
     def add_player(self, user: User):
         """
@@ -171,7 +170,7 @@ class GameRoom(db.Model):
 
         self.players.remove(user)
         for player in self.game.field.players:
-            if player.name == user.user_name:
+            if player.name == user.user_name and not player.is_bot:
                 self.game.field.players.remove(player)
 
         if user.id == self.creator_id:
@@ -199,9 +198,9 @@ class GameRoom(db.Model):
         self.game = copy(self.game)  # fixme это затычка
         db.session.commit()
 
-    def on_join(self) -> dict:
+    def get_info(self) -> dict:
         """
-        triggers when player (client) joins room
+        returns room data (room settings, players info)
 
         :return: room data dict
         :rtype: dict
@@ -216,7 +215,8 @@ class GameRoom(db.Model):
             "is_ready": is_all_players_joined and is_all_players_spawned,
             "players": [{
                 'name': player.user_name,
-                'is_spawned': player.user_name in [player.name for player in self.game.field.players],
+                'is_spawned': player.user_name in [player.name for player in self.game.field.players
+                                                   if not player.is_bot],
             } for player in self.players],
             "bots": [{
                 'name': bot.name,
@@ -249,13 +249,8 @@ class GameRoom(db.Model):
         if turn_resp:
             turn_info = TurnInfo(self.id, turn_resp.get_turn_info(), turn_resp.get_info())
             turn_info.save()
-            turn_data = {
-                'player': turn_info.player_name,
-                'action': turn_info.action,
-                'direction': turn_info.direction,
-                'response': turn_info.turn_response,
-                'next_player_name': next_player.name,
-            }
+            turn_data = turn_info.to_dict()
+            turn_data.update({'next_player_name': next_player.name})
 
             if is_win_condition:
                 win_data = self._on_win(player)
@@ -277,8 +272,11 @@ class GameRoom(db.Model):
         """
         self.is_running = False
         self.is_ended = True
-        user = db_queries.get_user_by_name(winner.name)  # todo None if winner is bot
-        self.winner_id = user.id if user else None  # todo need to rework for bot-wins case
+        if not winner.is_bot:  # todo None if winner is bot
+            user = db_queries.get_user_by_name(winner.name)
+            self.winner_id = user.id if user else None  # todo need to rework for bot-wins case
+        else:
+            self.winner_id = None
         self.save()
         win_data = {
             'winner_name': winner.name,

@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let response = fetch(`./api/game_data/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
-                console.log(response_json);
                 is_ended = response_json.is_ended;
                 drawTurnMessages(response_json.turns);
                 if (is_ended) {
