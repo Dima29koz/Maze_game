@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
-from wtforms.validators import DataRequired, EqualTo, ValidationError, InputRequired
+from wtforms.validators import DataRequired, EqualTo, ValidationError
 
-from server.app.main.models import User, GameRoom
-from server.app.utils.db_queries import get_not_ended_room_by_name
+from server.app.utils import db_queries
 
 
 class RegistrationForm(FlaskForm):
@@ -33,7 +32,7 @@ class RegistrationForm(FlaskForm):
         :type username: StringField
         :raises ValidationError: if nickname is already taken
         """
-        user_obj = User.query.filter_by(user_name=username.data).first()
+        user_obj = db_queries.get_user_by_name(username.data)
         if user_obj:
             raise ValidationError('Пользователь с таким ником уже существует')
 
@@ -89,7 +88,7 @@ class RulesForm(FlaskForm):
         :type room_name: StringField
         :raises ValidationError: if room_name is already taken
         """
-        if get_not_ended_room_by_name(room_name.data):
+        if db_queries.get_not_ended_room_by_name(room_name.data):
             raise ValidationError('Комната с таким именем уже существует')
 
 
@@ -116,7 +115,7 @@ class LoginRoomForm(FlaskForm):
         :type name: StringField
         :raises ValidationError: if room_name is incorrect
         """
-        room_obj = get_not_ended_room_by_name(name.data)
+        room_obj = db_queries.get_not_ended_room_by_name(name.data)
         if not room_obj:
             raise ValidationError('Комнаты с таким именем не существует')
 
@@ -128,6 +127,6 @@ class LoginRoomForm(FlaskForm):
         :type pwd: PasswordField
         :raises ValidationError: if room_name or password is incorrect
         """
-        room_obj = get_not_ended_room_by_name(self.name.data)
+        room_obj = db_queries.get_not_ended_room_by_name(self.name.data)
         if not room_obj or not room_obj.check_password(pwd.data):
             raise ValidationError('Неверная пара название/пароль')

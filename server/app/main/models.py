@@ -5,6 +5,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .. import db, login_manager
+from ..utils import db_queries
 
 from GameEngine.game import Game
 from GameEngine.rules import rules as default_rules
@@ -16,7 +17,7 @@ login_manager.login_message_category = "error"
 
 @login_manager.user_loader
 def load_user(user_id):
-    return db.session.query(User).get(user_id)
+    return db_queries.get_user_by_id(user_id)
 
 
 user_room = db.Table(
@@ -94,13 +95,13 @@ class GameRoom(db.Model):
     :type is_ended: bool
     """
 
-    def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator_name: str):
+    def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator: User):
         self.name = name
         self.pwd = generate_password_hash(pwd)
         self.rules = default_rules
         self.rules['players_amount'] = players_amount
         self.rules['bots_amount'] = bots_amount
-        self.set_creator(creator_name)
+        self.set_creator(creator)
         self.add()
         self.add_game()
 
@@ -141,14 +142,13 @@ class GameRoom(db.Model):
             db.session.rollback()
             print(_)
 
-    def add_player(self, user_name: str):
+    def add_player(self, user: User):
         """
         add player to room
 
         :return: False if there is no empty slots in a room, else True
         :rtype: bool
         """
-        user: User = User.query.filter_by(user_name=user_name).first()
         if user in self.players:
             return True
         if len(self.players) >= self.rules.get('players_amount'):
@@ -158,14 +158,13 @@ class GameRoom(db.Model):
         db.session.commit()
         return True
 
-    def remove_player(self, user_name: str):
+    def remove_player(self, user: User):
         """
         remove player from room
 
         :return: True if removed and room still exists, else False
         :rtype: bool
         """
-        user: User = User.query.filter_by(user_name=user_name).first()
         if user not in self.players:
             return False
 
@@ -184,11 +183,10 @@ class GameRoom(db.Model):
         self.save()
         return True
 
-    def set_creator(self, user_name: str):
+    def set_creator(self, user: User):
         """set room creator"""
-        user: User = User.query.filter_by(user_name=user_name).first()
         self.creator_id = user.id
-        self.add_player(user_name)
+        self.add_player(user)
 
     def add_game(self):
         """creates Game() and add it to DB"""
@@ -278,7 +276,7 @@ class GameRoom(db.Model):
         """
         self.is_running = False
         self.is_ended = True
-        user = User.query.filter_by(user_name=player_name).first()
+        user = db_queries.get_user_by_name(player_name)
         self.winner_id = user.id if user else None  # todo need to rework for bot-wins case
         turn_info = TurnInfo(self.id, {'player_name': 'System', 'action': 'win'}, player_name)
         turn_info.save()
