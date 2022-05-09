@@ -1,8 +1,9 @@
 from flask_migrate import Migrate
 
 from app import create_app, sio, db
+import config
 
-app = create_app()
+app = create_app(config.DevelopmentConfig)
 migrate = Migrate(app, db)
 
 

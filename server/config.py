@@ -21,4 +21,12 @@ class DevelopmentConfig(BaseConfig):
     """
     DEBUG = True
     LOGGER = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///maze.db'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir, 'maze.db')
+
+
+class TestConfig(BaseConfig):
+    """
+    Test flask-app config object
+    """
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'test.db')

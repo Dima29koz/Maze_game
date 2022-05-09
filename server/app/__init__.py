@@ -3,16 +3,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 
-from server import config
-
-conf = config.DevelopmentConfig
 
 db = SQLAlchemy()
 login_manager = LoginManager()
-sio = SocketIO(logger=conf.LOGGER)
+sio = SocketIO()
 
 
-def create_app() -> Flask:
+def create_app(config) -> Flask:
     """
     Creates app and register Blueprints
 
@@ -20,7 +17,7 @@ def create_app() -> Flask:
     :rtype: Flask
     """
     app = Flask(__name__)
-    app.config.from_object(conf)
+    app.config.from_object(config)
 
     db.init_app(app)
     login_manager.init_app(app)
@@ -41,6 +38,6 @@ def create_app() -> Flask:
     app.register_blueprint(main_blueprint)
     app.register_blueprint(api_blueprint)
 
-    sio.init_app(app)
+    sio.init_app(app, logger=config.LOGGER)
 
     return app
