@@ -12,10 +12,10 @@ class TestCase(unittest.TestCase):
         self.client = self.app.test_client()
         self.ctx = self.app.test_request_context()
         self.ctx.push()
-        self.sio_client = sio.test_client(self.app, flask_test_client=self.client)
         db.drop_all()
         db.create_all()
         self.setUpData()
+        self.client1, self.client2 = self.setUpClients()
 
     def tearDown(self):
         db.session.remove()
@@ -32,6 +32,25 @@ class TestCase(unittest.TestCase):
         room.game.field.spawn_player({'x': 1, 'y': 1}, u2.user_name, 1)
         room.save()
         room.on_start()
+
+    def setUpClients(self):
+        c1 = self.app.test_client()
+        c2 = self.app.test_client()
+        with c1.session_transaction() as sess1:
+            sess1['room_id'] = 1
+            sess1['_user_id'] = 1
+        with c2.session_transaction() as sess2:
+            sess2['room_id'] = 1
+            sess2['_user_id'] = 2
+        client1 = sio.test_client(self.app, flask_test_client=c1)
+        client2 = sio.test_client(self.app, flask_test_client=c2)
+        client1.connect(namespace='/game')
+        client2.connect(namespace='/game')
+        client1.emit('join', {'room_id': 1}, namespace='/game')
+        client2.emit('join', {'room_id': 1}, namespace='/game')
+        client1.get_received(namespace='/game')
+        client2.get_received(namespace='/game')
+        return client1, client2
 
 
 class TestGame(TestCase):
@@ -53,47 +72,19 @@ class TestGame(TestCase):
         self.assertEqual(rv.get_json()[0:2], init_stats)
 
     def test_action(self):
-        c1 = self.app.test_client()
-        c2 = self.app.test_client()
-        with c1.session_transaction() as sess1:
-            sess1['room_id'] = 1
-            sess1['_user_id'] = 1
-        with c2.session_transaction() as sess2:
-            sess2['room_id'] = 1
-            sess2['_user_id'] = 2
-        client = sio.test_client(self.app, flask_test_client=c1)
-        client2 = sio.test_client(self.app, flask_test_client=c2)
-        client.connect(namespace='/game')
-        client2.connect(namespace='/game')
-        client.emit('join', {'room_id': 1}, namespace='/game')
-        client2.emit('join', {'room_id': 1}, namespace='/game')
-        client.emit('action', {'action': 'shoot_bow', 'direction': 'bottom'}, namespace='/game')
-        rv1 = client.get_received(namespace='/game')[-1]
-        rv2 = client2.get_received(namespace='/game')[-1]
+        self.client1.emit('action', {'action': 'shoot_bow', 'direction': 'bottom'}, namespace='/game')
+        rv1 = self.client1.get_received(namespace='/game')[-1]
+        rv2 = self.client2.get_received(namespace='/game')[-1]
         self.assertEqual(rv1, rv2)
         self.assertEqual(rv1.get('args')[0].get('turn_data').get('response').split(',')[0], 'попал')
         self.assertEqual(rv1.get('args')[0].get('players_stat')[0].get('arrows'), 2)
         self.assertEqual(rv1.get('args')[0].get('players_stat')[1].get('health'), 1)
 
     def test_get_allowed_abilities(self):
-        c1 = self.app.test_client()
-        c2 = self.app.test_client()
-        with c1.session_transaction() as sess1:
-            sess1['room_id'] = 1
-            sess1['_user_id'] = 1
-        with c2.session_transaction() as sess2:
-            sess2['room_id'] = 1
-            sess2['_user_id'] = 2
-        client = sio.test_client(self.app, flask_test_client=c1)
-        client2 = sio.test_client(self.app, flask_test_client=c2)
-        client.connect(namespace='/game')
-        client2.connect(namespace='/game')
-        client.emit('join', {'room_id': 1}, namespace='/game')
-        client2.emit('join', {'room_id': 1}, namespace='/game')
-        client.emit('get_allowed_abilities', namespace='/game')
-        client2.emit('get_allowed_abilities', namespace='/game')
-        rv1 = client.get_received(namespace='/game')[-1]
-        rv2 = client2.get_received(namespace='/game')[-1]
+        self.client1.emit('get_allowed_abilities', namespace='/game')
+        self.client2.emit('get_allowed_abilities', namespace='/game')
+        rv1 = self.client1.get_received(namespace='/game')[-1]
+        rv2 = self.client2.get_received(namespace='/game')[-1]
         self.assertEqual(rv1.get('args')[0].get('is_active'), True)
         self.assertEqual(rv2.get('args')[0].get('is_active'), False)
         self.assertEqual(rv1.get('args')[0].get('next_player_name'), rv2.get('args')[0].get('next_player_name'))
