@@ -29,4 +29,6 @@ class TestConfig(BaseConfig):
     Test flask-app config object
     """
     TESTING = True
+    CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'test.db')
