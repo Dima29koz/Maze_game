@@ -115,3 +115,60 @@ class TestGameRoom(TestCase):
         self.assertEqual(r11[0].get('args')[0].get('players')[1].get('is_spawned'), True)
         self.assertEqual(r11[0].get('args')[0].get('is_ready'), True)
         self.assertFalse(r22)
+
+    def test_start(self):
+        room = models.get_room_by_id(1)
+        room.add_player(models.get_user_by_id(2))
+        c1 = self.app.test_client()
+        c2 = self.app.test_client()
+        with c1.session_transaction() as sess1:
+            sess1['room_id'] = 1
+            sess1['_user_id'] = 1
+        with c2.session_transaction() as sess2:
+            sess2['room_id'] = 1
+            sess2['_user_id'] = 2
+        client = sio.test_client(self.app, flask_test_client=c1)
+        client2 = sio.test_client(self.app, flask_test_client=c2)
+        client.connect(namespace='/game_room')
+        client2.connect(namespace='/game_room')
+        client.emit('join', {'room_id': 1}, namespace='/game_room')
+        client2.emit('join', {'room_id': 1}, namespace='/game_room')
+        client.emit('set_spawn', {'spawn': {'x': 1, 'y': 1}}, namespace='/game_room')
+        client2.emit('set_spawn', {'spawn': {'x': 0, 'y': 0}}, namespace='/game_room')
+        r1 = client.get_received(namespace='/game_room')
+        client2.get_received(namespace='/game_room')
+        self.assertEqual(r1[-1].get('args')[0].get('is_ready'), True)
+        client.emit('start', namespace='/game_room')
+        self.assertEqual(client.get_received(namespace='/game_room')[0].get('name'), 'start')
+        self.assertEqual(client2.get_received(namespace='/game_room')[0].get('name'), 'start')
+        room = models.get_room_by_id(1)
+        self.assertEqual(room.is_running, True)
+        self.assertEqual(len(room.turns), 3)
+
+    def test_leave(self):
+        room = models.get_room_by_id(1)
+        room.add_player(models.get_user_by_id(2))
+        c1 = self.app.test_client()
+        c2 = self.app.test_client()
+        with c1.session_transaction() as sess1:
+            sess1['room_id'] = 1
+            sess1['_user_id'] = 1
+        with c2.session_transaction() as sess2:
+            sess2['room_id'] = 1
+            sess2['_user_id'] = 2
+        client = sio.test_client(self.app, flask_test_client=c1)
+        client2 = sio.test_client(self.app, flask_test_client=c2)
+        client.connect(namespace='/game_room')
+        client2.connect(namespace='/game_room')
+        client.emit('join', {'room_id': 1}, namespace='/game_room')
+        client2.emit('join', {'room_id': 1}, namespace='/game_room')
+
+        client.emit('leave', namespace='/game_room')
+
+        r2 = client2.get_received(namespace='/game_room')
+        self.assertEqual(len(r2[-1].get('args')[0].get('players')), 1)
+        room = models.get_room_by_id(1)
+        self.assertEqual(room.creator.user_name, 'Tester2')
+        client2.emit('leave', namespace='/game_room')
+        room = models.get_room_by_id(1)
+        self.assertIsNone(room)
