@@ -13,6 +13,7 @@ class TestCase(unittest.TestCase):
         self.ctx = self.app.test_request_context()
         self.ctx.push()
         self.sio_client = sio.test_client(self.app, flask_test_client=self.client)
+        db.drop_all()
         db.create_all()
         self.setUpData()
 
