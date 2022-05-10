@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, IntegerField
-from wtforms.validators import DataRequired, EqualTo, ValidationError
+from wtforms.validators import DataRequired, EqualTo, ValidationError, NumberRange
 
 from server.app.main.models import get_user_by_name, get_not_ended_room_by_name
 
@@ -74,10 +74,11 @@ class RulesForm(FlaskForm):
     room_name = StringField("Название комнаты: ", validators=[DataRequired('Поле не заполнено')])
     pwd = PasswordField("Пароль: ", validators=[DataRequired('Поле не заполнено')])
     players_amount = IntegerField("Число игроков", validators=[DataRequired('Поле не заполнено')], default=2)
-    bots_amount = IntegerField("Число ботов",
-                               validators=[],
-                               default=0,
-                               render_kw={'disabled': False})
+    bots_amount = IntegerField(
+        "Число ботов",
+        validators=[NumberRange(min=0, max=10, message='Число ботов должно быть от 0 до 10')],
+        default=0,
+        render_kw={'disabled': False})
     submit = SubmitField("Создать")
 
     def validate_room_name(self, room_name: StringField):
