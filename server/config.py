@@ -32,3 +32,7 @@ class TestConfig(BaseConfig):
     CSRF_ENABLED = False
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'test.db')
+
+
+class ProductionConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
