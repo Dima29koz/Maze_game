@@ -47,7 +47,7 @@ class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(50), unique=True)
-    pwd = db.Column(db.String(50), nullable=False)
+    pwd = db.Column(db.String(256), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
@@ -69,7 +69,8 @@ class User(db.Model, UserMixin):
         try:
             db.session.add(self)
             db.session.commit()
-        except Exception as _:
+        except Exception as e:
+            print(e)
             db.session.rollback()
 
 
@@ -108,7 +109,7 @@ class GameRoom(db.Model):
     __tablename__ = 'game_room'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
-    pwd = db.Column(db.String(50), nullable=False)
+    pwd = db.Column(db.String(256), nullable=False)
     rules = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
     game = db.Column(db.PickleType)
@@ -139,6 +140,7 @@ class GameRoom(db.Model):
             db.session.add(self)
             db.session.commit()
         except Exception as _:
+            print(_)
             db.session.rollback()
 
     def add_player(self, user: User):

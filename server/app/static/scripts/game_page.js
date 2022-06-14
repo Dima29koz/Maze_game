@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     drawButtons();
                 }
                 else {
-                    socket.emit('get_allowed_abilities');
+                    socket.emit('get_allowed_abilities', {'room_id': room_id});
                 }
             });
 
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         drawTurnMessage(data.turn_data);
         scrollDownChatWindow();
         drawPlayersStat(data.players_stat);
-        socket.emit('get_allowed_abilities');
+        socket.emit('get_allowed_abilities', {'room_id': room_id});
     });
 
     socket.on('win_msg', data => {
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (action == null) {
                 action = document.querySelector('input[name="action"]:checked').value;
             }
-            socket.emit('action', {'action': action, 'direction': direction});
+            socket.emit('action', {'room_id': room_id, 'action': action, 'direction': direction});
         }
 
         function createRadioBtn(args, is_allowed=true) {

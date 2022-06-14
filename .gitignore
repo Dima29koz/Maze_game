@@ -3,3 +3,5 @@
 /.idea/
 /.vs/
 /GameEngine/tmp.py
+.env
+tmp

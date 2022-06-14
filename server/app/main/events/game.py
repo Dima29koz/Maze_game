@@ -1,6 +1,6 @@
 from flask import session
 from flask_login import current_user
-from flask_socketio import Namespace, join_room, emit, leave_room
+from flask_socketio import Namespace, join_room, emit
 
 from server.app.main.models import get_room_by_id
 
@@ -23,7 +23,7 @@ class GameNamespace(Namespace):
         handle player`s turn;
         emits `turn_info`, `win_msg`
         """
-        room_id = session.get('room_id', '')
+        room_id = data.get('room_id')
         room = get_room_by_id(room_id)
 
         current_player = room.game.get_current_player()
@@ -53,11 +53,11 @@ class GameNamespace(Namespace):
             if win_data:
                 emit('win_msg', win_data, room=room_id)
 
-    def on_get_allowed_abilities(self):
+    def on_get_allowed_abilities(self, data: dict):
         """
         emits `set_allowed_abilities` with data[is_active, allowed_abilities]
         """
-        room_id = session.get('room_id', '')
+        room_id = data.get('room_id')
         room = get_room_by_id(room_id)
         active_player = room.game.get_current_player()
         emit('set_allowed_abilities',
@@ -69,5 +69,6 @@ class GameNamespace(Namespace):
 
     def on_disconnect(self):
         """User disconnect from a game"""
-        room_id = session.pop('room_id', '')
-        leave_room(room_id)
+        # room_id = session.pop('room_id')
+        # leave_room(room_id)
+        pass

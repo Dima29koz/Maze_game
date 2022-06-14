@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector("#logout-room-btn").onclick = () => {
-        socket.emit('leave');
+        socket.emit('leave', {'room_id': room_id});
     };
 
     socket.on('join', data => {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let btn = document.createElement('button');
             btn.className = 'w-100 btn btn-lg btn-primary';
             btn.innerHTML = 'Начать игру';
-            btn.onclick = () => socket.emit('start');
+            btn.onclick = () => socket.emit('start', {'room_id': room_id});
             btn.disabled = !data.is_ready;
             div.append(btn);
         }

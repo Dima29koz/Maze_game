@@ -63,7 +63,8 @@ def registration():
     """
     form = RegistrationForm()
     if form.validate_on_submit():
-        User(form.username.data, form.pwd.data)
+        u = User(form.username.data, form.pwd.data)
+        print(u.user_name, 'added', 'redirecting. . .')
         return redirect(url_for('main.login'))
     return render_template('registration.html', form=form)
 

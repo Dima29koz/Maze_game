@@ -13,6 +13,7 @@ class BaseConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'A SECRET KEY'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
+    MANAGE_SESSION = True
 
 
 class DevelopmentConfig(BaseConfig):
@@ -35,4 +36,8 @@ class TestConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    MANAGE_SESSION = False
+    try:
+        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres', 'postgresql', 1)
+    except AttributeError:
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'maze.db')

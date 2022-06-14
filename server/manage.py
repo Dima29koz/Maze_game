@@ -1,11 +1,12 @@
 import os
-from flask_migrate import Migrate
+from dotenv import load_dotenv
+load_dotenv()
+from server.app import create_app, sio, db
+from server import config
 
-from app import create_app, sio, db
-import config
 
-app = create_app(os.environ.get('FLASK_ENV') or config.DevelopmentConfig)
-migrate = Migrate(app, db)
+conf = {'dev': config.DevelopmentConfig, 'prod': config.ProductionConfig, 'test': config.TestConfig}
+app = create_app(conf.get(os.environ.get('FLASK_ENV')))
 
 
 if __name__ == '__main__':

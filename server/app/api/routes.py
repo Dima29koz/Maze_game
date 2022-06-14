@@ -61,5 +61,5 @@ def get_user_games():
 def get_user_avatar(user_name):
     """API for getting user ave image"""
     filename = 'default_avatar.jpg'
-    file_path = os.path.join(os.path.split(api.root_path)[0], r'static\images', filename)
+    file_path = os.path.join(os.path.split(api.root_path)[0], 'static', 'images', filename)
     return send_file(file_path, mimetype='image/jpg')
