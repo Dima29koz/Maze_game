@@ -4,7 +4,8 @@ from GameEngine.globalEnv.enums import Directions
 from GameEngine.entities.treasure import Treasure, TreasureTypes
 from GameEngine.field_generator.level_pattern import PatternCell
 from GameEngine.field_generator.river_generator import RiverGenerator
-from GameEngine.field.cell import *
+from GameEngine.field.cell import (
+    Cell, CellRiver, CellExit, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CellClinic)
 from GameEngine.field.wall import *
 
 
@@ -71,7 +72,9 @@ class FieldGenerator:
                     ground_cells.append(self.field[row][col])
         self.ground_cells = ground_cells
 
-    def _generate_rivers(self, river_rules: list[int]):
+    def _generate_rivers(self, river_rules: dict):
+        if not river_rules['has_river']:
+            return []
         rg = RiverGenerator(self.cols, self.rows, self.pattern, self.field, self.ground_cells)
         return rg.spawn_rivers(river_rules)
 
@@ -110,7 +113,7 @@ class FieldGenerator:
 
                     self.field[row][col].change_neighbours(neighbours)
 
-    def _generate_walls(self, wall_rules):  # todo
+    def _generate_walls(self, wall_rules: dict):
         if not wall_rules.get('has_walls'):
             return
         cells = []
@@ -133,7 +136,7 @@ class FieldGenerator:
                 direction = river[i] - river[i+1]
                 river[i].break_wall(direction)
 
-    def _generate_outer_walls(self):
+    def _generate_outer_walls(self) -> list[Cell]:
         outer_cells = set()
         for row in range(0, self.rows):
             for col in range(0, self.cols):
@@ -146,7 +149,7 @@ class FieldGenerator:
         return list(outer_cells)
 
     @staticmethod
-    def _create_exit(outer_cells):
+    def _create_exit(outer_cells: list[Cell]):
         cell = choice(outer_cells)
         dirs = []
         for direction in Directions:
@@ -154,7 +157,7 @@ class FieldGenerator:
                 dirs.append(direction)
         direction = choice(dirs)
         cell.add_wall(direction, WallExit())
-        exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell)
+        exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell=cell)
         cell.neighbours.update({direction: exit_cell})
         return exit_cell
 

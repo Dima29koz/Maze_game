@@ -5,7 +5,12 @@ rules = {
         'rows': 4, 'cols': 5,
         'is_rect': True,
         'is_separated_armory': False,
-        'river_rules': [5, 3],
+        'river_rules': {
+            'has_river': True,
+            'min_coverage': 30,
+            'max_coverage': 70,
+            'min_len': 2,
+        },
         'treasures': [1, 1, 0],
         'walls': {
             'has_walls': True,

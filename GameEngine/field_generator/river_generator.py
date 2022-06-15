@@ -1,4 +1,4 @@
-from random import choice, shuffle
+from random import choice, shuffle, randint
 
 from GameEngine.field_generator.level_pattern import PatternCell
 from GameEngine.globalEnv.enums import Directions
@@ -6,7 +6,7 @@ from GameEngine.field.cell import Cell, CellRiver, CellRiverMouth
 
 
 class RiverGenerator:
-    def __init__(self, cols, rows,
+    def __init__(self, cols: int, rows: int,
                  pattern: list[list[PatternCell]],
                  field: list[list[Cell]],
                  ground_cells: list[Cell]):
@@ -15,7 +15,9 @@ class RiverGenerator:
         self.__field = field
         self.__ground_cells = ground_cells
 
-    def spawn_rivers(self, river_lengths) -> list[list[CellRiver]]:
+    def spawn_rivers(self, river_rules: dict) -> list[list[CellRiver]]:
+        river_lengths = self.__calc_river_lengths(
+            river_rules['min_coverage'], river_rules['max_coverage'], river_rules['min_len'])
         rivers = []
         for length in river_lengths:
             river = self.generate_river(length)
@@ -23,7 +25,7 @@ class RiverGenerator:
                 rivers.append(river)
         return rivers
 
-    def generate_river(self, length) -> list[CellRiver] | None:
+    def generate_river(self, length: int) -> list[CellRiver] | None:
         river_tmp = self.__gen_river(length)
         if not river_tmp:
             return
@@ -34,7 +36,7 @@ class RiverGenerator:
             self.__field[riv_cell.y][riv_cell.x] = riv_cell
         return river
 
-    def __gen_river(self, length) -> list[Cell] | None:
+    def __gen_river(self, length: int) -> list[Cell] | None:
         shuffle(self.__ground_cells)
         for source in self.__ground_cells:
             river = self.__gen_next_river_cell(length - 1, [source])
@@ -52,7 +54,7 @@ class RiverGenerator:
                 empty_neighbours.append(self.__field[y][x])
         return empty_neighbours
 
-    def __gen_next_river_cell(self, length, river: list[Cell]) -> list[Cell] | None:
+    def __gen_next_river_cell(self, length: int, river: list[Cell]) -> list[Cell] | None:
         if length == 0:
             self.__pattern[river[-1].y][river[-1].x].visited = True
             return river
@@ -71,3 +73,17 @@ class RiverGenerator:
                 last = river.pop()
                 self.__pattern[last.y][last.x].visited = False
                 return
+
+    def __calc_river_lengths(self, min_coverage: int, max_coverage: int, min_len: int) -> list[int]:
+        coverage = randint(min_coverage, max_coverage) / 100
+        river_cells_amount = int((len(self.__ground_cells) - 5) * coverage)
+        if river_cells_amount < min_len*2:
+            return [river_cells_amount]
+        rivers = []
+        while river_cells_amount > 0:
+            riv_len = randint(min_len, river_cells_amount)
+            if river_cells_amount - riv_len < min_len:
+                riv_len = river_cells_amount
+            river_cells_amount -= riv_len
+            rivers.append(riv_len)
+        return rivers

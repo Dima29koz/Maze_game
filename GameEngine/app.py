@@ -4,11 +4,10 @@ from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions
 
-from .rules import rules
+from GameEngine.rules import rules
 
 
 def main():
-    # rules['generator_rules']['river_rules'] = []
     game = Game(rules=rules)
     field = game.field
     field.spawn_player({'x': 1, 'y': 1}, 'Skipper', 1)

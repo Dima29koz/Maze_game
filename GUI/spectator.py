@@ -134,7 +134,7 @@ class SpectatorGUI:
         if type(cell) is CellExit:
             return 55, 120, 20
         if type(cell) in [CellRiver, CellRiverMouth]:
-            return 62, 105, len(cell.river) * 30
+            return 62, 105, (len(cell.river) * 30) % 255
         else:
             return 107, 98, 60
 
