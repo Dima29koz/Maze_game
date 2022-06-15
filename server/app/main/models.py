@@ -78,11 +78,11 @@ class GameRoom(db.Model):
     """
     This is a Game Room model. Its contains information about game
 
-    :param name: name of a room
+    :cvar name: name of a room
     :type name: str
-    :param pwd: password of a room
+    :cvar pwd: password of a room
     :type pwd: str
-    :cvar rules: rules of a room
+    :cvar rules: rules for a room
     :type rules: dict
     :cvar date: date of room creation
     :type date: DateTime
@@ -95,13 +95,14 @@ class GameRoom(db.Model):
     :cvar is_ended: ended state
     :type is_ended: bool
     """
-
-    def __init__(self, name: str, pwd: str, players_amount: int, bots_amount: int, creator: User):
-        self.name = name
-        self.pwd = generate_password_hash(pwd)
+    def __init__(self, rules_form, creator: User):
+        self.name = rules_form.room_name.data
+        self.pwd = generate_password_hash(rules_form.pwd.data)
         self.rules = default_rules
-        self.rules['players_amount'] = players_amount
-        self.rules['bots_amount'] = bots_amount
+        self.rules['players_amount'] = rules_form.players_amount.data
+        self.rules['bots_amount'] = rules_form.bots_amount.data
+        self.rules['is_rect'] = rules_form.is_rect.data
+        self.rules['is_separated_armory'] = rules_form.is_separated_armory.data
         self.set_creator(creator)
         self.add()
         self.add_game()

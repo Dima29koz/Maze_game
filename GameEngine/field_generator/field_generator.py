@@ -37,11 +37,11 @@ class FieldGenerator:
         """returns generated exit-cell"""
         return self.exit_cell
 
-    def _generate_field(self, rules):
+    def _generate_field(self, rules: dict):
         self._generate_pattern(rules['is_rect'])
         self._generate_base_field()
         self.rivers = self._generate_rivers(rules['river_rules'])
-        self._generate_armory(rules['armory'])
+        self._generate_armory(rules['is_separated_armory'])
         self._generate_clinic()
         self.treasures = self._spawn_treasures(rules['treasures'])
         self._generate_connections()
@@ -75,11 +75,11 @@ class FieldGenerator:
         rg = RiverGenerator(self.cols, self.rows, self.pattern, self.field, self.ground_cells)
         return rg.spawn_rivers(river_rules)
 
-    def _generate_armory(self, armory_rules: bool):
+    def _generate_armory(self, is_separated_armory: bool):
         """
-        :param armory_rules: True if needed 2 different types
+        :param is_separated_armory: True if needed 2 different types
         """
-        if armory_rules:
+        if is_separated_armory:
             cell = choice(self.ground_cells)
             self.field[cell.y][cell.x] = CellArmoryWeapon(cell.x, cell.y)
             self.ground_cells.remove(cell)

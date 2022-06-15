@@ -3,9 +3,9 @@
 rules = {
     'generator_rules': {
         'rows': 4, 'cols': 5,
-        'is_rect': False,
+        'is_rect': True,
+        'is_separated_armory': False,
         'river_rules': [5, 3],
-        'armory': True,
         'treasures': [1, 1, 0],
         'walls': {
             'has_walls': True,

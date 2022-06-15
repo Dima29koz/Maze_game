@@ -78,7 +78,9 @@ class RulesForm(FlaskForm):
         "Число ботов",
         validators=[NumberRange(min=0, max=10, message='Число ботов должно быть от 0 до 10')],
         default=0,
-        render_kw={'disabled': False})
+        render_kw={'disabled': True})
+    is_rect = BooleanField("Поле прямоугольной формы", default=True)
+    is_separated_armory = BooleanField("Раздельные склады оружия и взрывчатки", default=False)
     submit = SubmitField("Создать")
 
     def validate_room_name(self, room_name: StringField):

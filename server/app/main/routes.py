@@ -120,12 +120,7 @@ def room_create():
     """
     form = RulesForm()
     if form.validate_on_submit():
-        room = GameRoom(
-            form.room_name.data,
-            form.pwd.data,
-            form.players_amount.data,
-            form.bots_amount.data,
-            current_user)
+        room = GameRoom(form, current_user)
         return redirect(url_for("main.game_room", room=room.name, room_id=room.id))
     return render_template('create.html', form=form)
 
