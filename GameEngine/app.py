@@ -5,6 +5,7 @@ from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions
 
 from GameEngine.rules import rules
+from bots_ai.turn_state import BotAI
 
 
 def main():
@@ -12,7 +13,9 @@ def main():
     field = game.field
     field.spawn_player({'x': 1, 'y': 1}, 'Skipper', 1)
     # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
-    gui = SpectatorGUI(field)
+
+    bot = BotAI(rules, 'Skipper')
+    gui = SpectatorGUI(field, bot)
 
     state = Actions.move
     is_running = True

@@ -1,19 +1,28 @@
 import pygame
 from pygame.locals import *
 
+from GUI.painter import Painter
 from GameEngine.field.field import Field
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.field.cell import *
 from GameEngine.field.wall import *
+from GUI.utils import get_cell_color, get_key_act, get_wall_color
 from GUI.button import Button
+from GUI.bot_ai_spectator import BotAISpectator
+
+from bots_ai.turn_state import BotAI
 
 FPS = 30
-RES = WIDTH, HEIGHT = 1202, 600
+RES = WIDTH, HEIGHT = 1600, 800
 TILE = 50
+BTN_X = 0
+BTN_Y = 300
+DIST = 15
+LIMIT = 10
 
 
 class SpectatorGUI:
-    def __init__(self, field: Field):
+    def __init__(self, field: Field, bot: BotAI = None):
         self.fps = FPS
         self.res = RES
         self.tile_size = TILE
@@ -22,18 +31,24 @@ class SpectatorGUI:
         pygame.font.init()
         self.sc = pygame.display.set_mode(RES)
         self.clock = pygame.time.Clock()
+        self.painter = Painter(self.sc, self.tile_size)
+        self.bot_spectator = BotAISpectator(bot, limit=LIMIT) if bot else None
 
-        up = Button(self.sc, (self.tile_size+400, 50+300), "↑", Directions.top, self.tile_size)
-        down = Button(self.sc, (self.tile_size+400, 100+300), "↓", Directions.bottom, self.tile_size)
-        left = Button(self.sc, (0+400, 100+300), "←",  Directions.left, self.tile_size)
-        right = Button(self.sc, (self.tile_size * 2+400, 100+300), "→", Directions.right, self.tile_size)
+        up = Button(self.sc, (self.tile_size + BTN_X, self.tile_size + BTN_Y), "↑", Directions.top, self.tile_size)
+        down = Button(self.sc, (self.tile_size + BTN_X, self.tile_size * 2 + BTN_Y), "↓", Directions.bottom,
+                      self.tile_size)
+        left = Button(self.sc, (BTN_X, self.tile_size * 2 + BTN_Y), "←", Directions.left, self.tile_size)
+        right = Button(self.sc, (self.tile_size * 2 + BTN_X, self.tile_size * 2 + BTN_Y), "→", Directions.right,
+                       self.tile_size)
 
-        take_tr = Button(self.sc, (100 + 400, 0 + 300), "Tr", Actions.swap_treasure, self.tile_size)
-        skip = Button(self.sc, (0 + 400, 0 + 300), "sk", Actions.skip, self.tile_size)
+        take_tr = Button(self.sc, (self.tile_size * 2 + BTN_X, BTN_Y), "Tr", Actions.swap_treasure, self.tile_size)
+        skip = Button(self.sc, (BTN_X, BTN_Y), "sk", Actions.skip, self.tile_size)
 
-        moving = Button(self.sc, (150 + 400, 100 + 300), "mo", Actions.move, self.tile_size)
-        shooting = Button(self.sc, (150 + 400, 0 + 300), "sh", Actions.shoot_bow, self.tile_size)
-        bombing = Button(self.sc, (150 + 400, 50 + 300), "bo", Actions.throw_bomb, self.tile_size)
+        moving = Button(self.sc, (self.tile_size * 3 + BTN_X, self.tile_size * 2 + BTN_Y), "mo", Actions.move,
+                        self.tile_size)
+        shooting = Button(self.sc, (self.tile_size * 3 + BTN_X, BTN_Y), "sh", Actions.shoot_bow, self.tile_size)
+        bombing = Button(self.sc, (self.tile_size * 3 + BTN_X, self.tile_size + BTN_Y), "bo", Actions.throw_bomb,
+                         self.tile_size)
 
         moving.is_active = True
         self.buttons = [up, down, left, right, take_tr, skip, moving, shooting, bombing]
@@ -44,9 +59,28 @@ class SpectatorGUI:
         self.clock.tick(30)
         self.sc.fill(pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
-        self.draw_field()
-        self.draw_treasures()
-        self.draw_players()
+        self.painter.draw(grid=self.field.field, players=self.field.players, treasures=self.field.treasures)
+        dx = len(self.field.field[0]) * self.tile_size + DIST
+        if self.bot_spectator:
+            fields, fields_amount = self.bot_spectator.get_fields()
+            f1 = pygame.font.Font(None, 25)
+            text = f1.render(f'leaves amount: {fields_amount}', True, (255, 255, 255))
+            place = text.get_rect(topleft=(10, HEIGHT-25))
+            self.sc.blit(text, place)
+            f_size_x = len(fields[0][0][0])
+            f_size_y = len(fields[0][0])
+            tile_size = 30
+            i = 0
+            start_y = 0
+            for field in fields:
+                start_x = dx + (f_size_x * tile_size + DIST) * i
+                if start_x + f_size_x * tile_size + DIST > RES[0]:
+                    i = 0
+                    start_y += f_size_y * tile_size + DIST
+                    start_x = dx + (f_size_x * tile_size + DIST) * i
+                self.painter.draw(grid=field[0], players=[field[1]],
+                                  start_x=start_x, start_y=start_y, tile_size=tile_size)
+                i += 1
 
         pygame.display.flip()
 
@@ -56,19 +90,12 @@ class SpectatorGUI:
                 self.close()
 
             if event.type == KEYUP:
-                return self.get_key_act(event.key, allowed_actions, current_state)
+                return get_key_act(event.key, allowed_actions, current_state)
 
             if event.type == pygame.MOUSEBUTTONUP:
                 return self.get_click_act(allowed_actions, current_state)
 
         return None, current_state
-
-    def get_key_act(self, key, allowed_actions, current_state):
-        if key:
-            action, direction = self.convert_keys(key)
-            if (not action) or not allowed_actions[action]:
-                return None, current_state
-            return (action, direction), current_state
 
     def get_click_act(self, allowed_actions, current_state):
         pos = pygame.mouse.get_pos()
@@ -93,64 +120,6 @@ class SpectatorGUI:
     def close():
         exit()
 
-    @staticmethod
-    def convert_keys(key) -> tuple[Actions | None, Directions | None]:
-        if key == K_SPACE:
-            return Actions.skip, None
-        if key == K_RETURN:
-            return Actions.swap_treasure, None
-
-        if key == K_UP:
-            return Actions.move, Directions.top
-        if key == K_DOWN:
-            return Actions.move, Directions.bottom
-        if key == K_LEFT:
-            return Actions.move, Directions.left
-        if key == K_RIGHT:
-            return Actions.move, Directions.right
-
-        if key == K_w:
-            return Actions.throw_bomb, Directions.top
-        if key == K_s:
-            return Actions.throw_bomb, Directions.bottom
-        if key == K_a:
-            return Actions.throw_bomb, Directions.left
-        if key == K_d:
-            return Actions.throw_bomb, Directions.right
-
-        if key == K_i:
-            return Actions.shoot_bow, Directions.top
-        if key == K_k:
-            return Actions.shoot_bow, Directions.bottom
-        if key == K_j:
-            return Actions.shoot_bow, Directions.left
-        if key == K_l:
-            return Actions.shoot_bow, Directions.right
-
-        return None, None
-
-    @staticmethod
-    def get_cell_color(cell):
-        if type(cell) is CellExit:
-            return 55, 120, 20
-        if type(cell) in [CellRiver, CellRiverMouth]:
-            return 62, 105, (len(cell.river) * 30) % 255
-        else:
-            return 107, 98, 60
-
-    @staticmethod
-    def get_wall_color(wall):
-        if type(wall) is WallOuter:
-            return 60, 45, 15
-        if type(wall) is WallConcrete:
-            return 170, 105, 25
-        if type(wall) is WallExit:
-            return 54, 171, 28
-        if type(wall) is WallRubber:
-            return 15, 15, 15
-        else:
-            return 'darkslategray'
-
     def draw_buttons(self, allowed_actions):
         for button in self.buttons:
             if button not in self.buttons_dirs:
@@ -158,99 +127,3 @@ class SpectatorGUI:
                     button.draw()
             else:
                 button.draw()
-
-    def draw_field(self):
-        grid_cells = self.field.field
-        for row in grid_cells:
-            for cell in row:
-                if cell:
-                    self.draw_cell(cell)
-                    self.draw_walls(cell)
-
-    def draw_cell(self, cell):
-        x, y = cell.x * self.tile_size, cell.y * self.tile_size
-        pygame.draw.rect(self.sc, pygame.Color(self.get_cell_color(cell)),
-                         (x + 2, y + 2, self.tile_size - 2, self.tile_size - 2))
-        if type(cell) in [CellRiver, CellRiverMouth]:
-            self.draw_river_dir(cell, x, y)
-        if type(cell) == CellClinic:
-            self.draw_clinic(x, y)
-        if isinstance(cell, CellArmory):
-            self.draw_armory(cell, x, y)
-
-    def draw_clinic(self, x, y):
-        f1 = pygame.font.Font(None, self.tile_size)
-        text = f1.render('H', True, (155, 15, 15))
-        place = text.get_rect(center=(x + self.tile_size // 2, y + self.tile_size // 2))
-        self.sc.blit(text, place)
-
-    def draw_armory(self, cell, x, y):
-        s = 'A'
-        if type(cell) == CellArmoryExplosive:
-            s += 'E'
-        if type(cell) == CellArmoryWeapon:
-            s += 'W'
-        f1 = pygame.font.Font(None, self.tile_size * 4 // 5)
-        text = f1.render(s, True, (180, 180, 180))
-        place = text.get_rect(center=(x + self.tile_size // 2, y + self.tile_size // 2))
-        self.sc.blit(text, place)
-
-    def draw_treasures(self):
-        treasures = self.field.treasures
-        for treasure in treasures:
-            x, y = treasure.cell.x * self.tile_size, treasure.cell.y * self.tile_size
-            self.draw_treasure(treasure, x, y)
-
-    def draw_treasure(self, treasure, x, y):
-        if treasure.t_type is TreasureTypes.very:
-            pygame.draw.rect(self.sc, pygame.Color(209, 171, 0),
-                             (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                              self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-        if treasure.t_type is TreasureTypes.spurious:
-            pygame.draw.rect(self.sc, pygame.Color(87, 201, 102),
-                             (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                              self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-        if treasure.t_type is TreasureTypes.mined:
-            pygame.draw.rect(self.sc, pygame.Color(201, 92, 87),
-                             (x + self.tile_size // 3 + 2, y + self.tile_size // 3 + 2,
-                              self.tile_size // 3 - 2, self.tile_size // 3 - 2))
-
-    def draw_players(self):
-        players = self.field.players
-        for player in players:
-            if player.is_alive:
-                self.draw_player(player)
-
-    def draw_player(self, player):
-        x = player.cell.x * self.tile_size + self.tile_size // 2
-        y = player.cell.y * self.tile_size + self.tile_size // 2
-        if player.is_active:
-            pygame.draw.circle(self.sc, (255, 255, 255),
-                               (x, y), self.tile_size // 3.5)
-        pygame.draw.circle(self.sc, pygame.Color(abs(hash(player.name)) % 255, 155, 155),
-                           (x, y), self.tile_size // 4)
-
-        if player.treasure:
-            x, y = player.cell.x * self.tile_size, player.cell.y * self.tile_size
-            self.draw_treasure(player.treasure, x, y)
-
-    def draw_river_dir(self, cell, x, y):
-        f1 = pygame.font.Font(None, self.tile_size * 2 // 3)
-        s = str(cell.river.index(cell))
-        text = f1.render(s, True, (180, 180, 180))
-        place = text.get_rect(center=(x + self.tile_size // 2, y + self.tile_size // 2))
-        self.sc.blit(text, place)
-
-    def draw_walls(self, cell: Cell):
-        x, y = cell.x * self.tile_size, cell.y * self.tile_size
-        pygame.draw.line(self.sc, self.get_wall_color(cell.walls[Directions.top]),
-                         (x, y), (x + self.tile_size, y), 3)
-
-        pygame.draw.line(self.sc, self.get_wall_color(cell.walls[Directions.right]),
-                         (x + self.tile_size, y), (x + self.tile_size, y + self.tile_size), 3)
-
-        pygame.draw.line(self.sc, self.get_wall_color(cell.walls[Directions.bottom]),
-                         (x + self.tile_size, y + self.tile_size), (x, y + self.tile_size), 3)
-
-        pygame.draw.line(self.sc, self.get_wall_color(cell.walls[Directions.left]),
-                         (x, y + self.tile_size), (x, y), 3)
