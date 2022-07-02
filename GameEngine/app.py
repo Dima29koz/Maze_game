@@ -19,15 +19,22 @@ def main():
 
     state = Actions.move
     is_running = True
+
+    response = game.field.action_handler(Actions.info)
+    print(response.get_turn_info(), response.get_info())
+    print(response.get_raw_info())
+    bot.process_turn_resp(response.get_raw_info())
+
     while is_running:
         act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
         gui.draw(act_pl_abilities)
         act, state = gui.get_action(act_pl_abilities, state)
         if act:
-
             response = game.field.action_handler(*act)
-
             print(response.get_turn_info(), response.get_info())
+            print(response.get_raw_info())
+            bot.process_turn_resp(response.get_raw_info())
+
             if game.is_win_condition(rules):
                 is_running = False
 

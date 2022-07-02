@@ -18,7 +18,7 @@ info = {
     WallEmpty: {'name': {'ru': 'прошёл', 'en': ''}, 'mechanics': {'ru': ''}},
     WallConcrete: {'name': {'ru': 'стена'}, 'mechanics': {'ru': ''}},
     WallOuter: {'name': {'ru': 'внешняя стена'}, 'mechanics': {'ru': ''}},
-    WallRubber: {'name': {'ru': 'резиновая стена'}, 'mechanics': {'ru': ''}},
+    WallRubber: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
     WallExit: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
     WallEntrance: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
 
@@ -43,6 +43,7 @@ class RespHandler:
     :ivar direction: players direction
     :type direction: str
     """
+
     def __init__(self):
         self.treasures: list[TreasureTypes] = []
         self.cell_at_end_of_turn: Cell | None = None
@@ -79,6 +80,15 @@ class RespHandler:
         """returns turn info converted to dict"""
         return {'player_name': self.player_name, 'action': self.action, 'direction': self.direction}
 
+    def get_raw_info(self):
+        return self.get_turn_info() | {
+            'response': {
+                'type_out_treasure': self.treasures[0]
+                if len(self.treasures) > 0 and type(self.cell_at_end_of_turn) == CellExit else None,
+                'cell_treasures_amount': len(self.treasures) if not type(self.cell_at_end_of_turn) == CellExit else 0,
+            }
+        }
+
     @staticmethod
     def _translate(obj: Type[Cell | WallEmpty] | TreasureTypes, rtype='name', lang='ru'):
         return info[obj][rtype][lang]
@@ -88,6 +98,7 @@ class RespHandlerSkip(RespHandler):
     """
     Response handler object for action Skip
     """
+
     def __init__(self):
         super().__init__()
 
@@ -95,11 +106,17 @@ class RespHandlerSkip(RespHandler):
         res = self._translate(type(self.cell_at_end_of_turn))
         return res + super().get_info()
 
+    def get_raw_info(self):
+        res = super().get_raw_info()
+        res['response'] = res.get('response') | {'type_cell_at_end_of_turn': type(self.cell_at_end_of_turn)}
+        return res
+
 
 class RespHandlerSwapTreasure(RespHandler):
     """
     Response handler object for action SwapTreasure
     """
+
     def __init__(self, has_treasure: bool):
         super().__init__()
         self.has_treasure = has_treasure
@@ -107,11 +124,17 @@ class RespHandlerSwapTreasure(RespHandler):
     def get_info(self):
         return 'сменил клад' if self.has_treasure else 'подобрал клад'
 
+    def get_raw_info(self):
+        return self.get_turn_info() | {
+            'response': {'had_treasure': self.has_treasure}
+        }
+
 
 class RespHandlerShootBow(RespHandlerSkip):
     """
     Response handler object for action ShootBow
     """
+
     def __init__(self,
                  damaged_players: list[Player] = None,
                  dead_players: list[Player] = None,
@@ -137,11 +160,22 @@ class RespHandlerShootBow(RespHandlerSkip):
 
         return res + super().get_info()
 
+    def get_raw_info(self):
+        res = super().get_raw_info()
+        res['response'] = res.get('response') | {
+            'hit': self.hit,
+            'dmg_pls': [player.name for player in self.damaged_players],
+            'dead_pls': [player.name for player in self.dead_players],
+            'drop_pls': [player.name for player in self.lost_treasure_players]
+        }
+        return res
+
 
 class RespHandlerBombing(RespHandlerSkip):
     """
     Response handler object for action Bombing
     """
+
     def __init__(self, damaged_wall_type: WallEmpty):
         super().__init__()
         self.damaged_wall = damaged_wall_type
@@ -150,11 +184,19 @@ class RespHandlerBombing(RespHandlerSkip):
         res = 'взорвал, ' if self.damaged_wall.breakable else 'не взорвал, '
         return res + super().get_info()
 
+    def get_raw_info(self):
+        res = super().get_raw_info()
+        res['response'] = res.get('response') | {
+            'destroyed': self.damaged_wall.breakable
+        }
+        return res
+
 
 class RespHandlerMoving(RespHandler):
     """
     Response handler object for action Move
     """
+
     def __init__(self, wall_type: Type[WallEmpty], cell_after_wall_check: Cell):
         super().__init__()
         self.wall_type = wall_type
@@ -162,18 +204,33 @@ class RespHandlerMoving(RespHandler):
 
     def get_info(self):
         res = f'{self._translate(self.wall_type)}'
-        if self.cell_after_wall_check != self.cell_at_end_of_turn:
+        if self.cell_after_wall_check != self.cell_at_end_of_turn:  # fixme bug with rubber_wall
             res += f', {self._translate(type(self.cell_after_wall_check))}'
         res += f', {self._translate(type(self.cell_at_end_of_turn))}'
         return res + super().get_info()
+
+    def get_raw_info(self):
+        res = super().get_raw_info()
+        res['response'] = res.get('response') | {
+            'diff_cells': self.cell_after_wall_check != self.cell_at_end_of_turn,
+            'type_cell_after_wall_check': type(self.cell_after_wall_check),
+            'type_cell_at_end_of_turn': type(self.cell_at_end_of_turn),
+        }
+        return res
 
 
 class RespHandlerInfo(RespHandler):
     """
     Response handler object for action Info
     """
+
     def __init__(self):
         super().__init__()
 
     def get_info(self):
         return self._translate(type(self.cell_at_end_of_turn)) + super().get_info()
+
+    def get_raw_info(self):
+        res = super().get_raw_info()
+        res['response'] = res.get('response') | {'type_cell_at_end_of_turn': type(self.cell_at_end_of_turn)}
+        return res

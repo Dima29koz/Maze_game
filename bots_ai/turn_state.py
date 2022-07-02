@@ -1,7 +1,10 @@
+from typing import Type
+
 from GameEngine.entities.player import Player
 from GameEngine.field import cell
 from GameEngine.field import wall
-from GameEngine.globalEnv.enums import Directions
+from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
+from GameEngine.field import response as r
 from GameEngine.rules import rules as base_rules
 
 
@@ -43,14 +46,13 @@ class FieldState:
 
 
 class BotAI:
-    def __init__(self, game_rules: dict, name: str, pos_x: int = None, pos_y: int = None,
-                 current_cell_type: cell.Cell = type(cell.Cell)):
+    def __init__(self, game_rules: dict, name: str, pos_x: int = None, pos_y: int = None):
         self.size_x = game_rules.get('generator_rules').get('cols')
         self.size_y = game_rules.get('generator_rules').get('rows')
-        self.cols = 2 * self.size_x - 1
-        self.rows = 2 * self.size_y - 1
-        self.pos_x = pos_x if pos_x else self.size_x-1
-        self.pos_y = pos_y if pos_y else self.size_y-1
+        self.cols = 2 * self.size_x + 1
+        self.rows = 2 * self.size_y + 1
+        self.pos_x = pos_x if pos_x else self.size_x
+        self.pos_y = pos_y if pos_y else self.size_y
         field = self._generate_start_field()
         player = Player(field[self.pos_y][self.pos_x], name)
         self.field_root = FieldState(field, player)
@@ -61,6 +63,69 @@ class BotAI:
         self._collect_leaf_nodes(self.field_root, leaves)
         return leaves
 
+    def process_turn_resp(self, raw_response: dict):
+        action = Actions[raw_response.get('action')]
+        direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
+        player_name: str = raw_response.get('player_name')
+        response: dict = raw_response.get('response')
+
+        action_to_processor = {
+            Actions.swap_treasure: self._treasure_swap_processor,
+            Actions.shoot_bow: self._shooting_processor,
+            Actions.throw_bomb: self._bomb_throw_processor,
+            Actions.skip: self._pass_processor,
+            Actions.move: self._movement_processor,
+            Actions.info: self._info_processor,
+        }
+
+        action_to_processor[action](player_name, direction, response)
+
+    def _treasure_swap_processor(self, player_name: str, direction: Directions | None, response: dict):
+        pass
+
+    def _shooting_processor(self, player_name: str, direction: Directions, response: dict):
+        pass
+
+    def _bomb_throw_processor(self, player_name: str, direction: Directions, response: dict):
+        pass
+
+    def _pass_processor(self, player_name: str, direction: Directions | None, response: dict):
+        pass
+
+    def _movement_processor(self, player_name: str, direction: Directions, response: dict):
+        is_diff_cells: bool = response.get('diff_cells')
+        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
+        type_cell_after_wall_check: Type[cell.Cell] = response.get('type_cell_after_wall_check')
+        cell_treasures_amount: int = response.get('cell_treasures_amount')
+        type_out_treasure: TreasureTypes = response.get('type_out_treasure')
+
+        x, y = direction.calc(self.field_root.player.cell.x, self.field_root.player.cell.y)
+        self.field_root.player.move(self.field_root.field[y][x])
+        pos_x = self.field_root.player.cell.x
+        pos_y = self.field_root.player.cell.y
+        self._update_cell_type(type_cell_turn_end, pos_x, pos_y)
+
+    def _info_processor(self, player_name: str, direction: Directions, response: dict):
+        type_cell_turn_end = response.get('type_cell_at_end_of_turn')
+        cell_treasures_amount: int = response.get('cell_treasures_amount')
+
+        pos_x = self.field_root.player.cell.x
+        pos_y = self.field_root.player.cell.y
+        self._update_cell_type(type_cell_turn_end, pos_x, pos_y)
+
+    def _calc_possible_trajectories(self):
+        pass
+
+    def _update_cell_type(self, new_type: Type[cell.Cell], pos_x: int, pos_y: int):
+        if new_type is cell.CellExit:
+            print('exit')  # fixme
+            return
+        neighbours = self.field_root.field[pos_y][pos_x].neighbours
+        walls = self.field_root.field[pos_y][pos_x].walls
+        self.field_root.field[pos_y][pos_x] = new_type(pos_x, pos_y)
+        self.field_root.field[pos_y][pos_x].change_neighbours(neighbours)
+        self.field_root.field[pos_y][pos_x].walls = walls
+
     def _collect_leaf_nodes(self, node, leaves):
         if node is not None:
             if not node.next_states:
@@ -69,7 +134,9 @@ class BotAI:
                 self._collect_leaf_nodes(n, leaves)
 
     def _generate_start_field(self):
-        field = [[UnknownCell(col, row) for col in range(self.cols)] for row in range(self.rows)]
+        field = [[UnknownCell(col, row)
+                  if row not in [0, self.rows-1] and col not in [0, self.cols-1] else None
+                  for col in range(self.cols)] for row in range(self.rows)]
         self._generate_connections(field)
         return field
 
