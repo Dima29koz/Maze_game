@@ -3,10 +3,8 @@ from pygame.locals import *
 
 from GUI.painter import Painter
 from GameEngine.field.field import Field
-from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
-from GameEngine.field.cell import *
-from GameEngine.field.wall import *
-from GUI.utils import get_cell_color, get_key_act, get_wall_color
+from GameEngine.globalEnv.enums import Directions, Actions
+from GUI.utils import get_key_act
 from GUI.button import Button
 from GUI.bot_ai_spectator import BotAISpectator
 
@@ -56,7 +54,7 @@ class SpectatorGUI:
         self.buttons_dirs = [up, down, left, right]
 
     def draw(self, allowed_actions):
-        self.clock.tick(30)
+        self.clock.tick(self.fps)
         self.sc.fill(pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
         self.painter.draw(grid=self.field.field, players=self.field.players, treasures=self.field.treasures)
@@ -79,7 +77,7 @@ class SpectatorGUI:
                     start_y += f_size_y * tile_size + DIST
                     start_x = dx + (f_size_x * tile_size + DIST) * i
                 self.painter.draw(grid=field[0], players=[field[1]],
-                                  start_x=start_x, start_y=start_y, tile_size=tile_size)
+                                  start_x=start_x, start_y=start_y, tile_size=tile_size, pl=False)
                 i += 1
 
         pygame.display.flip()
@@ -92,7 +90,7 @@ class SpectatorGUI:
             if event.type == KEYUP:
                 return get_key_act(event.key, allowed_actions, current_state)
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 return self.get_click_act(allowed_actions, current_state)
 
         return None, current_state
@@ -102,6 +100,7 @@ class SpectatorGUI:
         for button in self.buttons:
             if button.get().collidepoint(pos):
                 return self.btn_on_click(button, allowed_actions, current_state)
+        return None, current_state
 
     def btn_on_click(self, button, allowed_actions, current_state):
         if (button not in self.buttons_dirs and allowed_actions[button.action]) \

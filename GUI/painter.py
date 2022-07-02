@@ -13,15 +13,16 @@ class Painter:
         self.start_y = 0
 
     def draw(self, grid=None, players=None, treasures=None,
-             start_x: int = None, start_y: int = None, tile_size: int = None):
+             start_x: int = None, start_y: int = None, tile_size: int = None,
+             gr=True, pl=True, tr=True):
         dx = start_x if start_x else self.start_x
         dy = start_y if start_y else self.start_y
         ts = tile_size if tile_size else self.tile_size
-        if grid:
+        if grid and gr:
             self.draw_field(grid, dx, dy, ts)
-        if players:
+        if players and pl:
             self.draw_players(players, dx, dy, ts)
-        if treasures:
+        if treasures and tr:
             self.draw_treasures(treasures, dx, dy, ts)
 
     def draw_field(self, grid, dx, dy, ts):
@@ -44,7 +45,10 @@ class Painter:
 
     def draw_river_dir(self, cell, x, y, ts):
         f1 = pygame.font.Font(None, ts * 2 // 3)
-        s = str(cell.river.index(cell))
+        try:
+            s = str(cell.river.index(cell))
+        except ValueError:
+            s = '?' if type(cell) == c.CellRiver else 'y'
         text = f1.render(s, True, (180, 180, 180))
         place = text.get_rect(center=(x + ts // 2, y + ts // 2))
         self.sc.blit(text, place)

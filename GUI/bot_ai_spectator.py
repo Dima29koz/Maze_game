@@ -7,5 +7,6 @@ class BotAISpectator:
         self.limit = limit
 
     def get_fields(self):
+        """return list of tree leaves limited by `limit` param and total leaves amount"""
         fields = self.bot.get_fields()
         return fields[:self.limit], len(fields)
