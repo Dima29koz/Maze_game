@@ -15,12 +15,12 @@ info = {
     CellArmoryWeapon: {'name': {'ru': 'Склад оружия'}, 'mechanics': {'ru': 'запас стрел восстановлен'}},
     CellArmoryExplosive: {'name': {'ru': 'Склад взрывчатки'}, 'mechanics': {'ru': 'запас бомб восстановлен'}},
 
-    WallEmpty: {'name': {'ru': 'прошёл', 'en': ''}, 'mechanics': {'ru': ''}},
-    WallConcrete: {'name': {'ru': 'стена'}, 'mechanics': {'ru': ''}},
-    WallOuter: {'name': {'ru': 'внешняя стена'}, 'mechanics': {'ru': ''}},
-    WallRubber: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
-    WallExit: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
-    WallEntrance: {'name': {'ru': 'прошёл'}, 'mechanics': {'ru': ''}},
+    WallEmpty: {'name': {'ru': 'прошёл', 'en': '', 'ai': WallEmpty}, 'mechanics': {'ru': '', 'ai': True}},
+    WallConcrete: {'name': {'ru': 'стена', 'ai': WallConcrete}, 'mechanics': {'ru': '', 'ai': False}},
+    WallOuter: {'name': {'ru': 'внешняя стена', 'ai': WallOuter}, 'mechanics': {'ru': '', 'ai': False}},
+    WallRubber: {'name': {'ru': 'прошёл', 'ai': WallRubber}, 'mechanics': {'ru': '', 'ai': True}},
+    WallExit: {'name': {'ru': 'прошёл', 'ai': WallExit}, 'mechanics': {'ru': '', 'ai': True}},
+    WallEntrance: {'name': {'ru': 'прошёл', 'ai': WallEntrance}, 'mechanics': {'ru': '', 'ai': True}},
 
     TreasureTypes.very: {'name': {'ru': 'истинный'}, },
     TreasureTypes.spurious: {'name': {'ru': 'ложный'}, },
@@ -212,6 +212,8 @@ class RespHandlerMoving(RespHandler):
     def get_raw_info(self):
         res = super().get_raw_info()
         res['response'] = res.get('response') | {
+            'wall_passed': info[self.wall_type]['mechanics']['ai'],
+            'wall_type': self.wall_type if not info[self.wall_type]['mechanics']['ai'] else None,
             'diff_cells': self.cell_after_wall_check != self.cell_at_end_of_turn,
             'type_cell_after_wall_check': type(self.cell_after_wall_check),
             'type_cell_at_end_of_turn': type(self.cell_at_end_of_turn),

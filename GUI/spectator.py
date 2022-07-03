@@ -16,7 +16,7 @@ TILE = 50
 BTN_X = 0
 BTN_Y = 300
 DIST = 15
-LIMIT = 10
+LIMIT = 20
 
 
 class SpectatorGUI:
@@ -67,7 +67,7 @@ class SpectatorGUI:
             self.sc.blit(text, place)
             f_size_x = len(fields[0][0][0])
             f_size_y = len(fields[0][0])
-            tile_size = 30
+            tile_size = 20
             i = 0
             start_y = 0
             for field in fields:
@@ -77,7 +77,7 @@ class SpectatorGUI:
                     start_y += f_size_y * tile_size + DIST
                     start_x = dx + (f_size_x * tile_size + DIST) * i
                 self.painter.draw(grid=field[0], players=[field[1]],
-                                  start_x=start_x, start_y=start_y, tile_size=tile_size, pl=False)
+                                  start_x=start_x, start_y=start_y, tile_size=tile_size, pl=True)
                 i += 1
 
         pygame.display.flip()

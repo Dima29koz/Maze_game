@@ -1,3 +1,4 @@
+from copy import copy, deepcopy
 from typing import Type
 
 from GameEngine.entities.player import Player
@@ -39,10 +40,20 @@ class FieldState:
     def __init__(self, field: list[list[cell.Cell | None]], player: Player):
         self.field = field
         self.player = player
-        self.next_states = []
+        self.next_states: list[FieldState] = []
 
     def get_current_data(self):
         return self.field, self.player
+
+    def update_cell_type(self, new_type: Type[cell.Cell], pos_x: int, pos_y: int):
+        if new_type is cell.CellExit:
+            print('exit')  # fixme
+            return
+        neighbours = self.field[pos_y][pos_x].neighbours
+        walls = self.field[pos_y][pos_x].walls
+        self.field[pos_y][pos_x] = new_type(pos_x, pos_y)
+        self.field[pos_y][pos_x].change_neighbours(neighbours)
+        self.field[pos_y][pos_x].walls = walls
 
 
 class BotAI:
@@ -57,11 +68,11 @@ class BotAI:
         player = Player(field[self.pos_y][self.pos_x], name)
         self.field_root = FieldState(field, player)
 
-    def get_fields(self):
-        """returns all leaves of a tree"""
-        leaves = []
+    def get_fields(self) -> list[tuple[list[list[cell.Cell | None]], Player]]:
+        """returns all leaves data of a tree"""
+        leaves: list[FieldState] = []
         self._collect_leaf_nodes(self.field_root, leaves)
-        return leaves
+        return [leaf.get_current_data() for leaf in leaves]
 
     def process_turn_resp(self, raw_response: dict):
         action = Actions[raw_response.get('action')]
@@ -77,61 +88,94 @@ class BotAI:
             Actions.move: self._movement_processor,
             Actions.info: self._info_processor,
         }
+        for node in self._get_leaf_nodes():
+            action_to_processor[action](node, player_name, direction, response)
 
-        action_to_processor[action](player_name, direction, response)
-
-    def _treasure_swap_processor(self, player_name: str, direction: Directions | None, response: dict):
+    def _treasure_swap_processor(self, node: FieldState, player_name: str, direction: Directions | None, response: dict):
         pass
 
-    def _shooting_processor(self, player_name: str, direction: Directions, response: dict):
+    def _shooting_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         pass
 
-    def _bomb_throw_processor(self, player_name: str, direction: Directions, response: dict):
+    def _bomb_throw_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         pass
 
-    def _pass_processor(self, player_name: str, direction: Directions | None, response: dict):
+    def _pass_processor(self, node: FieldState, player_name: str, direction: Directions | None, response: dict):
         pass
 
-    def _movement_processor(self, player_name: str, direction: Directions, response: dict):
+    def _movement_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         is_diff_cells: bool = response.get('diff_cells')
         type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
         type_cell_after_wall_check: Type[cell.Cell] = response.get('type_cell_after_wall_check')
+        is_wall_passed: bool = response.get('wall_passed')
+        wall_type: Type[wall.WallEmpty] | None = response.get('wall_type')
+        # todo учесть что это не обязательно настоящий тип стены
         cell_treasures_amount: int = response.get('cell_treasures_amount')
-        type_out_treasure: TreasureTypes = response.get('type_out_treasure')
+        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
-        x, y = direction.calc(self.field_root.player.cell.x, self.field_root.player.cell.y)
-        self.field_root.player.move(self.field_root.field[y][x])
-        pos_x = self.field_root.player.cell.x
-        pos_y = self.field_root.player.cell.y
-        self._update_cell_type(type_cell_turn_end, pos_x, pos_y)
+        current_cell = node.player.cell
+        if not is_wall_passed:
+            current_cell.add_wall(direction, wall_type())
+            current_cell.neighbours[direction].add_wall(-direction, wall_type())
+        else:  # coords changed
+            current_cell = current_cell.neighbours[direction]
+            node.player.move(current_cell)
+            pos_x = current_cell.x
+            pos_y = current_cell.y
+            node.update_cell_type(type_cell_after_wall_check, pos_x, pos_y)
+        if type_cell_after_wall_check is not cell.CellRiver or not is_diff_cells:  # coords changed ones, only 1 possible new location
+            return
+        # print('smilo')
+        node.next_states = self._calc_possible_river_trajectories(
+            node, current_cell, type_cell_after_wall_check, type_cell_turn_end)
 
-    def _info_processor(self, player_name: str, direction: Directions, response: dict):
+    def _info_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         type_cell_turn_end = response.get('type_cell_at_end_of_turn')
         cell_treasures_amount: int = response.get('cell_treasures_amount')
 
-        pos_x = self.field_root.player.cell.x
-        pos_y = self.field_root.player.cell.y
-        self._update_cell_type(type_cell_turn_end, pos_x, pos_y)
+        pos_x = node.player.cell.x
+        pos_y = node.player.cell.y
+        node.update_cell_type(type_cell_turn_end, pos_x, pos_y)
 
-    def _calc_possible_trajectories(self):
-        pass
+    def _calc_possible_river_trajectories(
+            self, node: FieldState, current_cell: cell.Cell,
+            type_cell_after_wall_check: Type[cell.Cell],
+            type_cell_turn_end: Type[cell.Cell]):
+        new_states = []
+        possible_len = [1, 2] if type_cell_turn_end is cell.CellRiverMouth else [2]
+        for length in possible_len:
+            req_cell_type = type_cell_turn_end if length == 1 else cell.CellRiver
+            for direction in Directions:
+                if type(current_cell.neighbours[direction]) in [req_cell_type, UnknownCell]:
+                    new_location = current_cell.neighbours[direction]
+                    if length > 1:
+                        for dir_ in Directions:
+                            if type(new_location.neighbours[dir_]) in [type_cell_turn_end, UnknownCell]:
+                                final_location = new_location.neighbours[dir_]
+                                new_node = deepcopy(node)
+                                new_node.update_cell_type(req_cell_type, new_location.x, new_location.y)
+                                new_node.update_cell_type(type_cell_turn_end, final_location.x, final_location.y)
+                                new_node.player.move(final_location)
+                                new_states.append(new_node)
+                    else:
+                        new_node = deepcopy(node)
+                        new_node.update_cell_type(req_cell_type, new_location.x, new_location.y)
+                        new_node.player.move(new_location)
+                        new_states.append(new_node)
 
-    def _update_cell_type(self, new_type: Type[cell.Cell], pos_x: int, pos_y: int):
-        if new_type is cell.CellExit:
-            print('exit')  # fixme
-            return
-        neighbours = self.field_root.field[pos_y][pos_x].neighbours
-        walls = self.field_root.field[pos_y][pos_x].walls
-        self.field_root.field[pos_y][pos_x] = new_type(pos_x, pos_y)
-        self.field_root.field[pos_y][pos_x].change_neighbours(neighbours)
-        self.field_root.field[pos_y][pos_x].walls = walls
+        return new_states
 
-    def _collect_leaf_nodes(self, node, leaves):
+    def _collect_leaf_nodes(self, node: FieldState, leaves: list[FieldState]):
         if node is not None:
             if not node.next_states:
-                leaves.append(node.get_current_data())
+                leaves.append(node)
             for n in node.next_states:
                 self._collect_leaf_nodes(n, leaves)
+
+    def _get_leaf_nodes(self) -> list[FieldState]:
+        leaves: list[FieldState] = []
+        self._collect_leaf_nodes(self.field_root, leaves)
+        return leaves
 
     def _generate_start_field(self):
         field = [[UnknownCell(col, row)
