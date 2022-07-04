@@ -9,9 +9,10 @@ from bots_ai.turn_state import BotAI
 
 
 def main():
+    # rules['generator_rules']['river_rules']['has_river'] = False
     game = Game(rules=rules)
     field = game.field
-    field.spawn_player({'x': 1, 'y': 1}, 'Skipper', 1)
+    field.spawn_player({'x': 0, 'y': 0}, 'Skipper', 1)
     # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
 
     bot = BotAI(rules, 'Skipper')

@@ -94,9 +94,10 @@ class Cell:
 
 class CellRiver(Cell):
     """River cell object"""
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, direction: Directions = None):
         super().__init__(x, y)
         self.river = []
+        self.direction = direction
 
     def idle(self, previous_cell):
         idx = self.river.index(self)

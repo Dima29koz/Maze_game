@@ -46,14 +46,19 @@ class FieldState:
         return self.field, self.player
 
     def update_cell_type(self, new_type: Type[cell.Cell], pos_x: int, pos_y: int):
-        if new_type is cell.CellExit:
-            print('exit')  # fixme
-            return
         neighbours = self.field[pos_y][pos_x].neighbours
         walls = self.field[pos_y][pos_x].walls
         self.field[pos_y][pos_x] = new_type(pos_x, pos_y)
         self.field[pos_y][pos_x].change_neighbours(neighbours)
         self.field[pos_y][pos_x].walls = walls
+
+    def create_exit(self, direction: Directions, current_cell: cell.Cell):
+        cell_exit = cell.CellExit(
+            *direction.calc(current_cell.x, current_cell.y), -direction, cell=current_cell)
+        current_cell.add_wall(direction, wall.WallExit())
+        current_cell.neighbours[direction] = cell_exit
+        self.field[cell_exit.y][cell_exit.x] = cell_exit
+        return cell_exit
 
 
 class BotAI:
@@ -116,14 +121,19 @@ class BotAI:
         current_cell = node.player.cell
         if not is_wall_passed:
             current_cell.add_wall(direction, wall_type())
-            current_cell.neighbours[direction].add_wall(-direction, wall_type())
+            if current_cell.neighbours[direction]:
+                current_cell.neighbours[direction].add_wall(-direction, wall_type())
         else:  # coords changed
-            current_cell = current_cell.neighbours[direction]
+            if type_cell_turn_end is cell.CellExit:
+                current_cell = node.create_exit(direction, current_cell)
+            else:
+                current_cell = current_cell.neighbours[direction]
+                pos_x = current_cell.x
+                pos_y = current_cell.y
+                node.update_cell_type(type_cell_after_wall_check, pos_x, pos_y)
             node.player.move(current_cell)
-            pos_x = current_cell.x
-            pos_y = current_cell.y
-            node.update_cell_type(type_cell_after_wall_check, pos_x, pos_y)
-        if type_cell_after_wall_check is not cell.CellRiver or not is_diff_cells:  # coords changed ones, only 1 possible new location
+        if type_cell_after_wall_check is not cell.CellRiver or not is_diff_cells:
+            # coords changed ones, only 1 possible new location
             return
         # print('smilo')
         node.next_states = self._calc_possible_river_trajectories(
