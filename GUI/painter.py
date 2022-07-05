@@ -4,6 +4,13 @@ from GUI.utils import get_cell_color, get_wall_color
 from GameEngine.field import cell as c
 from GameEngine.globalEnv.enums import Directions, TreasureTypes
 
+riv_dirs = {
+    Directions.top: '/\\',
+    Directions.bottom: '\\/',
+    Directions.right: '>',
+    Directions.left: '<',
+}
+
 
 class Painter:
     def __init__(self, sc, tile_size: int):
@@ -44,11 +51,14 @@ class Painter:
             self.draw_armory(cell, x, y, ts)
 
     def draw_river_dir(self, cell, x, y, ts):
-        f1 = pygame.font.Font(None, ts * 2 // 3)
+        f1 = pygame.font.Font(None, ts * 3 // 3)
         try:
             s = str(cell.river.index(cell))
         except ValueError:
-            s = '?' if type(cell) == c.CellRiver else 'y'
+            try:
+                s = riv_dirs[cell.direction] if type(cell) is c.CellRiver else 'y'
+            except KeyError:
+                s = '?' if type(cell) is c.CellRiver else 'y'
         text = f1.render(s, True, (180, 180, 180))
         place = text.get_rect(center=(x + ts // 2, y + ts // 2))
         self.sc.blit(text, place)

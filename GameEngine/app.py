@@ -10,6 +10,9 @@ from bots_ai.turn_state import BotAI
 
 def main():
     # rules['generator_rules']['river_rules']['has_river'] = False
+    rules['generator_rules']['river_rules']['min_coverage'] = 90
+    rules['generator_rules']['river_rules']['max_coverage'] = 100
+
     game = Game(rules=rules)
     field = game.field
     field.spawn_player({'x': 0, 'y': 0}, 'Skipper', 1)
@@ -23,7 +26,7 @@ def main():
 
     response = game.field.action_handler(Actions.info)
     print(response.get_turn_info(), response.get_info())
-    print(response.get_raw_info())
+    print(response.get_raw_info().get('response'))
     bot.process_turn_resp(response.get_raw_info())
 
     while is_running:
@@ -33,7 +36,7 @@ def main():
         if act:
             response = game.field.action_handler(*act)
             print(response.get_turn_info(), response.get_info())
-            print(response.get_raw_info())
+            print(response.get_raw_info().get('response'))
             bot.process_turn_resp(response.get_raw_info())
 
             if game.is_win_condition(rules):
