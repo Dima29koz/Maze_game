@@ -3,7 +3,7 @@ from pygame.locals import *
 from GameEngine.field import cell as c
 from GameEngine.field import wall as w
 from GameEngine.globalEnv.enums import Actions, Directions
-from bots_ai.turn_state import UnknownWall, UnknownCell
+from bots_ai.field_obj import UnknownWall, UnknownCell
 
 
 def convert_keys(key) -> tuple[Actions | None, Directions | None]:
