@@ -101,8 +101,8 @@ class GameRoom(db.Model):
         self.rules = default_rules
         self.rules['players_amount'] = rules_form.players_amount.data
         self.rules['bots_amount'] = rules_form.bots_amount.data
-        self.rules['is_rect'] = rules_form.is_rect.data
-        self.rules['is_separated_armory'] = rules_form.is_separated_armory.data
+        self.rules['generator_rules']['is_rect'] = rules_form.is_rect.data
+        self.rules['generator_rules']['is_separated_armory'] = rules_form.is_separated_armory.data
         self.set_creator(creator)
         self.add()
         self.add_game()

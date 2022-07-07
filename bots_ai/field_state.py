@@ -1,4 +1,4 @@
-from copy import deepcopy
+from copy import deepcopy, copy
 from typing import Type
 
 from GameEngine.entities.player import Player
@@ -12,9 +12,10 @@ class FieldState:
     contains current field state known by player
     """
 
-    def __init__(self, field: list[list[cell.Cell | None]], player: Player, parent):
+    def __init__(self, field: list[list[cell.Cell | None]], player: Player, parent, remaining_unique_obj_types: list):
         self.field = field
         self.player = player
+        self.remaining_unique_obj_types = remaining_unique_obj_types
         self.next_states: list[FieldState] = []
         self.parent: FieldState | None = parent
 
@@ -31,6 +32,10 @@ class FieldState:
         for direction in Directions:
             if self.field[pos_y][pos_x].neighbours[direction]:
                 self.field[pos_y][pos_x].neighbours[direction].neighbours[-direction] = self.field[pos_y][pos_x]
+        try:
+            self.remaining_unique_obj_types.remove(new_type)
+        except ValueError:
+            pass
 
     def create_exit(self, direction: Directions, current_cell: cell.Cell):
         target_cell = current_cell.neighbours[direction]
@@ -58,8 +63,8 @@ class FieldState:
         self.next_states.append(self.get_modified_copy(target_cell, new_type, direction))
 
     def get_modified_copy(self, target_cell: cell.Cell, new_type: Type[cell.Cell], direction: Directions = None):
-        new_state = FieldState(deepcopy(self.field), deepcopy(self.player), self)
+        new_state = FieldState(deepcopy(self.field), deepcopy(self.player), self, copy(self.remaining_unique_obj_types))
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
-        if new_state.player.cell != target_cell:
-            new_state.player.move(target_cell)
+        if new_state.player.cell != new_state.field[target_cell.y][target_cell.x]:
+            new_state.player.move(new_state.field[target_cell.y][target_cell.x])
         return new_state

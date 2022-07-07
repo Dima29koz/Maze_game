@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Type
 
 from GameEngine.entities.player import Player
@@ -8,7 +9,7 @@ from GameEngine.rules import rules as base_rules
 from bots_ai.exceptions import UnreachableState
 from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
-from bots_ai.utils import _calc_possible_river_trajectories, _get_possible_river_directions
+from bots_ai.utils import _calc_possible_river_trajectories, get_possible_river_directions
 
 
 class BotAI:
@@ -21,7 +22,8 @@ class BotAI:
         self.pos_y = pos_y if pos_y else self.size_y
         field = self._generate_start_field()
         player = Player(field[self.pos_y][self.pos_x], name)
-        self.field_root = FieldState(field, player, None)
+        self.unique_objects_types: list = self._get_unique_obj_types(game_rules)
+        self.field_root = FieldState(field, player, None, copy(self.unique_objects_types))
 
     def get_fields(self) -> list[tuple[list[list[cell.Cell | None]], Player]]:
         """returns all leaves data of a tree"""
@@ -101,6 +103,8 @@ class BotAI:
         #  перемещение в указанную сторону не противоречит известному полю
         if type_cell_after_wall_check is not cell.CellRiver:
             if type(new_cell) is UnknownCell:
+                if type_cell_after_wall_check in self.unique_objects_types and type_cell_after_wall_check not in node.remaining_unique_obj_types:
+                    return node
                 node.update_cell_type(type_cell_after_wall_check, new_cell.x, new_cell.y)
             node.player.move(new_cell)
             return
@@ -110,14 +114,10 @@ class BotAI:
         # река-устье: type_cell_after_wall_check == river, type_cell_turn_end == mouth, is_diff_cells = True
         # река: type_cell_after_wall_check == river, type_cell_turn_end == river, is_diff_cells = False
         try:
-            new_states = _calc_possible_river_trajectories(
+            _calc_possible_river_trajectories(
                 node, new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, direction)
         except UnreachableState:
             return node
-        else:
-            if new_states:
-                node.next_states = new_states
-                [leaf.set_parent(node) for leaf in node.next_states]
 
     def _info_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
@@ -126,10 +126,18 @@ class BotAI:
         pos_x = node.player.cell.x
         pos_y = node.player.cell.y
         if type_cell_turn_end is not cell.CellRiver:
+            if type_cell_turn_end in self.unique_objects_types and type_cell_turn_end not in node.remaining_unique_obj_types:
+                return node
             node.update_cell_type(type_cell_turn_end, pos_x, pos_y)
+            node.player.move(node.field[pos_y][pos_x])
         else:
-            possible_directions = _get_possible_river_directions(node.player.cell)
+            possible_directions = get_possible_river_directions(node.player.cell)
             [node.add_modified_leaf(node.player.cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
+
+    @staticmethod
+    def _get_unique_obj_types(rules: dict):
+        unique_obj = [cell.CellExit, cell.CellArmory, cell.CellClinic]
+        return unique_obj
 
     def _collect_leaf_nodes(self, node: FieldState, leaves: list[FieldState]):
         if node is not None:
@@ -166,6 +174,7 @@ class BotAI:
 
 
 if __name__ == "__main__":
-    bot = BotAI(base_rules, '')
-    for row_ in bot.field_root.field:
-        print(row_)
+    # bot = BotAI(base_rules, '')
+    # for row_ in bot.field_root.field:
+    #     print(row_)
+    pass

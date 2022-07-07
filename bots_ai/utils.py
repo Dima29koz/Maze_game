@@ -1,10 +1,10 @@
 from copy import deepcopy
 from typing import Type
 
-from GameEngine.field import cell
+from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from bots_ai.exceptions import UnreachableState
-from bots_ai.field_obj import UnknownCell
+from bots_ai.field_obj import UnknownCell, UnknownWall
 from bots_ai.field_state import FieldState
 
 
@@ -16,6 +16,9 @@ def get_possible_river_dirs_on_walk(current_cell: cell.Cell, turn_direction: Dir
         if prev_cell.direction is turn_direction:
             return [dir_ for dir_ in Directions if dir_ is not -turn_direction]
         else:
+            dir_ = known_input_river_direction(prev_cell)
+            if dir_ and dir_ is not -turn_direction:
+                return []
             return [-turn_direction]
 
 
@@ -23,14 +26,14 @@ def _calc_possible_river_trajectories(
         node: FieldState, current_cell: cell.Cell,
         type_cell_after_wall_check: Type[cell.Cell],
         type_cell_turn_end: Type[cell.Cell], is_diff_cells: bool, turn_direction: Directions):
-    new_states = []
-
     # ... , река, ...
     if type_cell_after_wall_check is cell.CellRiver and not is_diff_cells:
         if type(current_cell) not in [UnknownCell, cell.CellRiver]:
             raise UnreachableState()
         possible_river_dirs = get_possible_river_dirs_on_walk(current_cell, turn_direction)
-        print(possible_river_dirs)
+        if not possible_river_dirs:
+            raise UnreachableState()
+
         if type(current_cell) is UnknownCell:
             for direction in possible_river_dirs:
                 node.add_modified_leaf(current_cell, type_cell_after_wall_check, direction)
@@ -42,34 +45,49 @@ def _calc_possible_river_trajectories(
         raise UnreachableState()
 
     # ... , река-река / река-устье, ...
-    possible_len = [1, 2] if type_cell_turn_end is cell.CellRiverMouth else [2]
-    for length in possible_len:
-        req_cell_type = type_cell_turn_end if length == 1 else cell.CellRiver
-        for direction in Directions:
-            if type(current_cell.neighbours[direction]) in [req_cell_type, UnknownCell]:
-                new_location = current_cell.neighbours[direction]
-                if length > 1:
-                    for dir_ in Directions:
-                        if type(new_location.neighbours[dir_]) in [type_cell_turn_end, UnknownCell]:
-                            final_location = new_location.neighbours[dir_]
-                            new_node = deepcopy(node)
-                            new_node.update_cell_type(req_cell_type, new_location.x, new_location.y)
-                            new_node.update_cell_type(type_cell_turn_end, final_location.x, final_location.y)
-                            new_node.player.move(final_location)
-                            new_states.append(new_node)
-                else:
-                    new_node = deepcopy(node)
-                    new_node.update_cell_type(req_cell_type, new_location.x, new_location.y)
-                    new_node.player.move(new_location)
-                    new_states.append(new_node)
 
-    return new_states
+    # все варианты течения первой клетки (игрока двигает по течению)
+    new_states = get_possible_leafs(node, current_cell)
+
+    if type_cell_turn_end is not cell.CellRiverMouth:
+        # все варианты течения второй клетки (игрока двигает по течению)
+        new_states2: list[FieldState] = []
+        for new_state in new_states:
+            new_states2 += get_possible_leafs(new_state, new_state.player.cell)
+        final_states: list[FieldState] = []
+        for new_state in new_states2:
+            final_states += get_possible_leafs(new_state, new_state.player.cell, True)
+        if len(final_states) > 1:
+            [state.set_parent(node) for state in final_states]
+            node.next_states = final_states
+        return
+    else:  # смыло до устья
+        final_states: list[FieldState] = []
+        new_states2: list[FieldState] = []
+        for new_state in new_states:
+            current_cell = new_state.player.cell
+            if type(current_cell) is cell.CellRiverMouth:
+                final_states.append(new_state)
+            else:
+                new_states2 += get_possible_leafs(new_state, current_cell)
+                if type(current_cell) is UnknownCell:
+                    final_states.append(new_state.get_modified_copy(current_cell, type_cell_turn_end))
+
+        for new_state in new_states2:
+            current_cell = new_state.player.cell
+            final_states.append(new_state.get_modified_copy(current_cell, type_cell_turn_end))
+        if len(final_states) > 1:
+            [state.set_parent(node) for state in final_states]
+            node.next_states = final_states
+        return
 
 
-def _get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
+def get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
     dirs = []
 
     for direction in Directions:
+        if type(river_cell.walls[direction]) not in [wall.WallEmpty, UnknownWall]:
+            continue
         neighbour_cell = river_cell.neighbours[direction]
         if neighbour_cell is None:
             continue
@@ -96,3 +114,28 @@ def _get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
                 else:
                     return [direction]
     return dirs
+
+
+def get_possible_leafs(node: FieldState, current_cell: cell.Cell, is_final=False):
+    possible_river_dirs = get_possible_river_directions(current_cell)
+    if type(current_cell) is UnknownCell:
+        leaves = [node.get_modified_copy(current_cell, cell.CellRiver, direction)
+                  for direction in possible_river_dirs]
+        if not is_final:
+            for leaf in leaves:
+                leaf.player.move(leaf.player.cell.neighbours[leaf.player.cell.direction])
+        return leaves
+    elif type(current_cell) is cell.CellRiver and current_cell.direction in possible_river_dirs:
+        if not is_final:
+            node.player.move(current_cell.neighbours[current_cell.direction])
+        return [node]
+    else:
+        raise UnreachableState()
+
+
+def known_input_river_direction(current_cell: cell.Cell) -> Directions | None:
+    for direction in Directions:
+        neighbour_cell = current_cell.neighbours[direction]
+        if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:
+            return neighbour_cell.direction
+    return
