@@ -34,7 +34,7 @@ class Field:
         self.gameplay_rules = rules['gameplay_rules']
         generator = FieldGenerator(rules['generator_rules'])
         self.field = generator.get_field()
-        self.exit_cell = generator.get_exit_cell()
+        self.exit_cells: list[c.CellExit] = generator.get_exit_cells()
         self.treasures: list[Treasure] = generator.get_treasures()
         self.players: list[Player] = []
         self._active_player_idx = 0
@@ -89,7 +89,9 @@ class Field:
 
     def get_treasures_on_exit(self) -> list[Treasure]:
         """returns list of treasures on exit cell"""
-        treasures = self._treasures_on_cell(self.exit_cell)
+        treasures = []
+        for exit_cell in self.exit_cells:
+            treasures.extend(self._treasures_on_cell(exit_cell))
         [self.treasures.remove(treasure) for treasure in treasures]
         return treasures
 

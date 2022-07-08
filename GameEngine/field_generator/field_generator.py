@@ -23,7 +23,7 @@ class FieldGenerator:
         self.rivers: list[list[CellRiver]] = []
         self.field: list[list[Cell | None]] = [[]]
         self.treasures: list[Treasure] = []
-        self.exit_cell: CellExit | None = None
+        self.exit_cells: list[CellExit] = []
         self._generate_field(rules=generator_rules)
 
     def get_field(self):
@@ -34,9 +34,9 @@ class FieldGenerator:
         """returns generated treasures"""
         return self.treasures
 
-    def get_exit_cell(self):
-        """returns generated exit-cell"""
-        return self.exit_cell
+    def get_exit_cells(self):
+        """returns generated exit-cells"""
+        return self.exit_cells
 
     def _generate_field(self, rules: dict):
         self._generate_pattern(rules['is_rect'])
@@ -48,7 +48,7 @@ class FieldGenerator:
         self._generate_connections()
         outer_cells = self._generate_outer_walls()
         self._generate_walls(rules['walls'])
-        self.exit_cell = self._create_exit(outer_cells)
+        self.exit_cells = self._create_exit(outer_cells, rules['exits_amount'])
 
     def _generate_pattern(self, is_rect: bool):
         """
@@ -149,17 +149,21 @@ class FieldGenerator:
         return list(outer_cells)
 
     @staticmethod
-    def _create_exit(outer_cells: list[Cell]):
-        cell = choice(outer_cells)
-        dirs = []
-        for direction in Directions:
-            if isinstance(cell.walls[direction], WallOuter):
-                dirs.append(direction)
-        direction = choice(dirs)
-        cell.add_wall(direction, WallExit())
-        exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell=cell)
-        cell.neighbours.update({direction: exit_cell})
-        return exit_cell
+    def _create_exit(outer_cells: list[Cell], amount: int):
+        exit_cells = []
+        cells = sample(outer_cells, amount)
+        for cell in cells:
+
+            dirs = []
+            for direction in Directions:
+                if isinstance(cell.walls[direction], WallOuter):
+                    dirs.append(direction)
+            direction = choice(dirs)
+            cell.add_wall(direction, WallExit())
+            exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell=cell)
+            cell.neighbours.update({direction: exit_cell})
+            exit_cells.append(exit_cell)
+        return exit_cells
 
     def _spawn_treasures(self, treasures_rules: list[int]):
         treasures = []
