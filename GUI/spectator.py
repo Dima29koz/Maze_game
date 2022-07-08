@@ -7,16 +7,9 @@ from GameEngine.globalEnv.enums import Directions, Actions
 from GUI.utils import get_key_act
 from GUI.button import Button
 from GUI.bot_ai_spectator import BotAISpectator
+from GUI.config import *
 
 from bots_ai.turn_state import BotAI
-
-FPS = 30
-RES = WIDTH, HEIGHT = 1600, 800
-TILE = 50
-BTN_X = 0
-BTN_Y = 300
-DIST = 15
-LIMIT = 20
 
 
 class SpectatorGUI:
@@ -67,17 +60,16 @@ class SpectatorGUI:
             self.sc.blit(text, place)
             f_size_x = len(fields[0][0][0])
             f_size_y = len(fields[0][0])
-            tile_size = 20
             i = 0
             start_y = 0
             for field in fields:
-                start_x = dx + (f_size_x * tile_size + DIST) * i
-                if start_x + f_size_x * tile_size + DIST > RES[0]:
+                start_x = dx + (f_size_x * TILE_LEAF + DIST) * i
+                if start_x + f_size_x * TILE_LEAF + DIST > RES[0]:
                     i = 0
-                    start_y += f_size_y * tile_size + DIST
-                    start_x = dx + (f_size_x * tile_size + DIST) * i
+                    start_y += f_size_y * TILE_LEAF + DIST
+                    start_x = dx + (f_size_x * TILE_LEAF + DIST) * i
                 self.painter.draw(grid=field[0], players=[field[1]],
-                                  start_x=start_x, start_y=start_y, tile_size=tile_size, pl=True)
+                                  start_x=start_x, start_y=start_y, tile_size=TILE_LEAF, pl=True)
                 i += 1
 
         pygame.display.flip()

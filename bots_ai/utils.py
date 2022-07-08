@@ -47,7 +47,8 @@ def _calc_possible_river_trajectories(
     # ... , река-река / река-устье, ...
 
     # все варианты течения первой клетки (игрока двигает по течению)
-    new_states = get_possible_leafs(node, current_cell)
+    new_states = get_possible_leafs(node, current_cell, turn_direction=turn_direction,
+                                    same_type=type_cell_turn_end is type_cell_after_wall_check)
 
     if type_cell_turn_end is not cell.CellRiverMouth:
         # все варианты течения второй клетки (игрока двигает по течению)
@@ -56,7 +57,7 @@ def _calc_possible_river_trajectories(
             new_states2 += get_possible_leafs(new_state, new_state.player.cell)
         final_states: list[FieldState] = []
         for new_state in new_states2:
-            final_states += get_possible_leafs(new_state, new_state.player.cell, True)
+            final_states += get_possible_leafs(new_state, new_state.player.cell, is_final=True)
         if len(final_states) > 1:
             [state.set_parent(node) for state in final_states]
             node.next_states = final_states
@@ -82,7 +83,7 @@ def _calc_possible_river_trajectories(
         return
 
 
-def get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
+def get_possible_river_directions(river_cell: cell.Cell, same_type=False) -> list[Directions]:
     dirs = []
 
     for direction in Directions:
@@ -94,8 +95,16 @@ def get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
         elif type(neighbour_cell) is UnknownCell:
             dirs.append(direction)
         elif type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is not -direction:
-            dirs.append(direction)
-        elif type(neighbour_cell) is cell.CellRiverMouth:
+            has_in_river = False
+            for dir_ in Directions:
+                if dir_ is -direction:
+                    continue
+                semi_neighbour_cell = neighbour_cell.neighbours[dir_]
+                if type(semi_neighbour_cell) is cell.CellRiver and semi_neighbour_cell.direction is -dir_:
+                    has_in_river = True
+            if not has_in_river:
+                dirs.append(direction)
+        elif type(neighbour_cell) is cell.CellRiverMouth and not same_type:
             semi_neighbour_cells = []
             has_in_river = False
             for dir_ in Directions:
@@ -106,7 +115,7 @@ def get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
                     has_in_river = True
                 semi_neighbour_cells.append(semi_neighbour_cell)  # 3 соседа устья
 
-            has_unknown_neighbour = UnknownCell not in [type(semi_neighbour_cell) for semi_neighbour_cell in
+            has_unknown_neighbour = UnknownCell in [type(semi_neighbour_cell) for semi_neighbour_cell in
                                                         semi_neighbour_cells]
             if not has_in_river:
                 if has_unknown_neighbour:
@@ -116,8 +125,14 @@ def get_possible_river_directions(river_cell: cell.Cell) -> list[Directions]:
     return dirs
 
 
-def get_possible_leafs(node: FieldState, current_cell: cell.Cell, is_final=False):
-    possible_river_dirs = get_possible_river_directions(current_cell)
+def get_possible_leafs(node: FieldState, current_cell: cell.Cell,
+                       turn_direction: Directions = None, is_final=False, same_type=False):
+    possible_river_dirs = get_possible_river_directions(current_cell, same_type)
+    if turn_direction:
+        try:
+            possible_river_dirs.remove(-turn_direction)
+        except ValueError:
+            pass
     if type(current_cell) is UnknownCell:
         leaves = [node.get_modified_copy(current_cell, cell.CellRiver, direction)
                   for direction in possible_river_dirs]

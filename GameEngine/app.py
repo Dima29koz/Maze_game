@@ -1,4 +1,5 @@
 """runs game local for testing GameEngine"""
+import random
 
 from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
@@ -13,9 +14,10 @@ def main():
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
 
+    random.seed(5)
     game = Game(rules=rules)
     field = game.field
-    field.spawn_player({'x': 0, 'y': 0}, 'Skipper', 1)
+    field.spawn_player({'x': 1, 'y': 3}, 'Skipper', 1)
     # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
 
     bot = BotAI(rules, 'Skipper')
