@@ -10,7 +10,7 @@
     <form method="post" class="form-contact">
         {{ form.hidden_tag() }}
         <h1 class="h3 mb-3 fw-normal">Установите настройки игры:</h1>
-        {% for field in form if field.name not in ['csrf_token', 'submit', 'is_rect', 'is_separated_armory'] %}
+        {% for field in form if field.name in ['room_name', 'pwd', 'players_amount', 'bots_amount'] %}
             <div class="form-floating">
                 {% if field.errors %}
                     {{ field(class="form-control") }}
@@ -42,6 +42,13 @@
             <div class="form-check form-switch">
                 {{ form.is_separated_armory(class="form-check-input") }}
                 {{ form.is_separated_armory.label(class="form-check-label") }}
+            </div>
+        </div>
+
+        <div class="form-floating form-control">
+            <div class="form-check form-switch">
+                {{ form.is_same_wall_outer_concrete(class="form-check-input") }}
+                {{ form.is_same_wall_outer_concrete.label(class="form-check-label") }}
             </div>
         </div>
         <div>{{ form.submit(class="w-100 btn btn-lg btn-primary") }}</div>

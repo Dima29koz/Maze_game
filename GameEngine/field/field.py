@@ -23,8 +23,8 @@ class Field:
     :type gameplay_rules: dict
     :ivar field: game field
     :type field: list[list[Cell | None]]
-    :ivar exit_cell: exit cell object
-    :type exit_cell: Cell
+    :ivar exit_cells: list of exit cell objects
+    :type exit_cells: list[c.CellExit]
     :ivar treasures: treasures dropped on filed
     :type treasures: list[Treasure]
     :ivar players: players
@@ -200,7 +200,7 @@ class Field:
         self._cell_mechanics_activator(active_player, new_pl_cell)
 
         self._pass_turn_to_next_player()
-        return r.RespHandlerMoving(wall_type, cell)
+        return r.RespHandlerMoving(wall_type, cell, self.gameplay_rules.get('diff_outer_concrete_walls'))
 
     def _info_handler(self, active_player: Player, movement_direction: Directions):
         self._pass_turn_to_next_player()

@@ -22,7 +22,10 @@ rules = {
     'host_rules': {},
     'players_amount': 2,
     'bots_amount': 0,
-    'gameplay_rules': {'fast_win': True},
+    'gameplay_rules': {
+        'fast_win': True,  # player wins if he is the only survivor
+        'diff_outer_concrete_walls': False,  # if true you won't know difference between WallConcrete and WallOuter
+    },
     'player_stat': {
         'max_health': 2,
         'max_arrows': 3,

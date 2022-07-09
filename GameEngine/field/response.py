@@ -197,8 +197,10 @@ class RespHandlerMoving(RespHandler):
     Response handler object for action Move
     """
 
-    def __init__(self, wall_type: Type[WallEmpty], cell_after_wall_check: Cell):
+    def __init__(self, wall_type: Type[WallEmpty], cell_after_wall_check: Cell, is_same_wall_outer_concrete: bool):
         super().__init__()
+        if wall_type is WallOuter and is_same_wall_outer_concrete:
+            wall_type = WallConcrete
         self.wall_type = wall_type
         self.cell_after_wall_check = cell_after_wall_check
 

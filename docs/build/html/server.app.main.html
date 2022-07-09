@@ -165,6 +165,9 @@
 <li><p><strong>pwd</strong> – room password</p></li>
 <li><p><strong>players_amount</strong> – amount of players in a room</p></li>
 <li><p><strong>bots_amount</strong> – amount of players in a room</p></li>
+<li><p><strong>is_rect</strong> – field has rect form if True</p></li>
+<li><p><strong>is_separated_armory</strong> – different cells for Weapon and Explosive armory</p></li>
+<li><p><strong>is_same_wall_outer_concrete</strong> – if true you won’t know difference between WallConcrete and WallOuter</p></li>
 <li><p><strong>submit</strong> – submit field</p></li>
 </ul>
 </dd>
@@ -190,19 +193,15 @@
 <span id="server-app-main-models-module"></span><h2>server.app.main.models module<a class="headerlink" href="#module-server.app.main.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="server.app.main.models.GameRoom">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">GameRoom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bots_amount</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">GameRoom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules_form</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Model</span></code></p>
 <p>This is a Game Room model. Its contains information about game</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Variables</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – name of a room</p></li>
-<li><p><strong>pwd</strong> (<em>str</em>) – password of a room</p></li>
-</ul>
-</dd>
-<dt class="field-even">Variables</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>rules</strong> – rules of a room</p></li>
+<li><p><strong>name</strong> – name of a room</p></li>
+<li><p><strong>pwd</strong> – password of a room</p></li>
+<li><p><strong>rules</strong> – rules for a room</p></li>
 <li><p><strong>date</strong> – date of room creation</p></li>
 <li><p><strong>creator_id</strong> – id of room creator</p></li>
 <li><p><strong>game</strong> – game object</p></li>

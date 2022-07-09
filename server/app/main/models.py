@@ -103,6 +103,7 @@ class GameRoom(db.Model):
         self.rules['bots_amount'] = rules_form.bots_amount.data
         self.rules['generator_rules']['is_rect'] = rules_form.is_rect.data
         self.rules['generator_rules']['is_separated_armory'] = rules_form.is_separated_armory.data
+        self.rules['gameplay_rules']['diff_outer_concrete_walls'] = rules_form.is_same_wall_outer_concrete
         self.set_creator(creator)
         self.add()
         self.add_game()

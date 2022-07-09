@@ -68,6 +68,12 @@ class RulesForm(FlaskForm):
     :type players_amount: IntegerField
     :cvar bots_amount: amount of players in a room
     :type bots_amount: IntegerField
+    :cvar is_rect: field has rect form if True
+    :type is_rect: BooleanField
+    :cvar is_separated_armory: different cells for Weapon and Explosive armory
+    :type is_separated_armory: BooleanField
+    :cvar is_same_wall_outer_concrete: if true you won't know difference between WallConcrete and WallOuter
+    :type is_same_wall_outer_concrete: BooleanField
     :cvar submit: submit field
     :type submit: SubmitField
     """
@@ -79,8 +85,9 @@ class RulesForm(FlaskForm):
         validators=[NumberRange(min=0, max=10, message='Число ботов должно быть от 0 до 10')],
         default=0,
         render_kw={'disabled': True})
-    is_rect = BooleanField("Поле прямоугольной формы", default=True)
+    is_rect = BooleanField("Поле прямоугольной формы", default=True, render_kw={'disabled': True})
     is_separated_armory = BooleanField("Раздельные склады оружия и взрывчатки", default=False)
+    is_same_wall_outer_concrete = BooleanField("Не различать внешние и внутренние стены", default=False)
     submit = SubmitField("Создать")
 
     def validate_room_name(self, room_name: StringField):
