@@ -25,7 +25,7 @@ def _calc_possible_river_trajectories(
             return
         elif type(current_cell) is cell.CellRiver and current_cell.direction in possible_river_dirs:
             if node.player.cell != current_cell:
-                node.player.move(current_cell)
+                node.move_player(current_cell)
             return
         raise UnreachableState()
 
@@ -55,7 +55,7 @@ def _calc_possible_river_trajectories(
             riv_dir = new_state.player.cell.direction
             current_cell = new_state.player.cell.neighbours[riv_dir]
             if type(current_cell) is cell.CellRiverMouth:
-                new_state.player.move(current_cell)
+                new_state.move_player(current_cell)
                 final_states.append(new_state)
             else:
                 new_states2 += get_possible_leafs(new_state, current_cell, riv_dir)
@@ -66,11 +66,11 @@ def _calc_possible_river_trajectories(
             riv_dir = new_state.player.cell.direction
             current_cell = new_state.player.cell.neighbours[riv_dir]
             if type(current_cell) is cell.CellRiverMouth:
-                new_state.player.move(current_cell)
+                new_state.move_player(current_cell)
                 final_states.append(new_state)
             else:
                 final_states.append(new_state.get_modified_copy(current_cell, type_cell_turn_end))
-        if len(final_states) > 1:
+        if not(len(final_states) == 1 and final_states[0] is node):
             [state.set_parent(node) for state in final_states]
             node.next_states = final_states
         return
@@ -106,7 +106,7 @@ def get_possible_river_directions(river_cell: cell.Cell, turn_direction: Directi
         if has_known_input_river(neighbour_cell, direction):
             continue
 
-        if is_the_only_allowed_dir(neighbour_cell, direction):
+        if type(neighbour_cell) is cell.CellRiverMouth and is_the_only_allowed_dir(neighbour_cell, direction):
             return [direction]
 
         # нет стены между соседом, сосед  - река / устье / неизвестная_клетка, в соседа ничего не втекает
@@ -128,7 +128,7 @@ def get_possible_leafs(node: FieldState, current_cell: cell.Cell,
                   for direction in possible_river_dirs]
         return leaves
     elif type(current_cell) is cell.CellRiver and current_cell.direction in possible_river_dirs:
-        node.player.move(current_cell)
+        node.move_player(current_cell)
         return [node]
     else:
         raise UnreachableState()
@@ -150,13 +150,17 @@ def has_known_input_river(target_cell: cell.Cell, dir_: Directions) -> bool:
 
 
 def is_the_only_allowed_dir(target_cell: cell.Cell, dir_: Directions):
-    if type(target_cell) is UnknownCell:
-        return False
+    """
+
+    :param target_cell: клетка для которой проверяем
+    :param dir_: направление по которому пришли
+    :return: True if target cell have only 1 possible direction to input
+    """
     for direction in Directions:
         if direction is -dir_:
             continue
         neighbour_cell = target_cell.neighbours[direction]
-        if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction or \
+        if (type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction) or \
                 type(neighbour_cell) is UnknownCell:
             return False
     return True

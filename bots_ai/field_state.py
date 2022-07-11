@@ -13,9 +13,19 @@ class FieldState:
     """
 
     def __init__(self, field: list[list[cell.Cell | None]], player: Player, parent,
-                 remaining_unique_obj_types: list, is_final_size: bool = False):
+                 remaining_unique_obj_types: list,
+                 min_x, max_x, min_y, max_y, size_x, size_y, start_x, start_y,
+                 is_final_size: bool = False):
         self.field = field
         self.player = player
+        self.size_x = size_x
+        self.size_y = size_y
+        self.start_x = start_x
+        self.start_y = start_y
+        self.min_x = min_x
+        self.max_x = max_x
+        self.min_y = min_y
+        self.max_y = max_y
         self.is_final_size = is_final_size
         self.remaining_unique_obj_types = remaining_unique_obj_types
         self.next_states: list[FieldState] = []
@@ -24,25 +34,41 @@ class FieldState:
     def get_current_data(self):
         return self.field, self.player
 
+    def move_player(self, target_cell: cell.Cell):
+        self.player.move(target_cell)
+        if not self.is_final_size and type(target_cell) is not cell.CellExit:
+            if target_cell.x > self.max_x:
+                self.max_x = target_cell.x
+                self.crop_field(Directions.left)
+            elif target_cell.x < self.min_x:
+                self.min_x = target_cell.x
+                self.crop_field(Directions.right)
+
+            if target_cell.y > self.max_y:
+                self.max_y = target_cell.y
+                self.crop_field(Directions.top)
+            elif target_cell.y < self.min_y:
+                self.min_y = target_cell.y
+                self.crop_field(Directions.bottom)
+
+            if self.max_x - self.min_x == self.size_x and self.max_y - self.min_y == self.size_y:
+                self.is_final_size = True
+
     def crop_field(self, direction: Directions):
         match direction:
             case Directions.top:
-                self.field.pop(0)
-                [self.update_cell_type(None, x, 0) for x in range(len(self.field[0]))]
+                [self.update_cell_type(None, x, self.max_y - self.start_y) for x in range(len(self.field[0]))]
             case Directions.bottom:
-                self.field.pop(-1)
-                [self.update_cell_type(None, x, -1) for x in range(len(self.field[0]))]
+                [self.update_cell_type(None, x, self.min_y - self.start_y - 1) for x in range(len(self.field[0]))]
             case Directions.left:
-                [self.field[row].pop(0) for row in range(len(self.field))]
-                [self.update_cell_type(None, 0, y) for y in range(len(self.field))]
+                [self.update_cell_type(None, self.max_x - self.start_x, y) for y in range(len(self.field))]
             case Directions.right:
-                [self.field[row].pop(-1) for row in range(len(self.field))]
-                [self.update_cell_type(None, -1, y) for y in range(len(self.field))]
+                [self.update_cell_type(None, self.min_x - self.start_x - 1, y) for y in range(len(self.field))]
 
     def update_cell_type(self, new_type: Type[cell.Cell] | None, pos_x: int, pos_y: int,
                          river_direction: Directions = None):
         if new_type is None:
-            if self.field[pos_y][pos_x] is None:
+            if self.field[pos_y][pos_x] is None or type(self.field[pos_y][pos_x]) is cell.CellExit:
                 return
             for direction in Directions:
                 if self.field[pos_y][pos_x].neighbours[direction]:
@@ -90,8 +116,10 @@ class FieldState:
         self.next_states.append(self.get_modified_copy(target_cell, new_type, direction))
 
     def get_modified_copy(self, target_cell: cell.Cell, new_type: Type[cell.Cell], direction: Directions = None):
-        new_state = FieldState(deepcopy(self.field), deepcopy(self.player), self, copy(self.remaining_unique_obj_types))
+        new_state = FieldState(deepcopy(self.field), deepcopy(self.player), self, copy(self.remaining_unique_obj_types),
+                               self.min_x, self.max_x, self.min_y, self.max_y,
+                               self.size_x, self.size_y, self.start_x, self.start_y)
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
         if new_state.player.cell != new_state.field[target_cell.y][target_cell.x]:
-            new_state.player.move(new_state.field[target_cell.y][target_cell.x])
+            new_state.move_player(new_state.field[target_cell.y][target_cell.x])
         return new_state

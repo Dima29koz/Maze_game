@@ -23,7 +23,9 @@ class BotAI:
         field = self._generate_start_field()
         player = Player(field[self.pos_y][self.pos_x], name)
         self.unique_objects_types: list = self._get_unique_obj_types(game_rules)
-        self.field_root = FieldState(field, player, None, copy(self.unique_objects_types), is_final_size)
+        self.field_root = FieldState(field, player, None, copy(self.unique_objects_types),
+                                     player.cell.x, player.cell.x, player.cell.y, player.cell.y,
+                                     self.size_x, self.size_y, self.pos_x, self.pos_y, is_final_size)
 
     def get_fields(self) -> list[tuple[list[list[cell.Cell | None]], Player]]:
         """returns all leaves data of a tree"""
@@ -82,6 +84,10 @@ class BotAI:
             start_cell.add_wall(direction, wall_type())
             if new_cell:
                 start_cell.neighbours[direction].add_wall(-direction, wall_type())
+                if type(start_cell) is cell.CellRiverMouth:
+                    if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
+                        return node
+
             new_cell = start_cell
             direction = -direction
 
@@ -90,7 +96,7 @@ class BotAI:
             exit_cell = node.create_exit(direction, start_cell)
             if not exit_cell:
                 return node
-            node.player.move(exit_cell)
+            node.move_player(exit_cell)
             return
 
         #  попытка сходить за пределы карты - значит всю ветку можно удалить
@@ -108,7 +114,7 @@ class BotAI:
                         and type_cell_after_wall_check not in node.remaining_unique_obj_types:
                     return node
                 node.update_cell_type(type_cell_after_wall_check, new_cell.x, new_cell.y)
-            node.player.move(new_cell)
+            node.move_player(new_cell)
             return
 
         # ... , река-река / река-устье / река, ...
@@ -131,7 +137,7 @@ class BotAI:
             if type_cell_turn_end in self.unique_objects_types and type_cell_turn_end not in node.remaining_unique_obj_types:
                 return node
             node.update_cell_type(type_cell_turn_end, pos_x, pos_y)
-            node.player.move(node.field[pos_y][pos_x])
+            node.move_player(node.field[pos_y][pos_x])
         else:
             possible_directions = get_possible_river_directions(node.player.cell)
             [node.add_modified_leaf(node.player.cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
