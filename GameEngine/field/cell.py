@@ -91,6 +91,9 @@ class Cell:
         if self.y < other.y:
             return Directions.bottom
 
+    def __repr__(self):
+        return 'c'
+
 
 class CellRiver(Cell):
     """River cell object"""
@@ -138,6 +141,19 @@ class CellRiver(Cell):
         sup |= riv_dict
         return sup
 
+    def __repr__(self):
+        match self.direction:
+            case Directions.top:
+                return '↑'
+            case Directions.bottom:
+                return '↓'
+            case Directions.right:
+                return '→'
+            case Directions.left:
+                return '←'
+            case _:
+                return 'r'
+
 
 class CellRiverMouth(CellRiver):
     """River Mouth cell object"""
@@ -152,6 +168,9 @@ class CellRiverMouth(CellRiver):
 
     def treasure_movement(self):
         return self
+
+    def __repr__(self):
+        return 'y'
 
 
 class CellExit(Cell):
@@ -170,6 +189,9 @@ class CellExit(Cell):
         # todo есть мнение, что игрок без клада не может выйти
         return self
 
+    def __repr__(self):
+        return 'exit'
+
 
 class CellClinic(Cell):
     """Clinic cell object"""
@@ -181,6 +203,9 @@ class CellClinic(Cell):
 
     def active(self, previous_cell):
         return self.idle(previous_cell)
+
+    def __repr__(self):
+        return 'H'
 
 
 class CellArmory(Cell):
@@ -194,6 +219,9 @@ class CellArmory(Cell):
     def active(self, previous_cell):
         return self.idle(previous_cell)
 
+    def __repr__(self):
+        return 'A'
+
 
 class CellArmoryWeapon(CellArmory):
     """Armory Weapon cell object"""
@@ -206,6 +234,9 @@ class CellArmoryWeapon(CellArmory):
     def active(self, previous_cell):
         return self.idle(previous_cell)
 
+    def __repr__(self):
+        return 'W'
+
 
 class CellArmoryExplosive(CellArmory):
     """Armory Explosive cell object"""
@@ -217,3 +248,6 @@ class CellArmoryExplosive(CellArmory):
 
     def active(self, previous_cell):
         return self.idle(previous_cell)
+
+    def __repr__(self):
+        return 'E'

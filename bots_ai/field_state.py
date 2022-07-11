@@ -12,9 +12,11 @@ class FieldState:
     contains current field state known by player
     """
 
-    def __init__(self, field: list[list[cell.Cell | None]], player: Player, parent, remaining_unique_obj_types: list):
+    def __init__(self, field: list[list[cell.Cell | None]], player: Player, parent,
+                 remaining_unique_obj_types: list, is_final_size: bool = False):
         self.field = field
         self.player = player
+        self.is_final_size = is_final_size
         self.remaining_unique_obj_types = remaining_unique_obj_types
         self.next_states: list[FieldState] = []
         self.parent: FieldState | None = parent
@@ -22,7 +24,32 @@ class FieldState:
     def get_current_data(self):
         return self.field, self.player
 
-    def update_cell_type(self, new_type: Type[cell.Cell], pos_x: int, pos_y: int, river_direction: Directions = None):
+    def crop_field(self, direction: Directions):
+        match direction:
+            case Directions.top:
+                self.field.pop(0)
+                [self.update_cell_type(None, x, 0) for x in range(len(self.field[0]))]
+            case Directions.bottom:
+                self.field.pop(-1)
+                [self.update_cell_type(None, x, -1) for x in range(len(self.field[0]))]
+            case Directions.left:
+                [self.field[row].pop(0) for row in range(len(self.field))]
+                [self.update_cell_type(None, 0, y) for y in range(len(self.field))]
+            case Directions.right:
+                [self.field[row].pop(-1) for row in range(len(self.field))]
+                [self.update_cell_type(None, -1, y) for y in range(len(self.field))]
+
+    def update_cell_type(self, new_type: Type[cell.Cell] | None, pos_x: int, pos_y: int,
+                         river_direction: Directions = None):
+        if new_type is None:
+            if self.field[pos_y][pos_x] is None:
+                return
+            for direction in Directions:
+                if self.field[pos_y][pos_x].neighbours[direction]:
+                    self.field[pos_y][pos_x].neighbours[direction].neighbours[-direction] = None
+            self.field[pos_y][pos_x] = None
+            return
+
         neighbours = self.field[pos_y][pos_x].neighbours
         walls = self.field[pos_y][pos_x].walls
         self.field[pos_y][pos_x] = new_type(pos_x, pos_y) if not river_direction else cell.CellRiver(pos_x, pos_y,

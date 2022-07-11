@@ -14,13 +14,15 @@ def main():
     rules['gameplay_rules']['fast_win'] = False
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
+    spawn = {'x': 2, 'y': 1}
 
     random.seed(5)
     game = Game(rules=rules)
     field = game.field
-    field.spawn_player({'x': 1, 'y': 3}, 'Skipper', 1)
+    field.spawn_player(spawn, 'Skipper', 1)
     # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
 
+    # bot = BotAI(rules, 'Skipper', pos_x=spawn['x'], pos_y=spawn['y'])
     bot = BotAI(rules, 'Skipper')
     gui = SpectatorGUI(field, bot)
 

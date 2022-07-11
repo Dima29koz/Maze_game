@@ -5,7 +5,6 @@ from GameEngine.entities.player import Player
 from GameEngine.field import cell
 from GameEngine.field import wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
-from GameEngine.rules import rules as base_rules
 from bots_ai.exceptions import UnreachableState
 from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
@@ -16,14 +15,15 @@ class BotAI:
     def __init__(self, game_rules: dict, name: str, pos_x: int = None, pos_y: int = None):
         self.size_x = game_rules.get('generator_rules').get('cols')
         self.size_y = game_rules.get('generator_rules').get('rows')
-        self.cols = 2 * self.size_x + 1
-        self.rows = 2 * self.size_y + 1
-        self.pos_x = pos_x if pos_x else self.size_x
-        self.pos_y = pos_y if pos_y else self.size_y
+        self.cols = 2 * self.size_x + 1 if pos_x is None else self.size_x + 2
+        self.rows = 2 * self.size_y + 1 if pos_y is None else self.size_y + 2
+        self.pos_x = pos_x + 1 if pos_x is not None else self.size_x
+        self.pos_y = pos_y + 1 if pos_y is not None else self.size_y
+        is_final_size = True if pos_x is not None and pos_y is not None else False
         field = self._generate_start_field()
         player = Player(field[self.pos_y][self.pos_x], name)
         self.unique_objects_types: list = self._get_unique_obj_types(game_rules)
-        self.field_root = FieldState(field, player, None, copy(self.unique_objects_types))
+        self.field_root = FieldState(field, player, None, copy(self.unique_objects_types), is_final_size)
 
     def get_fields(self) -> list[tuple[list[list[cell.Cell | None]], Player]]:
         """returns all leaves data of a tree"""
@@ -83,6 +83,7 @@ class BotAI:
             if new_cell:
                 start_cell.neighbours[direction].add_wall(-direction, wall_type())
             new_cell = start_cell
+            direction = -direction
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
@@ -103,7 +104,8 @@ class BotAI:
         #  перемещение в указанную сторону не противоречит известному полю
         if type_cell_after_wall_check is not cell.CellRiver:
             if type(new_cell) is UnknownCell:
-                if type_cell_after_wall_check in self.unique_objects_types and type_cell_after_wall_check not in node.remaining_unique_obj_types:
+                if type_cell_after_wall_check in self.unique_objects_types \
+                        and type_cell_after_wall_check not in node.remaining_unique_obj_types:
                     return node
                 node.update_cell_type(type_cell_after_wall_check, new_cell.x, new_cell.y)
             node.player.move(new_cell)
