@@ -151,7 +151,7 @@ class FieldGenerator:
     @staticmethod
     def _create_exit(outer_cells: list[Cell], amount: int):
         exit_cells = []
-        cells = sample(outer_cells, amount)
+        cells = sample(outer_cells, min(amount, len(outer_cells)))
         for cell in cells:
 
             dirs = []

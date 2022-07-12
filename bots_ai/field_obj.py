@@ -7,6 +7,11 @@ class UnknownWall(wall.WallEmpty):
         super().__init__()
 
 
+class UnbreakableWall(wall.WallOuter):
+    def __init__(self):
+        super().__init__()
+
+
 class UnknownCell(cell.Cell):
     def __init__(self, x: int, y: int):
         super().__init__(x, y)

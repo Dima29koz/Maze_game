@@ -6,9 +6,9 @@ from GameEngine.field import cell
 from GameEngine.field import wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from bots_ai.exceptions import UnreachableState
-from bots_ai.field_obj import UnknownCell
+from bots_ai.field_obj import UnknownCell, UnbreakableWall, UnknownWall
 from bots_ai.field_state import FieldState
-from bots_ai.utils import _calc_possible_river_trajectories, get_possible_river_directions
+from bots_ai.utils import _calc_possible_river_trajectories, get_possible_river_directions, idle_processor
 
 
 class BotAI:
@@ -60,13 +60,54 @@ class BotAI:
         pass
 
     def _shooting_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
-        pass
+        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
+        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
+        cell_treasures_amount: int = response.get('cell_treasures_amount')
+        is_hit: bool = response.get('hit')
+        dmg_pls: list[str] = response.get('dmg_pls')
+        dead_pls: list[str] = response.get('dead_pls')
+        drop_pls: list[str] = response.get('drop_pls')
+
+        try:
+            idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
+        except UnreachableState:
+            return node
+
 
     def _bomb_throw_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
-        pass
+        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
+        cell_treasures_amount: int = response.get('cell_treasures_amount')
+        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
+        is_destroyed: bool = response.get('destroyed')
+
+        current_cell = node.player.cell
+        if is_destroyed:
+            if not current_cell.walls[direction].breakable:
+                return node
+            current_cell.break_wall(direction)
+
+        else:
+            neighbour_cell = current_cell.neighbours[direction]
+            if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
+                return node
+            if type(current_cell.walls[direction]) is UnknownWall:
+                current_cell.add_wall(direction, UnbreakableWall())
+                if neighbour_cell:
+                    neighbour_cell.add_wall(-direction, UnbreakableWall())
+        try:
+            idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
+        except UnreachableState:
+            return node
 
     def _pass_processor(self, node: FieldState, player_name: str, direction: Directions | None, response: dict):
-        pass
+        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
+        cell_treasures_amount: int = response.get('cell_treasures_amount')
+        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
+
+        try:
+            idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
+        except UnreachableState:
+            return node
 
     def _movement_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         is_diff_cells: bool = response.get('diff_cells')
@@ -91,7 +132,7 @@ class BotAI:
 
             new_cell = start_cell
             direction = -direction
-        elif type_cell_turn_end is not cell.CellExit:
+        elif type_cell_turn_end is not cell.CellExit and type(start_cell) is not cell.CellExit:
             start_cell.add_wall(direction, wall.WallEmpty())
             if new_cell:
                 new_cell.add_wall(-direction, wall.WallEmpty())

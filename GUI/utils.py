@@ -3,7 +3,7 @@ from pygame.locals import *
 from GameEngine.field import cell as c
 from GameEngine.field import wall as w
 from GameEngine.globalEnv.enums import Actions, Directions
-from bots_ai.field_obj import UnknownWall, UnknownCell
+from bots_ai.field_obj import UnknownWall, UnknownCell, UnbreakableWall
 
 
 def convert_keys(key) -> tuple[Actions | None, Directions | None]:
@@ -72,5 +72,7 @@ def get_wall_color(wall):
         return 15, 15, 15
     if type(wall) is UnknownWall:
         return 100, 10, 100
+    if type(wall) is UnbreakableWall:
+        return 1, 1, 1
     else:
         return 'darkslategray'

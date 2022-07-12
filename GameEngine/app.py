@@ -12,6 +12,7 @@ from bots_ai.turn_state import BotAI
 def main():
     # rules['generator_rules']['river_rules']['has_river'] = False
     # rules['generator_rules']['walls']['has_walls'] = False
+    rules['generator_rules']['exits_amount'] = 20
     rules['gameplay_rules']['fast_win'] = False
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100

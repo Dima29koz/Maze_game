@@ -1,7 +1,7 @@
 from typing import Type
 
 from GameEngine.field import cell, wall
-from GameEngine.globalEnv.enums import Directions
+from GameEngine.globalEnv.enums import Directions, TreasureTypes
 from bots_ai.exceptions import UnreachableState
 from bots_ai.field_obj import UnknownCell, UnknownWall
 from bots_ai.field_state import FieldState
@@ -171,3 +171,23 @@ def is_the_only_allowed_dir(target_cell: cell.Cell, dir_: Directions):
                 type(neighbour_cell) is UnknownCell:
             return False
     return True
+
+
+def idle_processor(node: FieldState, type_cell_turn_end: Type[cell.Cell], cell_treasures_amount: int,
+                   type_out_treasure: TreasureTypes | None):
+    current_cell = node.player.cell
+    if type(current_cell) is not cell.CellRiver:
+        return  # todo add cell mechanics activator
+    end_cell = current_cell.neighbours[current_cell.direction]
+    if type(end_cell) not in [type_cell_turn_end, UnknownCell]:
+        raise UnreachableState()
+    if type(end_cell) is type_cell_turn_end:
+        node.move_player(current_cell.neighbours[current_cell.direction])
+    elif type_cell_turn_end is cell.CellRiver:
+        _calc_possible_river_trajectories(
+            node, end_cell, type_cell_turn_end, type_cell_turn_end, False, current_cell.direction)
+    elif type_cell_turn_end is cell.CellRiverMouth:
+        node.update_cell_type(type_cell_turn_end, end_cell.x, end_cell.y)
+        node.move_player(node.field[end_cell.y][end_cell.x])
+    else:
+        raise UnreachableState()

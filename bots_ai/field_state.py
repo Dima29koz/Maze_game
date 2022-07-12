@@ -96,6 +96,14 @@ class FieldState:
             return
         cell_exit = cell.CellExit(
             *direction.calc(current_cell.x, current_cell.y), -direction, cell=current_cell)
+        for dir_ in Directions:
+            if dir_ is -direction:
+                continue
+            x, y = dir_.calc(cell_exit.x, cell_exit.y)
+            if x < len(self.field[0]) and y < len(self.field) and self.field[y][x]:
+                cell_exit.neighbours[dir_] = self.field[y][x]
+                self.field[y][x].neighbours[-dir_] = cell_exit
+                self.field[y][x].add_wall(-dir_, wall.WallOuter())
         current_cell.add_wall(direction, wall.WallExit())
         current_cell.neighbours[direction] = cell_exit
         self.field[cell_exit.y][cell_exit.x] = cell_exit
