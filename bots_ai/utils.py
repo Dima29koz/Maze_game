@@ -70,7 +70,7 @@ def _calc_possible_river_trajectories(
                 final_states.append(new_state)
             else:
                 final_states.append(new_state.get_modified_copy(current_cell, type_cell_turn_end))
-        if not(len(final_states) == 1 and final_states[0] is node):
+        if not (len(final_states) == 1 and final_states[0] is node):
             [state.set_parent(node) for state in final_states]
             node.next_states = final_states
         return
@@ -83,8 +83,11 @@ def get_possible_river_directions(river_cell: cell.Cell, turn_direction: Directi
     if not washed and turn_direction:
         prev_cell = river_cell.neighbours[-turn_direction]
         if type(prev_cell) is cell.CellRiverMouth or (
-                type(prev_cell) is cell.CellRiver and prev_cell.direction is not turn_direction):
-            return [-turn_direction]
+           type(prev_cell) is cell.CellRiver and prev_cell.direction is not turn_direction):
+            if not has_known_input_river(prev_cell, -turn_direction):
+                return [-turn_direction]
+            else:
+                return []
 
     for direction in Directions:
         # река не может течь в стену

@@ -84,9 +84,10 @@ class BotAI:
             start_cell.add_wall(direction, wall_type())
             if new_cell:
                 start_cell.neighbours[direction].add_wall(-direction, wall_type())
-                if type(start_cell) is cell.CellRiverMouth:
-                    if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
-                        return node
+                if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
+                    return node
+                if type(start_cell) is cell.CellRiver and start_cell.direction is direction:
+                    return node
 
             new_cell = start_cell
             direction = -direction
