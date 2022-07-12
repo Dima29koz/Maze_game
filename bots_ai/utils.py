@@ -44,7 +44,9 @@ def _calc_possible_river_trajectories(
         for new_state in new_states2:
             riv_dir = new_state.player.cell.direction
             final_states += get_possible_leafs(new_state, new_state.player.cell.neighbours[riv_dir], riv_dir)
-        if len(final_states) > 1:
+        if not final_states:
+            raise UnreachableState()
+        if not (len(final_states) == 1 and final_states[0] is node):
             [state.set_parent(node) for state in final_states]
             node.next_states = final_states
         return
@@ -70,6 +72,8 @@ def _calc_possible_river_trajectories(
                 final_states.append(new_state)
             else:
                 final_states.append(new_state.get_modified_copy(current_cell, type_cell_turn_end))
+        if not final_states:
+            raise UnreachableState()
         if not (len(final_states) == 1 and final_states[0] is node):
             [state.set_parent(node) for state in final_states]
             node.next_states = final_states

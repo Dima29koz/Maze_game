@@ -83,7 +83,7 @@ class BotAI:
         if not is_wall_passed:
             start_cell.add_wall(direction, wall_type())
             if new_cell:
-                start_cell.neighbours[direction].add_wall(-direction, wall_type())
+                new_cell.add_wall(-direction, wall_type())
                 if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
                     return node
                 if type(start_cell) is cell.CellRiver and start_cell.direction is direction:
@@ -91,6 +91,10 @@ class BotAI:
 
             new_cell = start_cell
             direction = -direction
+        elif type_cell_turn_end is not cell.CellExit:
+            start_cell.add_wall(direction, wall.WallEmpty())
+            if new_cell:
+                new_cell.add_wall(-direction, wall.WallEmpty())
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:

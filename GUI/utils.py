@@ -66,11 +66,11 @@ def get_wall_color(wall):
         return 60, 45, 15
     if type(wall) is w.WallConcrete:
         return 170, 105, 25
-    if type(wall) is w.WallExit:
+    if type(wall) in [w.WallExit, w.WallEntrance]:
         return 54, 171, 28
     if type(wall) is w.WallRubber:
         return 15, 15, 15
     if type(wall) is UnknownWall:
-        return 118, 66, 130
+        return 100, 10, 100
     else:
         return 'darkslategray'

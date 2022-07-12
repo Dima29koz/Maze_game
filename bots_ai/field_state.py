@@ -120,6 +120,9 @@ class FieldState:
                                self.min_x, self.max_x, self.min_y, self.max_y,
                                self.size_x, self.size_y, self.start_x, self.start_y)
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
+        if direction:
+            new_state.field[target_cell.y][target_cell.x].add_wall(direction, wall.WallEmpty())
+            new_state.field[target_cell.y][target_cell.x].neighbours[direction].add_wall(-direction, wall.WallEmpty())
         if new_state.player.cell != new_state.field[target_cell.y][target_cell.x]:
             new_state.move_player(new_state.field[target_cell.y][target_cell.x])
         return new_state
