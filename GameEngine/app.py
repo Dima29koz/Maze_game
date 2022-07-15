@@ -16,7 +16,7 @@ def main():
     rules['gameplay_rules']['fast_win'] = False
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
-    spawn = {'x': 2, 'y': 4}
+    spawn = {'x': 2, 'y': 0}
 
     random.seed(5)
     game = Game(rules=rules)
@@ -25,7 +25,7 @@ def main():
     # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
 
     # bot = BotAI(rules, 'Skipper', pos_x=spawn['x'], pos_y=spawn['y'])
-    bot = BotAI(rules, 'Skipper')
+    bot = BotAI(rules, 'Skipper', pos_x=2, pos_y=0)
     gui = SpectatorGUI(field, bot)
 
     state = Actions.move

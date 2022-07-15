@@ -126,7 +126,7 @@ class FieldState:
     def get_modified_copy(self, target_cell: cell.Cell, new_type: Type[cell.Cell], direction: Directions = None):
         new_state = FieldState(deepcopy(self.field), deepcopy(self.player), self, copy(self.remaining_unique_obj_types),
                                self.min_x, self.max_x, self.min_y, self.max_y,
-                               self.size_x, self.size_y, self.start_x, self.start_y)
+                               self.size_x, self.size_y, self.start_x, self.start_y, self.is_final_size)
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
         if direction:
             new_state.field[target_cell.y][target_cell.x].add_wall(direction, wall.WallEmpty())
