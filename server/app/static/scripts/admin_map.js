@@ -12,7 +12,7 @@ function drawMap(field, treasures, players, current_user) {
         let div = document.getElementById('err-msg');
         div.innerText = '';
     }
-    let tile_size = height < width ? height / field.length : width / field[0].length;
+    let tile_size = height < width ? height / field.length - 1 : width / field[0].length;
     if(drawingCanvas && drawingCanvas.getContext) {
         let context = drawingCanvas.getContext('2d');
         context.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);

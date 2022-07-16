@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let is_ended = false;
     let current_user = '';
+    let rules = {};
     // Connect to websocket
     let socket = io('/game');
     //let socket = io(location.protocol + '//' + document.domain + ':' + location.port + '/game_room');
@@ -13,7 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('join', data => {
         current_user = data.current_user;
-        drawMapInteractive(getMapContext(4, 5)); // fixme
+        rules = data.rules;
+        console.log(rules);
+        let rows = rules.generator_rules.rows
+        let cols = rules.generator_rules.cols
+        drawMapInteractive(getMapContext(rows, cols)); // fixme
         // todo перенести сюда рисовалку карты, которая будет загружаться с сервера
         fetch(`./api/game_data/${room_id}`)
             .then(response => response.json())

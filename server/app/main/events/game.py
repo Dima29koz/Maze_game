@@ -16,7 +16,8 @@ class GameNamespace(Namespace):
         room_id = data.get('room_id')
         session['room_id'] = room_id
         join_room(room_id)
-        emit('join', {'current_user': current_user.user_name})
+        room = get_room_by_id(room_id)
+        emit('join', {'current_user': current_user.user_name, 'rules': room.rules})
 
     def on_action(self, data: dict):
         """
