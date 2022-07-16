@@ -87,7 +87,7 @@ class FieldState:
         if type(target_cell) is not UnknownCell and target_cell is not None:
             return
         cell_exit = cell.CellExit(
-            *direction.calc(current_cell.x, current_cell.y), -direction, cell=current_cell)
+            *direction.calc(current_cell.x, current_cell.y), -direction)
         for dir_ in Directions:
             if dir_ is -direction:
                 continue

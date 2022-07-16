@@ -16,11 +16,6 @@ class UnknownCell(cell.Cell):
     def __init__(self, x: int, y: int):
         super().__init__(x, y)
         self.x, self.y = x, y
-        self.neighbours: dict[Directions, cell.Cell | None] = {
-            Directions.top: None,
-            Directions.right: None,
-            Directions.bottom: None,
-            Directions.left: None}
         self.walls: dict[Directions, UnknownWall] = {
             Directions.top: UnknownWall(),
             Directions.right: UnknownWall(),

@@ -173,7 +173,7 @@ class FieldGenerator:
                     dirs.append(direction)
             direction = choice(dirs)
             cell.add_wall(direction, WallExit())
-            exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell=cell)
+            exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction)
             exit_cells.append(exit_cell)
             self.field[exit_cell.y][exit_cell.x] = exit_cell
         return exit_cells

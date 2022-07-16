@@ -150,7 +150,7 @@ class CellRiverMouth(CellRiver):
 
 class CellExit(Cell):
     """Exit cell object"""
-    def __init__(self, x: int, y: int, direction: Directions, cell):
+    def __init__(self, x: int, y: int, direction: Directions):
         super().__init__(x, y)
         self.walls = {
             Directions.top: WallOuter(),
