@@ -245,22 +245,22 @@ function drawMapInteractive(data) {
                 grid.palette.setWallMode(t.type);
             }
         })
-    };
+    }
 
     function procRClick(e) {
         e.preventDefault();
         grid.cells.forEach(f => {
             if (context.isPointInPath(f.area, e.offsetX, e.offsetY)) {
-                player = new Player(f.x, f.y);
+                let player = new Player(f.x, f.y);
                 f.addPlayer(player);
                 grid.draw();
             }
         })
-    };
+    }
 
     function procOut() {
         document.body.style.cursor = "default";
-    };
+    }
 
 }
 

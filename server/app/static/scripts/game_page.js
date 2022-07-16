@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         current_user = data.current_user;
         drawMapInteractive(getMapContext(4, 5)); // fixme
         // todo перенести сюда рисовалку карты, которая будет загружаться с сервера
-        let response = fetch(`./api/game_data/${room_id}`)
+        fetch(`./api/game_data/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
                 is_ended = response_json.is_ended;
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-        response = fetch(`./api/players_stat/${room_id}`)
+        fetch(`./api/players_stat/${room_id}`)
             .then(response => response.json())
             .then(stats_json => drawPlayersStat(stats_json));
     });
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         btn_gr_vert = document.createElement('div');
         btn_gr_vert.className = 'btn-group-vertical';
-        res = createRadioBtn(acts[0], allowed_abilities.shoot_bow);
+        let res = createRadioBtn(acts[0], allowed_abilities.shoot_bow);
         btn_gr_vert.append(res[0]);
         btn_gr_vert.append(res[1]);
         res = createRadioBtn(acts[1], allowed_abilities.throw_bomb);
@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawTurnMessages(turns) {
-        for (turn of turns) { drawTurnMessage(turn); }
+        for (let turn of turns) { drawTurnMessage(turn); }
         scrollDownChatWindow();
     }
 
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof turn_data.player == 'undefined') { printSysMsg(turn_data.response); }
         else {
             // user's own message
-            if (turn_data.player == current_user) {
+            if (turn_data.player === current_user) {
                 div.classList.add('justify-content-end');
                 p.classList.add('my-msg');
                 span_username.classList.add('my-username');
@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return ' ' + turn_data.direction;
                 }
                 return '';
-            };
+            }
 
             // HTML to append
             p.innerHTML += span_username.outerHTML + span_turn_info.outerHTML + br.outerHTML + turn_data.response + br.outerHTML;
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawPlayersStat(players_data) {
         const div = document.getElementById('player-stats');
         div.innerHTML = '';
-        for (player_data of players_data) {
+        for (let player_data of players_data) {
             div.append(drawPlayerStat(player_data));
         }
     }
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const div = document.getElementById('map-container');
         let width = div.clientWidth;
         let height = div.clientHeight;
-        tile_size = height < width ? height / (rows + 3) : width / (cols + 3);
+        let tile_size = height < width ? height / (rows + 3) : width / (cols + 3);
         if(drawingCanvas && drawingCanvas.getContext) {
             drawingCanvas.getContext('2d').canvas.width  = width;
             drawingCanvas.getContext('2d').canvas.height = tile_size * (rows + 1);

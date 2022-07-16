@@ -4,7 +4,7 @@ rules = {
     'generator_rules': {
         'rows': 5, 'cols': 5,
         'exits_amount': 2,
-        'is_rect': True,
+        'is_not_rect': False,
         'is_separated_armory': False,
         'river_rules': {
             'has_river': True,

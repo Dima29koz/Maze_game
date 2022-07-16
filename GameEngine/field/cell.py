@@ -12,46 +12,21 @@ class Cell:
     :type x: int
     :param y: y coordinate of cell
     :type y: int
-    :ivar neighbours: neighbours of cell
-    :type neighbours: dict[Directions, Cell | None]
     :ivar walls: walls of cell
     :type walls: dict[Directions, WallEmpty]
 
     """
     def __init__(self, x: int, y: int):
         self.x, self.y = x, y
-        self.neighbours: dict[Directions, Cell | None] = {
-            Directions.top: None,
-            Directions.right: None,
-            Directions.bottom: None,
-            Directions.left: None}
         self.walls: dict[Directions, WallEmpty] = {
             Directions.top: WallEmpty(),
             Directions.right: WallEmpty(),
             Directions.bottom: WallEmpty(),
             Directions.left: WallEmpty()}
 
-    def change_neighbours(self, neighbours: dict):
-        """set cell neighbours"""
-        self.neighbours = neighbours
-
     def add_wall(self, direction: Directions, wall: WallEmpty):
         """add wall by direction"""
         self.walls[direction] = wall
-
-    def break_wall(self, direction: Directions) -> WallEmpty:
-        """
-        Break wall by direction if wall is breakable
-
-        :return: wall that was broken
-        """
-        wall = self.walls[direction]
-        if self.walls[direction].breakable:
-            self.add_wall(direction, WallEmpty())
-            neighbour = self.neighbours[direction]
-            if neighbour and neighbour.walls[-direction].breakable:
-                neighbour.walls[-direction] = WallEmpty()
-        return wall
 
     def idle(self, previous_cell):
         """idle handler"""
@@ -177,7 +152,6 @@ class CellExit(Cell):
     """Exit cell object"""
     def __init__(self, x: int, y: int, direction: Directions, cell):
         super().__init__(x, y)
-        self.neighbours[direction] = cell
         self.walls = {
             Directions.top: WallOuter(),
             Directions.right: WallOuter(),

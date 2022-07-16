@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const div_table_body = document.getElementById('history-table-body');
 
-    let response = fetch(`./api/user_games`)
-            .then(response => response.json())
-            .then(response_json => {
-                drawStat(response_json.games_total, response_json.games_won);
-                drawGames(response_json.games);
-            });
+    fetch(`./api/user_games`)
+        .then(response => response.json())
+        .then(response_json => {
+            drawStat(response_json.games_total, response_json.games_won);
+            drawGames(response_json.games);
+        });
     function drawGames(games) {
         for (let game of games) {
             let tr = document.createElement('tr');

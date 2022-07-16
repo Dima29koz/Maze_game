@@ -15,9 +15,10 @@ class FieldGenerator:
 
     Its generate game-field with given rules
     """
+
     def __init__(self, generator_rules: dict):
-        self.rows = generator_rules['rows']
-        self.cols = generator_rules['cols']
+        self.rows = generator_rules['rows'] + 2
+        self.cols = generator_rules['cols'] + 2
         self.pattern: list[list[PatternCell]] = [[]]
         self.ground_cells: list[Cell] = []
         self.rivers: list[list[CellRiver]] = []
@@ -38,8 +39,15 @@ class FieldGenerator:
         """returns generated exit-cells"""
         return self.exit_cells
 
+    def _get_neighbour_cell(self, cell: Cell, direction: Directions):
+        x, y = direction.calc(cell.x, cell.y)
+        try:
+            return self.field[y][x]
+        except IndexError:
+            return None
+
     def _generate_field(self, rules: dict):
-        self._generate_pattern(rules['is_rect'])
+        self._generate_pattern(rules['is_not_rect'])
         self._generate_base_field()
         self.rivers = self._generate_rivers(rules['river_rules'])
         self._generate_armory(rules['is_separated_armory'])
@@ -50,12 +58,16 @@ class FieldGenerator:
         self._generate_walls(rules['walls'])
         self.exit_cells = self._create_exit(outer_cells, rules['exits_amount'])
 
-    def _generate_pattern(self, is_rect: bool):
+    def _is_in_field(self, row: int, col: int) -> bool:
+        return row not in [0, self.rows - 1] and col not in [0, self.cols - 1]
+
+    def _generate_pattern(self, is_not_rect: bool):
         """
         Создает форму уровня
         """
-        self.pattern = [[PatternCell(col, row) for col in range(self.cols)] for row in range(self.rows)]
-        if not is_rect:  # todo это заглушка. нужна функция превращающая прямоугольник в облачко с дырками
+        self.pattern = [[
+            PatternCell(col, row, self._is_in_field(row, col)) for col in range(self.cols)] for row in range(self.rows)]
+        if is_not_rect:  # todo это заглушка. нужна функция превращающая прямоугольник в облачко с дырками
             self.pattern[3][0].is_not_none = False
             self.pattern[3][3].is_not_none = False
             self.pattern[3][4].is_not_none = False
@@ -111,8 +123,6 @@ class FieldGenerator:
                         else:
                             neighbours.update({direction: None})
 
-                    self.field[row][col].change_neighbours(neighbours)
-
     def _generate_walls(self, wall_rules: dict):
         if not wall_rules.get('has_walls'):
             return
@@ -127,29 +137,32 @@ class FieldGenerator:
             for direction in directions:
                 if not isinstance(cell.walls[direction], WallOuter):
                     cell.add_wall(direction, WallConcrete())
-                    cell.neighbours[direction].add_wall(-direction, WallConcrete())
+                    self._get_neighbour_cell(cell, direction).add_wall(-direction, WallConcrete())
         self._wall_fix()
 
     def _wall_fix(self):
         for river in self.rivers:
-            for i in range(len(river)-1):
-                direction = river[i] - river[i+1]
-                river[i].break_wall(direction)
+            for i in range(len(river) - 1):
+                direction = river[i] - river[i + 1]
+
+                river[i].add_wall(direction, WallEmpty())
+                neighbour = self._get_neighbour_cell(river[i], direction)
+                if neighbour:
+                    neighbour.add_wall(-direction, WallEmpty())
 
     def _generate_outer_walls(self) -> list[Cell]:
         outer_cells = set()
-        for row in range(0, self.rows):
-            for col in range(0, self.cols):
-                if isinstance(self.field[row][col], Cell):
+        for row in self.field:
+            for cell in row:
+                if cell:
                     for direction in Directions:
-                        if self.field[row][col].neighbours[direction] is None:
-                            self.field[row][col].add_wall(direction, WallOuter())
-                            outer_cells.add(self.field[row][col])
+                        if self._get_neighbour_cell(cell, direction) is None:
+                            cell.add_wall(direction, WallOuter())
+                            outer_cells.add(cell)
 
         return list(outer_cells)
 
-    @staticmethod
-    def _create_exit(outer_cells: list[Cell], amount: int):
+    def _create_exit(self, outer_cells: list[Cell], amount: int):
         exit_cells = []
         cells = sample(outer_cells, min(amount, len(outer_cells)))
         for cell in cells:
@@ -161,8 +174,8 @@ class FieldGenerator:
             direction = choice(dirs)
             cell.add_wall(direction, WallExit())
             exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction, cell=cell)
-            cell.neighbours.update({direction: exit_cell})
             exit_cells.append(exit_cell)
+            self.field[exit_cell.y][exit_cell.x] = exit_cell
         return exit_cells
 
     def _spawn_treasures(self, treasures_rules: list[int]):

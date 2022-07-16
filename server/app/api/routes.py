@@ -33,7 +33,9 @@ def get_players_stat(room_id):
 def get_game_field(room_id):
     """returns json with game_field data. use it only for testing"""
     room = get_room_by_id(room_id)
-    return jsonify(room.on_get_field())
+    if room:
+        return jsonify(room.on_get_field())
+    return {'field': 'Error - id'}
 
 
 @api.route('/api/user_games')

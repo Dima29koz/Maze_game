@@ -3,7 +3,7 @@ from operator import attrgetter
 from random import choice, sample
 
 from GameEngine.field_generator.field_generator import FieldGenerator
-from GameEngine.field import response as r, cell as c
+from GameEngine.field import response as r, cell as c, wall as w
 from GameEngine.entities.player import Player
 from GameEngine.entities.treasure import Treasure
 from GameEngine.globalEnv.enums import Actions, Directions
@@ -102,7 +102,7 @@ class Field:
         return [[cell.to_dict() if cell else {} for cell in row] for row in self.field]
 
     def get_field_pattern_list(self):
-        return [[{'x': cell.x, 'y': cell.y} if cell else None for cell in row] for row in self.field]
+        return [[{'x': cell.x, 'y': cell.y} if cell else None for cell in row[1:-1]] for row in self.field[1:-1]]
 
     def get_treasures_list(self):
         return [{'x': treasure.cell.x, 'y': treasure.cell.y, 'type': treasure.t_type.name}
@@ -129,6 +129,27 @@ class Field:
         response.set_info(player.cell, [treasure.t_type for treasure in self._treasures_on_cell(player.cell)])
         response.update_turn_info(player.name, action.name, direction.name if direction else '')
         return response
+
+    def _get_neighbour_cell(self, cell: Cell, direction: Directions):
+        x, y = direction.calc(cell.x, cell.y)
+        try:
+            return self.field[y][x]
+        except IndexError:
+            return None
+
+    def break_wall(self, cell: Cell, direction: Directions):
+        """
+        Break wall by direction if wall is breakable
+
+        :return: wall that was broken
+        """
+        wall = cell.walls[direction]
+        if wall.breakable:
+            cell.add_wall(direction, w.WallEmpty())
+            neighbour = self._get_neighbour_cell(cell, direction)
+            if neighbour and neighbour.walls[-direction].breakable:
+                neighbour.walls[-direction] = w.WallEmpty()
+        return wall
 
     def _check_players(self, current_cell: Cell) -> list[Player]:
         return [player for player in self.players
@@ -158,7 +179,7 @@ class Field:
             damaged_players = self._check_players(current_cell)
             if current_cell.walls[shot_direction].weapon_collision:
                 break
-            current_cell = current_cell.neighbours[shot_direction]
+            current_cell = self._get_neighbour_cell(current_cell, shot_direction)
 
         lost_treasure_players, dead_players = self._player_take_dmg_handler(damaged_players)
         self._pass_handler(active_player)
@@ -180,7 +201,7 @@ class Field:
 
     def _bomb_throw_handler(self, active_player: Player, throwing_direction: Directions):
         active_player.throw_bomb()
-        wall = active_player.cell.break_wall(throwing_direction)
+        wall = self.break_wall(active_player.cell, throwing_direction)
         self._pass_handler(active_player)
         return r.RespHandlerBombing(wall)
 
@@ -194,7 +215,7 @@ class Field:
     def _movement_handler(self, active_player: Player, movement_direction: Directions):
         current_cell = active_player.cell
         pl_collision, pl_state, wall_type = current_cell.check_wall(movement_direction)
-        cell = current_cell.neighbours[movement_direction] if not pl_collision else current_cell
+        cell = self._get_neighbour_cell(current_cell, movement_direction) if not pl_collision else current_cell
         new_pl_cell = cell.active(current_cell) if pl_state else cell.idle(current_cell)
         active_player.move(new_pl_cell)
         self._cell_mechanics_activator(active_player, new_pl_cell)

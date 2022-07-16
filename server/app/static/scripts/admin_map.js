@@ -2,11 +2,20 @@ function drawMap(field, treasures, players, current_user) {
     const div = document.getElementById('div-map');
     const drawingCanvas = document.getElementById('map-debug');
 
-    width = div.clientWidth;
-    height = div.clientHeight;
-    tile_size = height < width ? height / field.length : width / field[0].length;
+    let width = div.clientWidth;
+    let height = div.clientHeight;
+    if (typeof field === "string") {
+       let div = document.getElementById('err-msg');
+       div.innerText = field;
+    }
+    else {
+        let div = document.getElementById('err-msg');
+        div.innerText = '';
+    }
+    let tile_size = height < width ? height / field.length : width / field[0].length;
     if(drawingCanvas && drawingCanvas.getContext) {
         let context = drawingCanvas.getContext('2d');
+        context.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
         let cells = drawField(context);
         drawTreasures(context);
         drawPlayers(context);
@@ -22,11 +31,11 @@ function drawMap(field, treasures, players, current_user) {
 
     function drawField(context) {
         let cells = [];
-        for (row of field) {
-            for (cell of row) {
+        for (let row of field) {
+            for (let cell of row) {
                 if (cell.type) {
                     cells.push(drawCell(cell, context));
-                    drawWalls(cell.walls, context);
+                    drawWalls(cell, cell.walls, context);
                 }
             }
         }
@@ -34,22 +43,22 @@ function drawMap(field, treasures, players, current_user) {
 
         function drawCell(cell, context) {
             let cell_obj = new Path2D();
-            x = cell.x * tile_size;
-            y = cell.y * tile_size;
+            let x = cell.x * tile_size;
+            let y = cell.y * tile_size;
             cell_obj.rect(x+2, y+2, tile_size-4, tile_size-4);
             cell_obj.data = { 'x': cell.x, 'y': cell.y };
             context.fillStyle = getCellColor(cell.type);
             context.fill(cell_obj);
-            if (cell.type == 'CellRiver' || cell.type == 'CellRiverMouth') {
+            if (cell.type === 'CellRiver' || cell.type === 'CellRiverMouth') {
                 drawRiverDir(cell, x, y, context);
             }
-            if (cell.type == 'CellClinic') {
+            if (cell.type === 'CellClinic') {
                 drawClinic(cell, x, y, context);
             }
-            if (cell.type == 'CellArmory' || cell.type == 'CellArmoryWeapon') {
+            if (cell.type === 'CellArmory' || cell.type === 'CellArmoryWeapon') {
                 drawArmory(cell, x, y, context);
             }
-            if (cell.type == 'CellArmoryExplosive') {
+            if (cell.type === 'CellArmoryExplosive') {
                 drawArmoryExplosive(cell, x, y, context);
             }
             return cell_obj;
@@ -68,9 +77,9 @@ function drawMap(field, treasures, players, current_user) {
             }
         }
 
-        function drawWalls(walls, context) {
-            x = cell.x * tile_size;
-            y = cell.y * tile_size;
+        function drawWalls(cell, walls, context) {
+            let x = cell.x * tile_size;
+            let y = cell.y * tile_size;
 
             context.fillStyle = getWallColor(walls.top);
             context.fillRect(x, y, tile_size, 4);
@@ -145,9 +154,9 @@ function drawMap(field, treasures, players, current_user) {
     }
 
     function drawTreasures(context) {
-        for (treasure of treasures) {
-            x = treasure.x * tile_size;
-            y = treasure.y * tile_size;
+        for (let treasure of treasures) {
+            let x = treasure.x * tile_size;
+            let y = treasure.y * tile_size;
             drawTreasure(x, y, treasure.type, context);
         }
     }
@@ -170,14 +179,14 @@ function drawMap(field, treasures, players, current_user) {
     }
 
     function drawPlayers(context) {
-        for (player of players) {
-            x = player.x * tile_size + tile_size / 2;
-            y = player.y * tile_size + tile_size / 2;
+        for (let player of players) {
+            let x = player.x * tile_size + tile_size / 2;
+            let y = player.y * tile_size + tile_size / 2;
             context.beginPath();
-            context.arc(x,y, tile_size / 3.5 ,0,Math.PI*2,true);
+            context.arc(x, y, tile_size / 3.5 ,0,Math.PI*2,true);
             context.fillStyle = 'red';
             context.fill();
-            if (player.name == current_user) {
+            if (player.name === current_user) {
                 context.lineWidth = 3;
                 context.strokeStyle = 'white';
                 context.stroke();
