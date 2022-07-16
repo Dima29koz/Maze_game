@@ -115,18 +115,35 @@ class Painter:
 
     def draw_players(self, players, dx, dy, ts):
         for player in players:
-            if player.is_alive:
+            if type(player) is dict or player.is_alive:
                 self.draw_player(player, dx, dy, ts)
 
     def draw_player(self, player, dx, dy, ts):
-        x = player.cell.x * ts + ts // 2 + dx
-        y = player.cell.y * ts + ts // 2 + dy
-        if player.is_active:
-            pygame.draw.circle(self.sc, (255, 255, 255),
-                               (x, y), ts // 3.5)
-        pygame.draw.circle(self.sc, pygame.Color(abs(hash(player.name)) % 255, 155, 155),
-                           (x, y), ts // 4)
+        if type(player) is dict:
+            x = player.get('x') * ts + dx
+            y = player.get('y') * ts + dy
+            name = 'player'
+            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                             (x + 2, y + 2), (x + ts - 2, y + 2), 2)
 
-        if player.treasure:
-            x, y = player.cell.x * ts, player.cell.y * ts
-            self.draw_treasure(player.treasure, x, y, ts)
+            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                             (x + ts - 2, y + 2), (x + ts - 2, y + ts - 4), 2)
+
+            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                             (x + ts - 2, y + ts - 4), (x + 2, y + ts - 4), 2)
+
+            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                             (x + 2, y + ts - 4), (x + 2, y + 2), 2)
+        else:
+            x = player.cell.x * ts + ts // 2 + dx
+            y = player.cell.y * ts + ts // 2 + dy
+            name = player.name
+            if player.is_active:
+                pygame.draw.circle(self.sc, (255, 255, 255),
+                                   (x, y), ts // 3.5)
+            pygame.draw.circle(self.sc, pygame.Color(abs(hash(name)) % 255, 155, 155),
+                               (x, y), ts // 4)
+
+            if player.treasure:
+                x, y = player.cell.x * ts, player.cell.y * ts
+                self.draw_treasure(player.treasure, x, y, ts)

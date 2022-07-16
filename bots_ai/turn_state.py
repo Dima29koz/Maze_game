@@ -21,13 +21,13 @@ class BotAI:
         self.pos_y = pos_y + 1 if pos_y is not None else self.size_y
         is_final_size = True if pos_x is not None and pos_y is not None else False
         field = self._generate_start_field()
-        player = Player(field[self.pos_y][self.pos_x], name)
         self.unique_objects_types: list = self._get_unique_obj_types(game_rules)
-        self.field_root = FieldState(field, player, None, copy(self.unique_objects_types),
-                                     player.cell.x, player.cell.x, player.cell.y, player.cell.y,
-                                     self.size_x, self.size_y, self.pos_x, self.pos_y, is_final_size)
+        self.field_root = FieldState(
+            field, self.pos_x, self.pos_y, None, copy(self.unique_objects_types),
+            self.pos_x, self.pos_x, self.pos_y, self.pos_y,
+            self.size_x, self.size_y, self.pos_x, self.pos_y, is_final_size)
 
-    def get_fields(self) -> list[tuple[list[list[cell.Cell | None]], Player]]:
+    def get_fields(self) -> list[tuple[list[list[cell.Cell | None]], dict[str, int]]]:
         """returns all leaves data of a tree"""
         leaves: list[FieldState] = []
         self._collect_leaf_nodes(self.field_root, leaves)
@@ -79,20 +79,16 @@ class BotAI:
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
         is_destroyed: bool = response.get('destroyed')
 
-        current_cell = node.player.cell
+        current_cell = node.get_player_cell()
         if is_destroyed:
             if not current_cell.walls[direction].breakable:
                 return node
-            node.break_wall(current_cell, direction)
-
+            node.add_wall(current_cell, direction, wall.WallEmpty)
         else:
-            neighbour_cell = node.get_neighbour_cell(current_cell, direction)
             if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
                 return node
             if type(current_cell.walls[direction]) is UnknownWall:
-                current_cell.add_wall(direction, UnbreakableWall())
-                if neighbour_cell:
-                    neighbour_cell.add_wall(-direction, UnbreakableWall())
+                node.add_wall(current_cell, direction, UnbreakableWall)
         try:
             idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
         except UnreachableState:
@@ -118,12 +114,11 @@ class BotAI:
         cell_treasures_amount: int = response.get('cell_treasures_amount')
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
-        start_cell = node.field[node.player.cell.y][node.player.cell.x]
+        start_cell = node.get_player_cell()
         new_cell = node.get_neighbour_cell(start_cell, direction)
         if not is_wall_passed:
-            start_cell.add_wall(direction, wall_type())
+            node.add_wall(start_cell, direction, wall_type)
             if new_cell:
-                new_cell.add_wall(-direction, wall_type())
                 if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
                     return node
                 if type(start_cell) is cell.CellRiver and start_cell.direction is direction:
@@ -132,9 +127,7 @@ class BotAI:
             new_cell = start_cell
             direction = -direction
         elif type_cell_turn_end is not cell.CellExit and type(start_cell) is not cell.CellExit:
-            start_cell.add_wall(direction, wall.WallEmpty())
-            if new_cell:
-                new_cell.add_wall(-direction, wall.WallEmpty())
+            node.add_wall(start_cell, direction, wall.WallEmpty)
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
@@ -176,16 +169,13 @@ class BotAI:
         type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
         cell_treasures_amount: int = response.get('cell_treasures_amount')
 
-        pos_x = node.player.cell.x
-        pos_y = node.player.cell.y
         if type_cell_turn_end is not cell.CellRiver:
             if type_cell_turn_end in self.unique_objects_types and type_cell_turn_end not in node.remaining_unique_obj_types:
                 return node
-            node.update_cell_type(type_cell_turn_end, pos_x, pos_y)
-            node.move_player(node.field[pos_y][pos_x])
+            node.update_cell_type(type_cell_turn_end, node.pl_pos_x, node.pl_pos_y)
         else:
-            possible_directions = get_possible_river_directions(node, node.player.cell)
-            [node.add_modified_leaf(node.player.cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
+            possible_directions = get_possible_river_directions(node, node.get_player_cell())
+            [node.add_modified_leaf(node.get_player_cell(), type_cell_turn_end, dir_) for dir_ in possible_directions]
 
     @staticmethod
     def _get_unique_obj_types(rules: dict):

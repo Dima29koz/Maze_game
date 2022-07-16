@@ -1,7 +1,6 @@
 from copy import deepcopy, copy
 from typing import Type
 
-from GameEngine.entities.player import Player
 from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from bots_ai.field_obj import UnknownCell
@@ -12,12 +11,13 @@ class FieldState:
     contains current field state known by player
     """
 
-    def __init__(self, field: list[list[cell.Cell | None]], player: Player, parent,
+    def __init__(self, field: list[list[cell.Cell | None]], pl_pos_x: int, pl_pos_y: int, parent,
                  remaining_unique_obj_types: list,
                  min_x, max_x, min_y, max_y, size_x, size_y, start_x, start_y,
                  is_final_size: bool = False):
         self.field = field
-        self.player = player
+        self.pl_pos_x = pl_pos_x
+        self.pl_pos_y = pl_pos_y
         self.size_x = size_x
         self.size_y = size_y
         self.start_x = start_x
@@ -31,24 +31,34 @@ class FieldState:
         self.next_states: list[FieldState] = []
         self.parent: FieldState | None = parent
 
+    # def get_field_copy(self):
+    #     return [
+    #         [
+    #             type(_cell)(_cell.x, _cell.y, _cell.direction) if type(_cell) is cell.CellRiver
+    #             else type(_cell)(_cell.x, _cell.y) if _cell is not None else None for _cell in row
+    #         ] for row in self.field]
+
     def get_current_data(self):
-        return self.field, self.player
+        return self.field, {'x': self.pl_pos_x, 'y': self.pl_pos_y}
+
+    def get_player_cell(self):
+        return self.field[self.pl_pos_y][self.pl_pos_x]
 
     def move_player(self, target_cell: cell.Cell):
-        self.player.move(target_cell)
+        self.pl_pos_x, self.pl_pos_y = target_cell.x, target_cell.y
         if not self.is_final_size and type(target_cell) is not cell.CellExit:
-            if target_cell.x > self.max_x:
-                self.max_x = target_cell.x
+            if self.pl_pos_x > self.max_x:
+                self.max_x = self.pl_pos_x
                 self.crop_field(Directions.left)
-            elif target_cell.x < self.min_x:
-                self.min_x = target_cell.x
+            elif self.pl_pos_x < self.min_x:
+                self.min_x = self.pl_pos_x
                 self.crop_field(Directions.right)
 
-            if target_cell.y > self.max_y:
-                self.max_y = target_cell.y
+            if self.pl_pos_y > self.max_y:
+                self.max_y = self.pl_pos_y
                 self.crop_field(Directions.top)
-            elif target_cell.y < self.min_y:
-                self.min_y = target_cell.y
+            elif self.pl_pos_y < self.min_y:
+                self.min_y = self.pl_pos_y
                 self.crop_field(Directions.bottom)
 
             if self.max_x - self.min_x == self.size_x and self.max_y - self.min_y == self.size_y:
@@ -86,23 +96,22 @@ class FieldState:
         target_cell = self.get_neighbour_cell(current_cell, direction)
         if type(target_cell) is not UnknownCell and target_cell is not None:
             return
-        cell_exit = cell.CellExit(
-            *direction.calc(current_cell.x, current_cell.y), -direction)
+        cell_exit = cell.CellExit(*direction.calc(current_cell.x, current_cell.y), -direction)
         for dir_ in Directions:
             if dir_ is -direction:
                 continue
-            x, y = dir_.calc(cell_exit.x, cell_exit.y)
-            if x < len(self.field[0]) and y < len(self.field) and self.field[y][x]:
-                self.field[y][x].add_wall(-dir_, wall.WallOuter())
+            neighbour_cell = self.get_neighbour_cell(cell_exit, dir_)
+            if neighbour_cell:
+                neighbour_cell.add_wall(-dir_, wall.WallOuter())
         current_cell.add_wall(direction, wall.WallExit())
         self.field[cell_exit.y][cell_exit.x] = cell_exit
         return cell_exit
 
-    def break_wall(self, current_cell: cell.Cell, direction: Directions):
-        current_cell.add_wall(direction, wall.WallEmpty())
+    def add_wall(self, current_cell: cell.Cell, direction: Directions, wall_type: Type[wall.WallEmpty]):
+        current_cell.add_wall(direction, wall_type())
         neighbour = self.get_neighbour_cell(current_cell, direction)
         if neighbour:
-            neighbour.walls[-direction] = wall.WallEmpty()
+            neighbour.add_wall(-direction, wall_type())
 
     def get_neighbour_cell(self, current_cell: cell.Cell, direction: Directions):
         x, y = direction.calc(current_cell.x, current_cell.y)
@@ -126,7 +135,8 @@ class FieldState:
         self.next_states.append(self.get_modified_copy(target_cell, new_type, direction))
 
     def get_modified_copy(self, target_cell: cell.Cell, new_type: Type[cell.Cell], direction: Directions = None):
-        new_state = FieldState(deepcopy(self.field), deepcopy(self.player), self, copy(self.remaining_unique_obj_types),
+        new_state = FieldState(deepcopy(self.field), self.pl_pos_x, self.pl_pos_y,
+                               self, copy(self.remaining_unique_obj_types),
                                self.min_x, self.max_x, self.min_y, self.max_y,
                                self.size_x, self.size_y, self.start_x, self.start_y, self.is_final_size)
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
@@ -134,6 +144,6 @@ class FieldState:
             new_state.field[target_cell.y][target_cell.x].add_wall(direction, wall.WallEmpty())
             neighbor_cell = self.get_neighbour_cell(target_cell, direction)
             new_state.field[neighbor_cell.y][neighbor_cell.x].add_wall(-direction, wall.WallEmpty())
-        if new_state.player.cell != new_state.field[target_cell.y][target_cell.x]:
-            new_state.move_player(new_state.field[target_cell.y][target_cell.x])
+        if new_state.pl_pos_x != target_cell.x or new_state.pl_pos_y != target_cell.y:
+            new_state.move_player(target_cell)
         return new_state

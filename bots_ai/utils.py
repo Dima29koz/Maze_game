@@ -24,7 +24,7 @@ def _calc_possible_river_trajectories(
                 node.add_modified_leaf(current_cell, type_cell_after_wall_check, direction)
             return
         elif type(current_cell) is cell.CellRiver and current_cell.direction in possible_river_dirs:
-            if node.player.cell != current_cell:
+            if node.get_player_cell() != current_cell:
                 node.move_player(current_cell)
             return
         raise UnreachableState()
@@ -38,14 +38,14 @@ def _calc_possible_river_trajectories(
         # все варианты течения второй клетки
         new_states2: list[FieldState] = []
         for new_state in new_states:
-            riv_dir = new_state.player.cell.direction
+            riv_dir = new_state.get_player_cell().direction
             new_states2 += get_possible_leafs(
-                new_state, new_state.get_neighbour_cell(new_state.player.cell, riv_dir), riv_dir)
+                new_state, new_state.get_neighbour_cell(new_state.get_player_cell(), riv_dir), riv_dir)
         final_states: list[FieldState] = []
         for new_state in new_states2:
-            riv_dir = new_state.player.cell.direction
+            riv_dir = new_state.get_player_cell().direction
             final_states += get_possible_leafs(
-                new_state, new_state.get_neighbour_cell(new_state.player.cell, riv_dir), riv_dir)
+                new_state, new_state.get_neighbour_cell(new_state.get_player_cell(), riv_dir), riv_dir)
         if not final_states:
             raise UnreachableState()
         if not (len(final_states) == 1 and final_states[0] is node):
@@ -56,8 +56,8 @@ def _calc_possible_river_trajectories(
         final_states: list[FieldState] = []
         new_states2: list[FieldState] = []
         for new_state in new_states:
-            riv_dir = new_state.player.cell.direction
-            current_cell = new_state.get_neighbour_cell(new_state.player.cell, riv_dir)
+            riv_dir = new_state.get_player_cell().direction
+            current_cell = new_state.get_neighbour_cell(new_state.get_player_cell(), riv_dir)
             if type(current_cell) is cell.CellRiverMouth:
                 new_state.move_player(current_cell)
                 final_states.append(new_state)
@@ -67,8 +67,8 @@ def _calc_possible_river_trajectories(
                     final_states.append(new_state.get_modified_copy(current_cell, type_cell_turn_end))
 
         for new_state in new_states2:
-            riv_dir = new_state.player.cell.direction
-            current_cell = new_state.get_neighbour_cell(new_state.player.cell, riv_dir)
+            riv_dir = new_state.get_player_cell().direction
+            current_cell = new_state.get_neighbour_cell(new_state.get_player_cell(), riv_dir)
             if type(current_cell) is cell.CellRiverMouth:
                 new_state.move_player(current_cell)
                 final_states.append(new_state)
@@ -179,19 +179,20 @@ def is_the_only_allowed_dir(node: FieldState, target_cell: cell.Cell, dir_: Dire
 
 def idle_processor(node: FieldState, type_cell_turn_end: Type[cell.Cell], cell_treasures_amount: int,
                    type_out_treasure: TreasureTypes | None):
-    current_cell = node.player.cell
+    current_cell = node.get_player_cell()
     if type(current_cell) is not cell.CellRiver:
         return  # todo add cell mechanics activator
     end_cell = node.get_neighbour_cell(current_cell, current_cell.direction)
     if type(end_cell) not in [type_cell_turn_end, UnknownCell]:
         raise UnreachableState()
     if type(end_cell) is type_cell_turn_end:
-        node.move_player(node.get_neighbour_cell(current_cell, current_cell.direction))
+        neighbour_cell = node.get_neighbour_cell(current_cell, current_cell.direction)
+        node.move_player(neighbour_cell)
     elif type_cell_turn_end is cell.CellRiver:
         _calc_possible_river_trajectories(
             node, end_cell, type_cell_turn_end, type_cell_turn_end, False, current_cell.direction)
     elif type_cell_turn_end is cell.CellRiverMouth:
         node.update_cell_type(type_cell_turn_end, end_cell.x, end_cell.y)
-        node.move_player(node.field[end_cell.y][end_cell.x])
+        node.move_player(end_cell)
     else:
         raise UnreachableState()
