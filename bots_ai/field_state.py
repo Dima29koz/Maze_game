@@ -70,28 +70,20 @@ class FieldState:
         if new_type is None:
             if self.field[pos_y][pos_x] is None or type(self.field[pos_y][pos_x]) is cell.CellExit:
                 return
-            for direction in Directions:
-                if self.field[pos_y][pos_x].neighbours[direction]:
-                    self.field[pos_y][pos_x].neighbours[direction].neighbours[-direction] = None
             self.field[pos_y][pos_x] = None
             return
 
-        neighbours = self.field[pos_y][pos_x].neighbours
         walls = self.field[pos_y][pos_x].walls
         self.field[pos_y][pos_x] = new_type(pos_x, pos_y) if not river_direction else cell.CellRiver(pos_x, pos_y,
                                                                                                      river_direction)
-        self.field[pos_y][pos_x].change_neighbours(neighbours)
         self.field[pos_y][pos_x].walls = walls
-        for direction in Directions:
-            if self.field[pos_y][pos_x].neighbours[direction]:
-                self.field[pos_y][pos_x].neighbours[direction].neighbours[-direction] = self.field[pos_y][pos_x]
         try:
             self.remaining_unique_obj_types.remove(new_type)
         except ValueError:
             pass
 
     def create_exit(self, direction: Directions, current_cell: cell.Cell):
-        target_cell = current_cell.neighbours[direction]
+        target_cell = self.get_neighbour_cell(current_cell, direction)
         if type(target_cell) is not UnknownCell and target_cell is not None:
             return
         cell_exit = cell.CellExit(
@@ -101,13 +93,23 @@ class FieldState:
                 continue
             x, y = dir_.calc(cell_exit.x, cell_exit.y)
             if x < len(self.field[0]) and y < len(self.field) and self.field[y][x]:
-                cell_exit.neighbours[dir_] = self.field[y][x]
-                self.field[y][x].neighbours[-dir_] = cell_exit
                 self.field[y][x].add_wall(-dir_, wall.WallOuter())
         current_cell.add_wall(direction, wall.WallExit())
-        current_cell.neighbours[direction] = cell_exit
         self.field[cell_exit.y][cell_exit.x] = cell_exit
         return cell_exit
+
+    def break_wall(self, current_cell: cell.Cell, direction: Directions):
+        current_cell.add_wall(direction, wall.WallEmpty())
+        neighbour = self.get_neighbour_cell(current_cell, direction)
+        if neighbour:
+            neighbour.walls[-direction] = wall.WallEmpty()
+
+    def get_neighbour_cell(self, current_cell: cell.Cell, direction: Directions):
+        x, y = direction.calc(current_cell.x, current_cell.y)
+        try:
+            return self.field[y][x]
+        except IndexError:
+            return None
 
     def remove_leaf(self, leaf):
         self.next_states.remove(leaf)
@@ -130,7 +132,8 @@ class FieldState:
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
         if direction:
             new_state.field[target_cell.y][target_cell.x].add_wall(direction, wall.WallEmpty())
-            new_state.field[target_cell.y][target_cell.x].neighbours[direction].add_wall(-direction, wall.WallEmpty())
+            neighbor_cell = self.get_neighbour_cell(target_cell, direction)
+            new_state.field[neighbor_cell.y][neighbor_cell.x].add_wall(-direction, wall.WallEmpty())
         if new_state.player.cell != new_state.field[target_cell.y][target_cell.x]:
             new_state.move_player(new_state.field[target_cell.y][target_cell.x])
         return new_state

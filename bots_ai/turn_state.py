@@ -73,7 +73,6 @@ class BotAI:
         except UnreachableState:
             return node
 
-
     def _bomb_throw_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
         type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
         cell_treasures_amount: int = response.get('cell_treasures_amount')
@@ -84,10 +83,10 @@ class BotAI:
         if is_destroyed:
             if not current_cell.walls[direction].breakable:
                 return node
-            current_cell.break_wall(direction)
+            node.break_wall(current_cell, direction)
 
         else:
-            neighbour_cell = current_cell.neighbours[direction]
+            neighbour_cell = node.get_neighbour_cell(current_cell, direction)
             if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
                 return node
             if type(current_cell.walls[direction]) is UnknownWall:
@@ -120,7 +119,7 @@ class BotAI:
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
         start_cell = node.field[node.player.cell.y][node.player.cell.x]
-        new_cell = start_cell.neighbours[direction]
+        new_cell = node.get_neighbour_cell(start_cell, direction)
         if not is_wall_passed:
             start_cell.add_wall(direction, wall_type())
             if new_cell:
@@ -185,7 +184,7 @@ class BotAI:
             node.update_cell_type(type_cell_turn_end, pos_x, pos_y)
             node.move_player(node.field[pos_y][pos_x])
         else:
-            possible_directions = get_possible_river_directions(node.player.cell)
+            possible_directions = get_possible_river_directions(node, node.player.cell)
             [node.add_modified_leaf(node.player.cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
 
     @staticmethod
@@ -223,8 +222,6 @@ class BotAI:
                             neighbours.update({direction: field[y][x]})
                         else:
                             neighbours.update({direction: None})
-
-                    field[row][col].change_neighbours(neighbours)
 
 
 if __name__ == "__main__":
