@@ -1,14 +1,9 @@
 from copy import copy
-from typing import Type
 
-from GameEngine.entities.player import Player
 from GameEngine.field import cell
-from GameEngine.field import wall
-from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
-from bots_ai.exceptions import UnreachableState
-from bots_ai.field_obj import UnknownCell, UnbreakableWall, UnknownWall
+from GameEngine.globalEnv.enums import Directions, Actions
+from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
-from bots_ai.utils import _calc_possible_river_trajectories, get_possible_river_directions, idle_processor
 
 
 class BotAI:
@@ -39,143 +34,13 @@ class BotAI:
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
 
-        action_to_processor = {
-            Actions.swap_treasure: self._treasure_swap_processor,
-            Actions.shoot_bow: self._shooting_processor,
-            Actions.throw_bomb: self._bomb_throw_processor,
-            Actions.skip: self._pass_processor,
-            Actions.move: self._movement_processor,
-            Actions.info: self._info_processor,
-        }
         to_be_removed = []
         for node in self._get_leaf_nodes():
-            res = action_to_processor[action](node, player_name, direction, response)
+            res = node.process_action(action, direction, response)
             if res:
                 to_be_removed.append(res)
         for node in to_be_removed:
             node.remove()
-
-    def _treasure_swap_processor(self, node: FieldState, player_name: str, direction: Directions | None,
-                                 response: dict):
-        pass
-
-    def _shooting_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
-        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
-        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
-        cell_treasures_amount: int = response.get('cell_treasures_amount')
-        is_hit: bool = response.get('hit')
-        dmg_pls: list[str] = response.get('dmg_pls')
-        dead_pls: list[str] = response.get('dead_pls')
-        drop_pls: list[str] = response.get('drop_pls')
-
-        try:
-            idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
-        except UnreachableState:
-            return node
-
-    def _bomb_throw_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
-        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
-        cell_treasures_amount: int = response.get('cell_treasures_amount')
-        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
-        is_destroyed: bool = response.get('destroyed')
-
-        current_cell = node.get_player_cell()
-        if is_destroyed:
-            if not current_cell.walls[direction].breakable:
-                return node
-            node.add_wall(current_cell, direction, wall.WallEmpty)
-        else:
-            if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
-                return node
-            if type(current_cell.walls[direction]) is UnknownWall:
-                node.add_wall(current_cell, direction, UnbreakableWall)
-        try:
-            idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
-        except UnreachableState:
-            return node
-
-    def _pass_processor(self, node: FieldState, player_name: str, direction: Directions | None, response: dict):
-        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
-        cell_treasures_amount: int = response.get('cell_treasures_amount')
-        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
-
-        try:
-            idle_processor(node, type_cell_turn_end, cell_treasures_amount, type_out_treasure)
-        except UnreachableState:
-            return node
-
-    def _movement_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
-        is_diff_cells: bool = response.get('diff_cells')
-        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
-        type_cell_after_wall_check: Type[cell.Cell] = response.get('type_cell_after_wall_check')
-        is_wall_passed: bool = response.get('wall_passed')
-        wall_type: Type[wall.WallEmpty] | None = response.get('wall_type')
-        # todo учесть что это не обязательно настоящий тип стены
-        cell_treasures_amount: int = response.get('cell_treasures_amount')
-        type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
-
-        start_cell = node.get_player_cell()
-        new_cell = node.get_neighbour_cell(start_cell, direction)
-        if not is_wall_passed:
-            node.add_wall(start_cell, direction, wall_type)
-            if new_cell:
-                if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
-                    return node
-                if type(start_cell) is cell.CellRiver and start_cell.direction is direction:
-                    return node
-
-            new_cell = start_cell
-            direction = -direction
-        elif type_cell_turn_end is not cell.CellExit and type(start_cell) is not cell.CellExit:
-            node.add_wall(start_cell, direction, wall.WallEmpty)
-
-        # хотим пройти в выход, но он еще не создан
-        if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
-            exit_cell = node.create_exit(direction, start_cell)
-            if not exit_cell:
-                return node
-            node.move_player(exit_cell)
-            return
-
-        #  попытка сходить за пределы карты - значит всю ветку можно удалить
-        if new_cell is None:
-            return node
-
-        #  попытка изменить значение уже известной клетки
-        if type(new_cell) not in [UnknownCell, type_cell_after_wall_check]:
-            return node
-
-        #  перемещение в указанную сторону не противоречит известному полю
-        if type_cell_after_wall_check is not cell.CellRiver:
-            if type(new_cell) is UnknownCell:
-                if type_cell_after_wall_check in self.unique_objects_types \
-                        and type_cell_after_wall_check not in node.remaining_unique_obj_types:
-                    return node
-                node.update_cell_type(type_cell_after_wall_check, new_cell.x, new_cell.y)
-            node.move_player(new_cell)
-            return
-
-        # ... , река-река / река-устье / река, ...
-        # река-река: type_cell_after_wall_check == river, type_cell_turn_end == river, is_diff_cells = True
-        # река-устье: type_cell_after_wall_check == river, type_cell_turn_end == mouth, is_diff_cells = True
-        # река: type_cell_after_wall_check == river, type_cell_turn_end == river, is_diff_cells = False
-        try:
-            _calc_possible_river_trajectories(
-                node, new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, direction)
-        except UnreachableState:
-            return node
-
-    def _info_processor(self, node: FieldState, player_name: str, direction: Directions, response: dict):
-        type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
-        cell_treasures_amount: int = response.get('cell_treasures_amount')
-
-        if type_cell_turn_end is not cell.CellRiver:
-            if type_cell_turn_end in self.unique_objects_types and type_cell_turn_end not in node.remaining_unique_obj_types:
-                return node
-            node.update_cell_type(type_cell_turn_end, node.pl_pos_x, node.pl_pos_y)
-        else:
-            possible_directions = get_possible_river_directions(node, node.get_player_cell())
-            [node.add_modified_leaf(node.get_player_cell(), type_cell_turn_end, dir_) for dir_ in possible_directions]
 
     @staticmethod
     def _get_unique_obj_types(rules: dict):
