@@ -34,13 +34,8 @@ class BotAI:
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
 
-        to_be_removed = []
-        for node in self._get_leaf_nodes():
-            res = node.process_action(action, direction, response)
-            if res:
-                to_be_removed.append(res)
-        for node in to_be_removed:
-            node.remove()
+        for node in self._get_leaf_nodes()[::-1]:
+            node.process_action(action, direction, response)
 
     @staticmethod
     def _get_unique_obj_types(rules: dict):
