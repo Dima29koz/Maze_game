@@ -82,36 +82,51 @@ class FieldState:
                 [self.update_cell_type(None, self.min_x - self.start_x - 1, y) for y in range(len(self.field))]
 
     def update_cell_type(self, new_type: Type[CELL] | None, pos_x: int, pos_y: int,
-                         river_direction: Directions = None):
+                         direction: Directions = None):
         if new_type is None:
             if self.field[pos_y][pos_x] is None or type(self.field[pos_y][pos_x]) is cell.CellExit:
                 return
             self.field[pos_y][pos_x] = None
             return
 
+        if new_type is cell.CellExit:
+            self._create_exit(direction, self.field[pos_y][pos_x])
+            return
+
         walls = self.field[pos_y][pos_x].walls
-        self.field[pos_y][pos_x] = new_type(pos_x, pos_y) if not river_direction else cell.CellRiver(pos_x, pos_y,
-                                                                                                     river_direction)
-        self.field[pos_y][pos_x].walls = walls
+        self.field[pos_y][pos_x] = new_type(pos_x, pos_y) if not direction else cell.CellRiver(pos_x, pos_y, direction)
+        self.field[pos_y][pos_x].walls = copy(walls)
+
+        if direction:
+            self.add_wall(self.field[pos_y][pos_x], direction, wall.WallEmpty)
         try:
             self.remaining_unique_obj_types.remove(new_type)
         except ValueError:
             pass
 
-    def create_exit(self, direction: Directions, current_cell: cell.Cell):
+    def _create_exit(self, direction: Directions, current_cell: cell.Cell) -> None:
+        """
+
+        :param direction: direction of exit wall
+        :param current_cell: position of cell which neighbour`s to exit
+        :raises UnreachableState: if location for exit cell is not Unknown or None
+        """
         target_cell = self.get_neighbour_cell(current_cell, direction)
-        if type(target_cell) is not UnknownCell and target_cell is not None:
+        if type(target_cell) is cell.CellExit:
             return
+        if type(target_cell) is not UnknownCell and target_cell is not None:
+            raise UnreachableState()
         cell_exit = cell.CellExit(*direction.calc(current_cell.x, current_cell.y), -direction)
         for dir_ in Directions:
             if dir_ is -direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(cell_exit, dir_)
             if neighbour_cell:
-                neighbour_cell.add_wall(-dir_, wall.WallOuter())
+                if type(neighbour_cell) is cell.CellExit:
+                    continue
+                self._update_wall(neighbour_cell, dir_, wall.WallOuter)
         current_cell.add_wall(direction, wall.WallExit())
         self.field[cell_exit.y][cell_exit.x] = cell_exit
-        return cell_exit
 
     def add_wall(self, current_cell: CELL, direction: Directions, wall_type: Type[wall.WallEmpty],
                  neighbour_wall_type: Type[wall.WallEmpty] | None = None):
@@ -120,7 +135,12 @@ class FieldState:
         if neighbour:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
-            neighbour.add_wall(-direction, neighbour_wall_type())
+            self._update_wall(neighbour, direction, neighbour_wall_type)
+
+    def _update_wall(self, target_cell: CELL, direction: Directions, wall_type):
+        self.field[target_cell.y][target_cell.x] = copy(self.field[target_cell.y][target_cell.x])
+        self.field[target_cell.y][target_cell.x].walls = copy(self.field[target_cell.y][target_cell.x].walls)
+        self.field[target_cell.y][target_cell.x].add_wall(-direction, wall_type())
 
     def get_neighbour_cell(self, current_cell: CELL, direction: Directions):
         x, y = direction.calc(current_cell.x, current_cell.y)
@@ -144,15 +164,11 @@ class FieldState:
         self.next_states.append(self.get_modified_copy(target_cell, new_type, direction))
 
     def get_modified_copy(self, target_cell: CELL, new_type: Type[CELL], direction: Directions = None):
-        new_state = FieldState(deepcopy(self.field), self.pl_pos_x, self.pl_pos_y,
+        new_state = FieldState([copy(row) for row in self.field], self.pl_pos_x, self.pl_pos_y,
                                self, copy(self.remaining_unique_obj_types),
                                self.min_x, self.max_x, self.min_y, self.max_y,
                                self.size_x, self.size_y, self.start_x, self.start_y, self.is_final_size)
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
-        if direction:
-            new_state.field[target_cell.y][target_cell.x].add_wall(direction, wall.WallEmpty())
-            neighbor_cell = self.get_neighbour_cell(target_cell, direction)
-            new_state.field[neighbor_cell.y][neighbor_cell.x].add_wall(-direction, wall.WallEmpty())
         if new_state.pl_pos_x != target_cell.x or new_state.pl_pos_y != target_cell.y:
             new_state.move_player(target_cell)
         return new_state
@@ -184,7 +200,7 @@ class FieldState:
 
         self._pass_processor(direction, response)
 
-    def _bomb_throw_processor(self, direction: Directions, response: dict):
+    def _bomb_throw_processor(self, direction: Directions, response: dict) -> None:
         is_destroyed: bool = response.get('destroyed')
 
         current_cell = self.get_player_cell()
@@ -250,11 +266,8 @@ class FieldState:
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
-            exit_cell = self.create_exit(direction, start_cell)
-            if not exit_cell:
-                raise UnreachableState()
-            self.move_player(exit_cell)
-            return
+            self.update_cell_type(cell.CellExit, start_cell.x, start_cell.y, direction)
+            new_cell = self.get_neighbour_cell(start_cell, direction)
 
         #  попытка сходить за пределы карты - значит всю ветку можно удалить
         if new_cell is None:
@@ -288,8 +301,9 @@ class FieldState:
             # todo добавить проверку для уникальных объектов (домики, клады и тп)
             self.update_cell_type(type_cell_turn_end, self.pl_pos_x, self.pl_pos_y)
         else:
-            possible_directions = self.get_possible_river_directions(self.get_player_cell())
-            [self.add_modified_leaf(self.get_player_cell(), type_cell_turn_end, dir_) for dir_ in possible_directions]
+            player_cell = self.get_player_cell()
+            possible_directions = self.get_possible_river_directions(player_cell)
+            [self.add_modified_leaf(player_cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
 
     def _calc_possible_river_trajectories(
             self, current_cell: CELL,
@@ -438,7 +452,7 @@ class FieldState:
             if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:
                 return True
 
-    def is_the_only_allowed_dir(self, target_cell: CELL, dir_: Directions):
+    def is_the_only_allowed_dir(self, target_cell: CELL, dir_: Directions) -> bool:
         """
 
         :param target_cell: клетка для которой проверяем

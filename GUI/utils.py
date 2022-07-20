@@ -63,7 +63,7 @@ def get_cell_color(cell):
 
 def get_wall_color(wall):
     if type(wall) is w.WallOuter:
-        return 60, 45, 15
+        return 1, 1, 1
     if type(wall) is w.WallConcrete:
         return 170, 105, 25
     if type(wall) in [w.WallExit, w.WallEntrance]:
@@ -73,6 +73,8 @@ def get_wall_color(wall):
     if type(wall) is UnknownWall:
         return 100, 10, 100
     if type(wall) is UnbreakableWall:
-        return 1, 1, 1
+        return 60, 45, 15
+    if type(wall) is w.WallEmpty:
+        return 200, 200, 200
     else:
         return 'darkslategray'

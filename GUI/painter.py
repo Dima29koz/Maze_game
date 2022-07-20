@@ -83,16 +83,16 @@ class Painter:
     def draw_walls(self, cell: c.Cell, dx, dy, ts):
         x, y = cell.x * ts + dx, cell.y * ts + dy
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.top]),
-                         (x, y), (x + ts, y), 3)
+                         (x, y), (x + ts - 2, y), 2)
 
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.right]),
-                         (x + ts, y), (x + ts, y + ts), 3)
+                         (x + ts - 2, y), (x + ts - 2, y + ts - 2), 2)
 
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.bottom]),
-                         (x + ts, y + ts), (x, y + ts), 3)
+                         (x, y + ts - 2), (x + ts - 2, y + ts - 2), 2)
 
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.left]),
-                         (x, y + ts), (x, y), 3)
+                         (x, y + ts - 2), (x, y), 2)
 
     def draw_treasures(self, treasures, dx, dy, ts):
         for treasure in treasures:
