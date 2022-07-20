@@ -12,13 +12,13 @@ class BotAI:
         self.size_y = game_rules.get('generator_rules').get('rows')
         self.cols = 2 * self.size_x + 1 if pos_x is None else self.size_x + 2
         self.rows = 2 * self.size_y + 1 if pos_y is None else self.size_y + 2
-        self.pos_x = pos_x + 1 if pos_x is not None else self.size_x
-        self.pos_y = pos_y + 1 if pos_y is not None else self.size_y
+        self.pos_x = pos_x if pos_x is not None else self.size_x
+        self.pos_y = pos_y if pos_y is not None else self.size_y
         is_final_size = True if pos_x is not None and pos_y is not None else False
         field = self._generate_start_field()
-        self.unique_objects_types: list = self._get_unique_obj_types(game_rules)
+        self.field_objects_amount: dict = self._get_field_objects_amount(game_rules)
         self.field_root = FieldState(
-            field, self.pos_x, self.pos_y, None, copy(self.unique_objects_types),
+            field, self.pos_x, self.pos_y, None, copy(self.field_objects_amount),
             self.pos_x, self.pos_x, self.pos_y, self.pos_y,
             self.size_x, self.size_y, self.pos_x, self.pos_y, is_final_size)
 
@@ -38,9 +38,12 @@ class BotAI:
             node.process_action(action, direction, response)
 
     @staticmethod
-    def _get_unique_obj_types(rules: dict):
-        unique_obj = [cell.CellExit, cell.CellArmory, cell.CellClinic]
-        return unique_obj
+    def _get_field_objects_amount(rules: dict):
+        obj_amount = {
+            cell.CellClinic: 1,
+            cell.CellArmory: 1,
+        }
+        return obj_amount
 
     def _collect_leaf_nodes(self, node: FieldState, leaves: list[FieldState]):
         if node is not None:

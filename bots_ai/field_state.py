@@ -18,7 +18,7 @@ class FieldState:
     """
 
     def __init__(self, field: list[list[CELL | None]], pl_pos_x: int, pl_pos_y: int, parent,
-                 remaining_unique_obj_types: list,
+                 remaining_obj_amount: dict,
                  min_x, max_x, min_y, max_y, size_x, size_y, start_x, start_y,
                  is_final_size: bool = False):
         self.field = field
@@ -33,16 +33,9 @@ class FieldState:
         self.min_y = min_y
         self.max_y = max_y
         self.is_final_size = is_final_size
-        self.remaining_unique_obj_types = remaining_unique_obj_types
+        self.remaining_obj_amount = remaining_obj_amount
         self.next_states: list[FieldState] = []
         self.parent: FieldState | None = parent
-
-    # def get_field_copy(self):
-    #     return [
-    #         [
-    #             type(_cell)(_cell.x, _cell.y, _cell.direction) if type(_cell) is cell.CellRiver
-    #             else type(_cell)(_cell.x, _cell.y) if _cell is not None else None for _cell in row
-    #         ] for row in self.field]
 
     def get_current_data(self):
         return self.field, {'x': self.pl_pos_x, 'y': self.pl_pos_y}
@@ -86,6 +79,8 @@ class FieldState:
         if new_type is None:
             if self.field[pos_y][pos_x] is None or type(self.field[pos_y][pos_x]) is cell.CellExit:
                 return
+            if self.has_known_input_river(self.field[pos_y][pos_x], direction, ignore_dir=True):
+                raise UnreachableState()
             self.field[pos_y][pos_x] = None
             return
 
@@ -93,16 +88,24 @@ class FieldState:
             self._create_exit(direction, self.field[pos_y][pos_x])
             return
 
+        # todo кажется надо убедиться что я не клоун, ибо а зачем обновлять тип известной клетки
+        if type(self.field[pos_y][pos_x]) is UnknownCell:
+            try:
+                if self.remaining_obj_amount.get(new_type) == 0:
+                    raise UnreachableState()
+                self.remaining_obj_amount[new_type] -= 1
+            except KeyError:
+                pass
+            if new_type not in [cell.CellRiverMouth, cell.CellRiver] \
+                    and self.has_known_input_river(self.field[pos_y][pos_x], direction, ignore_dir=True):
+                raise UnreachableState()
+
         walls = self.field[pos_y][pos_x].walls
         self.field[pos_y][pos_x] = new_type(pos_x, pos_y) if not direction else cell.CellRiver(pos_x, pos_y, direction)
         self.field[pos_y][pos_x].walls = copy(walls)
 
         if direction:
             self.add_wall(self.field[pos_y][pos_x], direction, wall.WallEmpty)
-        try:
-            self.remaining_unique_obj_types.remove(new_type)
-        except ValueError:
-            pass
 
     def _create_exit(self, direction: Directions, current_cell: cell.Cell) -> None:
         """
@@ -115,6 +118,8 @@ class FieldState:
         if type(target_cell) is cell.CellExit:
             return
         if type(target_cell) is not UnknownCell and target_cell is not None:
+            raise UnreachableState()
+        if target_cell is not None and self.has_known_input_river(target_cell, direction, ignore_dir=True):
             raise UnreachableState()
         cell_exit = cell.CellExit(*direction.calc(current_cell.x, current_cell.y), -direction)
         for dir_ in Directions:
@@ -130,7 +135,7 @@ class FieldState:
 
     def add_wall(self, current_cell: CELL, direction: Directions, wall_type: Type[wall.WallEmpty],
                  neighbour_wall_type: Type[wall.WallEmpty] | None = None):
-        current_cell.add_wall(direction, wall_type())
+        self._update_wall(current_cell, -direction, wall_type)
         neighbour = self.get_neighbour_cell(current_cell, direction)
         if neighbour:
             if neighbour_wall_type is None:
@@ -165,7 +170,7 @@ class FieldState:
 
     def get_modified_copy(self, target_cell: CELL, new_type: Type[CELL], direction: Directions = None):
         new_state = FieldState([copy(row) for row in self.field], self.pl_pos_x, self.pl_pos_y,
-                               self, copy(self.remaining_unique_obj_types),
+                               self, copy(self.remaining_obj_amount),
                                self.min_x, self.max_x, self.min_y, self.max_y,
                                self.size_x, self.size_y, self.start_x, self.start_y, self.is_final_size)
         new_state.update_cell_type(new_type, target_cell.x, target_cell.y, direction)
@@ -280,7 +285,6 @@ class FieldState:
         #  перемещение в указанную сторону не противоречит известному полю
         if type_cell_after_wall_check is not cell.CellRiver:
             if type(new_cell) is UnknownCell:
-                # todo добавить проверку для уникальных объектов (домики, клады и тп)
                 self.update_cell_type(type_cell_after_wall_check, new_cell.x, new_cell.y)
             self.move_player(new_cell)
             return
@@ -298,7 +302,6 @@ class FieldState:
         cell_treasures_amount: int = response.get('cell_treasures_amount')
 
         if type_cell_turn_end is not cell.CellRiver:
-            # todo добавить проверку для уникальных объектов (домики, клады и тп)
             self.update_cell_type(type_cell_turn_end, self.pl_pos_x, self.pl_pos_y)
         else:
             player_cell = self.get_player_cell()
@@ -382,7 +385,8 @@ class FieldState:
     def get_possible_leafs(
             self, current_cell: CELL, turn_direction: Directions = None, is_final: bool = False,
             washed: bool = False, next_cell_is_mouth: bool = False):
-        possible_river_dirs = self.get_possible_river_directions(current_cell, turn_direction, washed, next_cell_is_mouth)
+        possible_river_dirs = self.get_possible_river_directions(current_cell, turn_direction, washed,
+                                                                 next_cell_is_mouth)
         if type(current_cell) is UnknownCell:
             leaves = [self.get_modified_copy(current_cell, cell.CellRiver, direction)
                       for direction in possible_river_dirs]
@@ -438,15 +442,16 @@ class FieldState:
             dirs.append(direction)
         return dirs
 
-    def has_known_input_river(self, target_cell: CELL, dir_: Directions) -> bool:
+    def has_known_input_river(self, target_cell: CELL, dir_: Directions, ignore_dir=False) -> bool:
         """
 
         :param target_cell: клетка для которой проверяем
         :param dir_: направление по которому пришли
+        :param ignore_dir: если True проверяются все направления
         :return: True if has known input river
         """
         for direction in Directions:
-            if direction is -dir_:
+            if not ignore_dir and direction is -dir_:
                 continue
             neighbour_cell = self.get_neighbour_cell(target_cell, direction)
             if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:

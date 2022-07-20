@@ -25,7 +25,7 @@ def main():
     field.spawn_player(spawn, 'Skipper', 1)
     # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
 
-    bot = BotAI(rules, 'Skipper', pos_x=None, pos_y=None)
+    bot = BotAI(rules, 'Skipper', pos_x=3, pos_y=1)
     # bot = BotAI(rules, 'Skipper', pos_x=2, pos_y=0)
     gui = SpectatorGUI(field, bot)
 
@@ -34,7 +34,7 @@ def main():
 
     response = game.field.action_handler(Actions.info)
     print(response.get_turn_info(), response.get_info())
-    print(response.get_raw_info().get('response'))
+    # print(response.get_raw_info().get('response'))
     bot.process_turn_resp(response.get_raw_info())
 
     while is_running:
@@ -44,7 +44,7 @@ def main():
         if act:
             response = game.field.action_handler(*act)
             print(response.get_turn_info(), response.get_info())
-            print(response.get_raw_info().get('response'))
+            # print(response.get_raw_info().get('response'))
             bot.process_turn_resp(response.get_raw_info())
 
             if game.is_win_condition(rules):
