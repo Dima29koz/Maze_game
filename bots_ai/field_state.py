@@ -101,6 +101,9 @@ class FieldState:
         if target_cell is not None and new_type not in [cell.CellRiverMouth, cell.CellRiver]:
             if self._has_known_input_river(target_cell, direction, ignore_dir=True):
                 raise UnreachableState()
+        if target_cell is not None and new_type is not cell.CellRiver:
+            if self._is_cause_of_isolated_mouth(target_cell):
+                raise UnreachableState()
 
         if new_type is None:
             if self.field[pos_y][pos_x] is None or type(self.field[pos_y][pos_x]) is cell.CellExit:
@@ -499,4 +502,12 @@ class FieldState:
             return True
         if type(previous_cell) is cell.CellRiver:
             return self._is_river_is_looped(start_cell, self._get_neighbour_cell(previous_cell, previous_cell.direction))
+        return False
+
+    def _is_cause_of_isolated_mouth(self, target_cell) -> bool:
+        for direction in Directions:
+            neighbour_cell = self._get_neighbour_cell(target_cell, direction)
+            if neighbour_cell and type(neighbour_cell) is cell.CellRiverMouth:
+                if self._is_the_only_allowed_dir(neighbour_cell, direction):
+                    return True
         return False
