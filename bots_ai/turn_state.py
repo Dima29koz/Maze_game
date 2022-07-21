@@ -37,6 +37,36 @@ class BotAI:
         for node in self._get_leaf_nodes()[::-1]:
             node.process_action(action, direction, response)
 
+    def has_real_field(self, field: list[list[cell.Cell | None]]):
+        for node in self._get_leaf_nodes():
+            if self.is_node_is_real(node.field, field):
+                node.is_real = True
+                return True
+        return False
+
+    @staticmethod
+    def is_node_is_real(
+            n_field: list[list[cell.Cell | cell.CellRiver | None]],
+            field: list[list[cell.Cell | cell.CellRiver | None]]):
+        for y, row in enumerate(field):
+            for x, obj in enumerate(row):
+                target_cell = n_field[y][x]
+                if obj is None and target_cell is None:
+                    continue
+                if target_cell is None and type(obj) is cell.CellExit:
+                    continue
+                if type(target_cell) is UnknownCell:
+                    continue
+                if type(target_cell) is type(obj):
+                    if type(target_cell) is cell.CellRiver:
+                        idx = obj.river.index(obj)
+                        if target_cell.direction is not obj - obj.river[idx + 1]:
+                            return False
+                    continue
+                else:
+                    return False
+        return True
+
     @staticmethod
     def _get_field_objects_amount(rules: dict):
         obj_amount = {

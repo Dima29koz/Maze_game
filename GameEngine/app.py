@@ -46,7 +46,7 @@ def main():
             print(response.get_turn_info(), response.get_info())
             # print(response.get_raw_info().get('response'))
             bot.process_turn_resp(response.get_raw_info())
-
+            print('Has real - ', bot.has_real_field(field.field))
             if game.is_win_condition(rules):
                 is_running = False
 
