@@ -16,26 +16,32 @@ def main():
     rules['gameplay_rules']['fast_win'] = False
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
-    spawn = {'x': 3, 'y': 1}
+    spawn: dict[str, int] = {'x': 1, 'y': 1}
+    spawn2: dict[str, int] = {'x': 2, 'y': 2}
+
+    players = [
+        (spawn, 'Skipper'),
+        (spawn2, 'Tester'),
+    ]
+
     bot = None
 
     random.seed(5)
     game = Game(rules=rules)
     field = game.field
-    field.spawn_player(spawn, 'Skipper', 1)
-    # field.spawn_player({'x': 1, 'y': 1}, 'Tester', 2)
+    for i, player in enumerate(players, 1):
+        field.spawn_player(*player, turn=i)
 
-    bot = BotAI(rules, 'Skipper', pos_x=3, pos_y=1)
-    # bot = BotAI(rules, 'Skipper', pos_x=2, pos_y=0)
+    bot = BotAI(rules, players, known_spawns=False)
     gui = SpectatorGUI(field, bot)
 
     state = Actions.move
     is_running = True
 
-    response = game.field.action_handler(Actions.info)
-    print(response.get_turn_info(), response.get_info())
-    # print(response.get_raw_info().get('response'))
-    bot.process_turn_resp(response.get_raw_info())
+    for _ in players:
+        response = game.field.action_handler(Actions.info)
+        print(response.get_turn_info(), response.get_info())
+        bot.process_turn_resp(response.get_raw_info())
 
     while is_running:
         act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
@@ -44,9 +50,13 @@ def main():
         if act:
             response = game.field.action_handler(*act)
             print(response.get_turn_info(), response.get_info())
+            player_name = response.get_turn_info().get('player_name')
             # print(response.get_raw_info().get('response'))
             bot.process_turn_resp(response.get_raw_info())
-            print('Has real - ', bot.has_real_field(field.field))
+            print(bot.get_spawn(player_name))
+            # bot.get_cropped_field(player_name)
+            print('Has real - ', bot.has_real_field(field.field, player_name))
+            print('Has bad nodes - ', bot.has_bad_nodes(player_name))
             if game.is_win_condition(rules):
                 is_running = False
 

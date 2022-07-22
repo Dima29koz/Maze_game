@@ -17,17 +17,18 @@ class FieldState:
     contains current field state known by player
     """
 
-    def __init__(self, field: list[list[CELL | None]], pl_pos_x: int, pl_pos_y: int, parent,
+    def __init__(self, field: list[list[CELL | None]],
                  remaining_obj_amount: dict,
-                 min_x, max_x, min_y, max_y, size_x, size_y, start_x, start_y,
+                 size_x: int, size_y: int,
+                 min_x: int, max_x: int, min_y: int, max_y: int,
+                 pl_pos_x: int = None, pl_pos_y: int = None,
+                 parent=None,
                  is_final_size: bool = False):
         self.field = field
-        self.pl_pos_x = pl_pos_x
-        self.pl_pos_y = pl_pos_y
         self.size_x = size_x
         self.size_y = size_y
-        self.start_x = start_x
-        self.start_y = start_y
+        self.pl_pos_x = pl_pos_x if pl_pos_x is not None else self.size_x
+        self.pl_pos_y = pl_pos_y if pl_pos_y is not None else self.size_y
         self.min_x = min_x
         self.max_x = max_x
         self.min_y = min_y
@@ -46,6 +47,21 @@ class FieldState:
 
     def remove(self):
         self.parent._remove_leaf(self)
+
+    def get_spaw_points(self):
+        xr = range(1 + self.size_x - self.min_x, self.size_x + 1 - self.max_x + self.size_x)
+        yr = range(1 + self.size_y - self.min_y, self.size_y + 1 - self.max_y + self.size_y)
+        return [(y, x) for x in xr for y in yr]
+
+    def get_cropped_fields(self, spawn_x: int = None, spawn_y: int = None):
+        points = self.get_spaw_points()
+        # todo добавить проверку на дурака
+        if spawn_x is not None and spawn_y is not None:
+            points = [(spawn_y, spawn_x)]
+
+        for point in points:
+            yield [row[1 + self.size_x - point[1]:-point[1]]
+                   for row in self.field[1 + self.size_y - point[0]:-point[0]]]
 
     def process_action(self, action: Actions, direction: Directions | None, response: dict):
         action_to_processor = {
@@ -85,13 +101,13 @@ class FieldState:
     def _crop_field(self, direction: Directions):
         match direction:
             case Directions.top:
-                [self._update_cell_type(None, x, self.max_y - self.start_y) for x in range(len(self.field[0]))]
+                [self._update_cell_type(None, x, self.max_y - self.size_y) for x in range(len(self.field[0]))]
             case Directions.bottom:
-                [self._update_cell_type(None, x, self.min_y - self.start_y - 1) for x in range(len(self.field[0]))]
+                [self._update_cell_type(None, x, self.min_y - self.size_y - 1) for x in range(len(self.field[0]))]
             case Directions.left:
-                [self._update_cell_type(None, self.max_x - self.start_x, y) for y in range(len(self.field))]
+                [self._update_cell_type(None, self.max_x - self.size_x, y) for y in range(len(self.field))]
             case Directions.right:
-                [self._update_cell_type(None, self.min_x - self.start_x - 1, y) for y in range(len(self.field))]
+                [self._update_cell_type(None, self.min_x - self.size_x - 1, y) for y in range(len(self.field))]
 
     def _update_cell_type(self, new_type: Type[CELL] | None, pos_x: int, pos_y: int,
                           direction: Directions = None):
@@ -186,10 +202,11 @@ class FieldState:
         self.next_states.append(self._get_modified_copy(target_cell, new_type, direction))
 
     def _get_modified_copy(self, target_cell: CELL, new_type: Type[CELL], direction: Directions = None):
-        new_state = FieldState([copy(row) for row in self.field], self.pl_pos_x, self.pl_pos_y,
-                               self, copy(self.remaining_obj_amount),
+        new_state = FieldState([copy(row) for row in self.field], copy(self.remaining_obj_amount),
+                               self.size_x, self.size_y,
                                self.min_x, self.max_x, self.min_y, self.max_y,
-                               self.size_x, self.size_y, self.start_x, self.start_y, self.is_final_size)
+                               self.pl_pos_x, self.pl_pos_y,
+                               self, self.is_final_size)
         new_state._update_cell_type(new_type, target_cell.x, target_cell.y, direction)
         if new_state.pl_pos_x != target_cell.x or new_state.pl_pos_y != target_cell.y:
             new_state._move_player(target_cell)
