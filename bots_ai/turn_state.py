@@ -1,4 +1,5 @@
 from copy import copy
+from typing import Type
 
 from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Directions, Actions
@@ -10,16 +11,16 @@ class BotAI:
     def __init__(self, game_rules: dict, players: list[tuple[dict[str, int | None], str]], known_spawns=False):
         self.size_x: int = game_rules.get('generator_rules').get('cols')
         self.size_y: int = game_rules.get('generator_rules').get('rows')
-        self.cols = 2 * self.size_x + 1
-        self.rows = 2 * self.size_y + 1
-        self.field_objects_amount: dict = self._get_field_objects_amount(game_rules)
+        self.cols = self.size_x + 2
+        self.rows = self.size_y + 2
+        self.field_objects_amount: dict[Type[cell.Cell], int] = self._get_field_objects_amount(game_rules)
+        self.players_roots: dict[str, FieldState] = {
+            player[1]: self._get_start_state(player, known_spawns) for player in players}
 
-        self.field_root = self._get_start_state(players[0], known_spawns)
-
-        self.players_roots = {player[1]: self._get_start_state(player, known_spawns) for player in players}
+        self.real_field: list[list[cell.Cell | None]] = []
 
     def get_fields(self, player_name: str) -> list[tuple[list[list[cell.Cell | None]], dict[str, int]]]:
-        """returns all leaves data of a tree"""
+        """returns all player leaves data"""
         leaves: list[FieldState] = []
         self._collect_leaf_nodes(self.players_roots.get(player_name), leaves)
         return [leaf.get_current_data() for leaf in leaves]
@@ -39,72 +40,77 @@ class BotAI:
         active_player_nodes = self._get_leaf_nodes(player_name)[::-1]
         other_players = list(self.players_roots.keys())
         other_players.remove(player_name)
-        print(f'nodes total - {len(active_player_nodes)}')
+        if not other_players:
+            return
 
         for node in active_player_nodes:
-            is_good = False
-            for cropped_node in node.get_cropped_fields():
-                if self.find_node(cropped_node, other_players):
-                    is_good = True
-                    continue
-                else:
-                    print('cropped node is wrong')
-                    for row in cropped_node:
-                        print(row)
-            if not is_good:
-                print('node is bad')
-                for row in node.field:
-                    print(row)
+            if not self._match_node(node.field, other_players):
+                node.remove()
 
-    def find_node(self, cropped_node: list[list[cell.Cell | cell.CellRiver | None]],
-                  other_players: list[str]):
+    def _match_node(self, field: list[list[cell.Cell | cell.CellRiver | None]], other_players: list[str]):
         for player in other_players:
+            matchable_with_player_nodes = False
             for pl_node in self._get_leaf_nodes(player)[::-1]:
-                for cropped_pl_node in pl_node.get_cropped_fields():
-                    if self.is_matchable(cropped_node, cropped_pl_node):
-                        return True
-        return False
+                if self.is_matchable(field, pl_node.field):
+                    matchable_with_player_nodes = True
+                    break
+            if not matchable_with_player_nodes:
+                return False
+        return True
 
-    @staticmethod
-    def is_matchable(node: list[list[cell.Cell | cell.CellRiver | None]],
-                     other_node: list[list[cell.Cell | cell.CellRiver | None]]):
-        for y, row in enumerate(node):
-            for x, obj in enumerate(row):
-                target_cell = other_node[y][x]
-                if obj is None and target_cell is None:
+    def is_matchable(self, field: list[list[cell.Cell | cell.CellRiver | None]],
+                     other_field: list[list[cell.Cell | cell.CellRiver | None]]):
+        unique_objs = self.field_objects_amount.copy()
+        for y, row in enumerate(field):
+            for x, self_cell in enumerate(row):
+                other_cell = other_field[y][x]
+                if self_cell is None and other_cell is None:
                     continue
-                if target_cell is None and type(obj) is cell.CellExit:
+                if other_cell is None and type(self_cell) is cell.CellExit:
                     continue
-                if type(target_cell) is UnknownCell or type(obj) is UnknownCell:
+                if self_cell is None and type(other_cell) is cell.CellExit:
                     continue
-                if type(target_cell) is type(obj):
-                    if type(target_cell) is cell.CellRiver:
-                        if target_cell.direction is not obj.direction:
+
+                if type(other_cell) is UnknownCell:
+                    if unique_objs.get(type(self_cell)) is not None:
+                        if unique_objs.get(type(self_cell)) > 0:
+                            unique_objs[type(self_cell)] -= 1
+                        else:
+                            return False
+                    continue
+                if type(self_cell) is UnknownCell:
+                    if unique_objs.get(type(other_cell)) is not None:
+                        if unique_objs.get(type(other_cell)) > 0:
+                            unique_objs[type(other_cell)] -= 1
+                        else:
+                            return False
+                    continue
+
+                if type(other_cell) is type(self_cell):
+                    if unique_objs.get(type(self_cell)) is not None:
+                        if unique_objs.get(type(self_cell)) > 0:
+                            unique_objs[type(self_cell)] -= 1
+                        else:
+                            return False
+                    if type(other_cell) is cell.CellRiver:
+                        if other_cell.direction is not self_cell.direction:
                             return False
                     continue
                 else:
                     return False
         return True
 
-    def has_real_field(self, field: list[list[cell.Cell | None]], player_name: str):
+    def has_real_field(self, player_name: str):
+        flag = False
         for node in self._get_leaf_nodes(player_name):
-            for cropped_field in node.get_cropped_fields():
-                if self.is_node_is_real(cropped_field, [row[1:-1] for row in field[1:-1]]):
-                    node.is_real = True  # todo
-                    return True
-        return False
+            cropped_field = [row[1:-1] for row in node.field[1:-1]]
+            if self.is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
+                node.is_real = True  # todo
+                flag = True
+        return flag
 
-    def get_spawn(self, player_name: str):
-        node = self._get_leaf_nodes(player_name)[0]
-        return node.get_spaw_points()
-
-    def get_cropped_field(self, player_name: str):
-        node = self._get_leaf_nodes(player_name)[0]
-        fields = node.get_cropped_fields()
-        for field in fields:
-            for row in field:
-                print(row)
-            print()
+    def get_spawn_amount(self, player_name: str):
+        return len(self.players_roots.get(player_name).next_states)
 
     def has_bad_nodes(self, player_name: str):
         for node in self._get_leaf_nodes(player_name):
@@ -164,13 +170,16 @@ class BotAI:
         max_y = self.size_y if pos_y is None else 2 * self.size_y - pos_y
         name = player[1]
 
-        field = self._generate_start_field(pos_x, pos_y, known_spawns)
-
-        return FieldState(
+        field = self._generate_start_field()
+        root_state = FieldState(
             field, copy(self.field_objects_amount),
-            self.size_x, self.size_y,
-            min_x, max_x, min_y, max_y,
-            is_final_size=known_spawns)
+            self.size_x, self.size_y)
+        xr = range(1 + self.size_x - min_x, self.size_x + 1 - max_x + self.size_x)
+        yr = range(1 + self.size_y - min_y, self.size_y + 1 - max_y + self.size_y)
+        points = [(x, y) for y in yr for x in xr]
+        for point in points:
+            root_state.next_states.append(root_state.copy(*point))
+        return root_state
 
     @staticmethod
     def _get_field_objects_amount(rules: dict):
@@ -192,13 +201,9 @@ class BotAI:
         self._collect_leaf_nodes(self.players_roots.get(player_name), leaves)
         return leaves
 
-    def _generate_start_field(self, pos_x, pos_y, is_final_size):
-        if is_final_size:
-            none_cols = list(range(1 + self.size_x - pos_x)) + list(range(self.cols - pos_x, self.cols))
-            none_rows = list(range(1 + self.size_y - pos_y)) + list(range(self.rows - pos_y, self.rows))
-        else:
-            none_cols = [0, self.cols - 1]
-            none_rows = [0, self.rows - 1]
+    def _generate_start_field(self):
+        none_cols = [0, self.cols - 1]
+        none_rows = [0, self.rows - 1]
 
         field = [[UnknownCell(col, row)
                   if row not in none_rows and col not in none_cols else None
@@ -207,7 +212,4 @@ class BotAI:
 
 
 if __name__ == "__main__":
-    # bot = BotAI(base_rules, '')
-    # for row_ in bot.field_root.field:
-    #     print(row_)
     pass

@@ -16,7 +16,7 @@ def main():
     rules['gameplay_rules']['fast_win'] = False
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
-    spawn: dict[str, int] = {'x': 1, 'y': 1}
+    spawn: dict[str, int] = {'x': 3, 'y': 1}
     spawn2: dict[str, int] = {'x': 2, 'y': 2}
 
     players = [
@@ -33,6 +33,7 @@ def main():
         field.spawn_player(*player, turn=i)
 
     bot = BotAI(rules, players, known_spawns=False)
+    bot.real_field = field.field
     gui = SpectatorGUI(field, bot)
 
     state = Actions.move
@@ -53,10 +54,9 @@ def main():
             player_name = response.get_turn_info().get('player_name')
             # print(response.get_raw_info().get('response'))
             bot.process_turn_resp(response.get_raw_info())
-            print(bot.get_spawn(player_name))
-            # bot.get_cropped_field(player_name)
-            print('Has real - ', bot.has_real_field(field.field, player_name))
-            print('Has bad nodes - ', bot.has_bad_nodes(player_name))
+            print('spawns: ', bot.get_spawn_amount(player_name))
+            print('Has real - ', bot.has_real_field(player_name))
+            # print('Has bad nodes - ', bot.has_bad_nodes(player_name))
             if game.is_win_condition(rules):
                 is_running = False
 
