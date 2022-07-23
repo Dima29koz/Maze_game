@@ -46,14 +46,14 @@ class SpectatorGUI:
         self.buttons_st = [moving, shooting, bombing]
         self.buttons_dirs = [up, down, left, right]
 
-    def draw(self, allowed_actions):
+    def draw(self, allowed_actions, active_player: str = None):
         self.clock.tick(self.fps)
         self.sc.fill(pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
         self.painter.draw(grid=self.field.field, players=self.field.players, treasures=self.field.treasures)
         dx = len(self.field.field[0]) * self.tile_size + DIST
         if self.bot_spectator:
-            fields, fields_amount = self.bot_spectator.get_fields()
+            fields, fields_amount = self.bot_spectator.get_fields(active_player)
             f1 = pygame.font.Font(None, 25)
             text = f1.render(f'leaves amount: {fields_amount}', True, (255, 255, 255))
             place = text.get_rect(topleft=(10, HEIGHT-25))

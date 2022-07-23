@@ -45,7 +45,7 @@ def main():
 
     while is_running:
         act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
-        gui.draw(act_pl_abilities)
+        gui.draw(act_pl_abilities, game.get_current_player().name)
         act, state = gui.get_action(act_pl_abilities, state)
         if act:
             response = game.field.action_handler(*act)

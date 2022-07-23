@@ -33,6 +33,59 @@ class BotAI:
         for node in self._get_leaf_nodes(player_name)[::-1]:
             node.process_action(action, direction, response)
 
+        self.match_nodes(player_name)
+
+    def match_nodes(self, player_name: str):
+        active_player_nodes = self._get_leaf_nodes(player_name)[::-1]
+        other_players = list(self.players_roots.keys())
+        other_players.remove(player_name)
+        print(f'nodes total - {len(active_player_nodes)}')
+
+        for node in active_player_nodes:
+            is_good = False
+            for cropped_node in node.get_cropped_fields():
+                if self.find_node(cropped_node, other_players):
+                    is_good = True
+                    continue
+                else:
+                    print('cropped node is wrong')
+                    for row in cropped_node:
+                        print(row)
+            if not is_good:
+                print('node is bad')
+                for row in node.field:
+                    print(row)
+
+    def find_node(self, cropped_node: list[list[cell.Cell | cell.CellRiver | None]],
+                  other_players: list[str]):
+        for player in other_players:
+            for pl_node in self._get_leaf_nodes(player)[::-1]:
+                for cropped_pl_node in pl_node.get_cropped_fields():
+                    if self.is_matchable(cropped_node, cropped_pl_node):
+                        return True
+        return False
+
+    @staticmethod
+    def is_matchable(node: list[list[cell.Cell | cell.CellRiver | None]],
+                     other_node: list[list[cell.Cell | cell.CellRiver | None]]):
+        for y, row in enumerate(node):
+            for x, obj in enumerate(row):
+                target_cell = other_node[y][x]
+                if obj is None and target_cell is None:
+                    continue
+                if target_cell is None and type(obj) is cell.CellExit:
+                    continue
+                if type(target_cell) is UnknownCell or type(obj) is UnknownCell:
+                    continue
+                if type(target_cell) is type(obj):
+                    if type(target_cell) is cell.CellRiver:
+                        if target_cell.direction is not obj.direction:
+                            return False
+                    continue
+                else:
+                    return False
+        return True
+
     def has_real_field(self, field: list[list[cell.Cell | None]], player_name: str):
         for node in self._get_leaf_nodes(player_name):
             for cropped_field in node.get_cropped_fields():
