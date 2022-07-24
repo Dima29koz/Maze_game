@@ -340,8 +340,10 @@ class FieldState:
                     except UnreachableState:
                         pass
                     if type(current_cell) is UnknownCell:
-                        # fixme создается устье без проверки
-                        final_states.append(new_state._get_modified_copy(current_cell, type_cell_turn_end))
+                        try:
+                            final_states.append(new_state._get_modified_copy(current_cell, type_cell_turn_end))
+                        except UnreachableState:
+                            pass
 
             for new_state in new_states2:
                 riv_dir = new_state.get_player_cell().direction
@@ -350,8 +352,10 @@ class FieldState:
                     new_state._move_player(current_cell)
                     final_states.append(new_state)
                 else:
-                    # fixme создается устье без проверки
-                    final_states.append(new_state._get_modified_copy(current_cell, type_cell_turn_end))
+                    try:
+                        final_states.append(new_state._get_modified_copy(current_cell, type_cell_turn_end))
+                    except UnreachableState:
+                        pass
             if not final_states:
                 raise UnreachableState()
             if not (len(final_states) == 1 and final_states[0] is self):
@@ -366,12 +370,12 @@ class FieldState:
         if washed:
             prev_cell = self._get_neighbour_cell(current_cell, -turn_direction)
             if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
-                raise UnreachableState()
+                return []
 
         possible_river_dirs = self._get_possible_river_directions(current_cell, turn_direction, washed,
                                                                   next_cell_is_mouth)
         if not possible_river_dirs:
-            raise UnreachableState()
+            return []
 
         if type(current_cell) is UnknownCell:
             leaves = [self._get_modified_copy(current_cell, cell.CellRiver, direction)
@@ -381,7 +385,7 @@ class FieldState:
             self._move_player(current_cell)
             return [self]
         else:
-            raise UnreachableState()
+            return []
 
     def _get_possible_river_directions(self, river_cell: CELL, turn_direction: Directions = None,
                                        washed: bool = False, next_cell_is_mouth: bool = False) -> list[Directions]:
