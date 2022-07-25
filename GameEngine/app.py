@@ -55,7 +55,6 @@ def main():
             # print(response.get_raw_info().get('response'))
             bot.process_turn_resp(response.get_raw_info())
             print('spawns: ', bot.get_spawn_amount(player_name))
-            print('Has real - ', bot.has_real_field(player_name))
             # print('Has bad nodes - ', bot.has_bad_nodes(player_name))
             if game.is_win_condition(rules):
                 is_running = False

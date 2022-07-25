@@ -9,12 +9,12 @@ class LeavesMatcher:
     def __init__(self,
                  unique_objs_amount: dict[Type[cell.Cell], int],
                  players_roots: dict[str, FieldState]):
-        self.unique_objs_amount = unique_objs_amount
-        self.players_roots = players_roots
+        self._unique_objs_amount = unique_objs_amount
+        self._players_roots = players_roots
 
     def match_leaves(self, player_name: str):
-        active_player_nodes = self.get_player_leaves(player_name)[::-1]
-        other_players = list(self.players_roots.keys())
+        active_player_nodes = self._get_player_leaves(player_name)[::-1]
+        other_players = list(self._players_roots.keys())
         other_players.remove(player_name)
         if not other_players:
             return
@@ -26,23 +26,23 @@ class LeavesMatcher:
                         print(row)
                 node.remove()
 
-    def get_player_leaves(self, player_name: str) -> list[FieldState]:
-        return self.players_roots.get(player_name).get_leaf_nodes()
+    def _get_player_leaves(self, player_name: str) -> list[FieldState]:
+        return self._players_roots.get(player_name).get_leaf_nodes()
 
     def _match_node(self, field: list[list[cell.Cell | cell.CellRiver | None]], other_players: list[str]):
         for player in other_players:
             matchable_with_player_nodes = False
-            for pl_node in self.get_player_leaves(player)[::-1]:
-                if self.is_matchable(field, pl_node.field):
+            for pl_node in self._get_player_leaves(player)[::-1]:
+                if self._is_matchable(field, pl_node.field):
                     matchable_with_player_nodes = True
                     break
             if not matchable_with_player_nodes:
                 return False
         return True
 
-    def is_matchable(self, field: list[list[cell.Cell | cell.CellRiver | None]],
-                     other_field: list[list[cell.Cell | cell.CellRiver | None]]):
-        unique_objs = self.unique_objs_amount
+    def _is_matchable(self, field: list[list[cell.Cell | cell.CellRiver | None]],
+                      other_field: list[list[cell.Cell | cell.CellRiver | None]]):
+        unique_objs = self._unique_objs_amount.copy()
         for y, row in enumerate(field):
             for x, self_cell in enumerate(row):
                 other_cell = other_field[y][x]

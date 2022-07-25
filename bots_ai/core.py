@@ -32,8 +32,12 @@ class BotAI:
         if not self.has_real_field(player_name):
             print('proc err!!!')
         self.leaves_matcher.match_leaves(player_name)
+        if not self.has_real_field(player_name):
+            print('matcher err!!!')
 
     def has_real_field(self, player_name: str):
+        if not len(self.players_roots.get(player_name).next_states):
+            return False
         flag = False
         for node in self.players_roots.get(player_name).get_leaf_nodes():
             cropped_field = [row[1:-1] for row in node.field[1:-1]]
