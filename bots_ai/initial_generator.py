@@ -1,3 +1,4 @@
+from copy import copy
 from typing import Type
 
 from GameEngine.field import cell
@@ -6,8 +7,9 @@ from bots_ai.field_state import FieldState
 
 
 class InitGenerator:
-    def __init__(self, game_rules: dict):
+    def __init__(self, game_rules: dict, players: list[str]):
         self._rules = game_rules
+        self._players = players
         self._size_x: int = game_rules.get('generator_rules').get('cols')
         self._size_y: int = game_rules.get('generator_rules').get('rows')
         self._cols = self._size_x + 2
@@ -16,13 +18,19 @@ class InitGenerator:
         self._spawn_points = self._gen_spawn_points()
 
     def get_start_state(self, player, known_spawns: bool):
+        other_players = copy(self._players)
+        other_players.remove(player[1])
         field = self._generate_start_field()
         root_state = FieldState(
             field, self.get_unique_obj_amount(),
-            self._size_x, self._size_y)
-        points = self._spawn_points if not known_spawns else [(player[0].get('x'), player[0].get('y'))]
+            self._size_x, self._size_y, {player_name: True for player_name in other_players})
+        real_spawn = (player[0].get('x'), player[0].get('y'))
+        points = self._spawn_points if not known_spawns else [real_spawn]
         for point in points:
-            root_state.next_states.append(root_state.copy(*point))
+            next_state = root_state.copy(*point)
+            if point == real_spawn:
+                next_state.is_real_spawn = True
+            root_state.next_states.append(next_state)
         return root_state
 
     def get_unique_obj_amount(self) -> dict[Type[cell.Cell], int]:

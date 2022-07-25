@@ -20,7 +20,9 @@ class FieldState:
     def __init__(self, field: list[list[CELL | None]],
                  remaining_obj_amount: dict,
                  size_x: int, size_y: int,
+                 enemy_compatibility: dict[str, bool],
                  pl_pos_x: int = None, pl_pos_y: int = None,
+                 is_real_spawn: bool = False,
                  parent=None):
         self.field = field
         self.size_x = size_x
@@ -30,7 +32,10 @@ class FieldState:
         self.remaining_obj_amount = remaining_obj_amount
         self.next_states: list[FieldState] = []
         self.parent: FieldState | None = parent
-        self.is_real = False
+        self.is_real_spawn = is_real_spawn
+        self.enemy_compatibility = enemy_compatibility
+
+        self.is_real = False  # only for testing
 
     def get_current_data(self):
         return self.field, {'x': self.pl_pos_x, 'y': self.pl_pos_y}
@@ -61,21 +66,68 @@ class FieldState:
             pl_pos_x, pl_pos_y = self.pl_pos_x, self.pl_pos_y
         return FieldState(
             [copy(row) for row in self.field],
-            copy(self.remaining_obj_amount),
+            self.remaining_obj_amount.copy(),
             self.size_x, self.size_y,
+            self.enemy_compatibility.copy(),
             pl_pos_x, pl_pos_y,
+            self.is_real_spawn,
             self)
 
     def get_leaf_nodes(self):
+        """
+        :return: list of all leaves of a tree
+        """
         leaves: list[FieldState] = []
         self._collect_leaf_nodes(leaves)
         return leaves
+
+    def get_real_spawn_leaves(self):
+        """
+        :return: list of only real-spawn leaves of a tree
+        """
+        leaves: list[FieldState] = []
+        self._collect_real_spawn_nodes(leaves)
+        return leaves
+
+    def get_compatible_leaves(self, target_player: str):
+        """
+        :return: list of all leaves of a tree which compatible with target player
+        """
+        leaves: list[FieldState] = []
+        self._collect_compatible_nodes(leaves, target_player)
+        return leaves
+
+    def update_compatibility(self, player_name: str, value: bool):
+        self.enemy_compatibility[player_name] = value
+
+    def check_compatibility(self):
+        if True not in self.enemy_compatibility.values() and not self.is_real_spawn:
+            self.remove()
+            return False
+        return True
+
+    def is_impossible(self):
+        return False  # todo
 
     def _collect_leaf_nodes(self, leaves: list):
         if not self.next_states:
             leaves.append(self)
         for state in self.next_states:
             state._collect_leaf_nodes(leaves)
+
+    def _collect_real_spawn_nodes(self, leaves: list):
+        if not self.next_states:
+            leaves.append(self)
+        for state in self.next_states:
+            if state.is_real_spawn:
+                state._collect_real_spawn_nodes(leaves)
+
+    def _collect_compatible_nodes(self, leaves: list, target_player: str):
+        if not self.next_states:
+            leaves.append(self)
+        for state in self.next_states:
+            if state.enemy_compatibility[target_player]:
+                state._collect_compatible_nodes(leaves, target_player)
 
     def _move_player(self, target_cell: CELL):
         self.pl_pos_x, self.pl_pos_y = target_cell.x, target_cell.y

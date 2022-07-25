@@ -8,17 +8,26 @@ from bots_ai.leaves_matcher import LeavesMatcher
 
 class BotAI:
     def __init__(self, game_rules: dict, players: list[tuple[dict[str, int | None], str]], known_spawns=False):
-        self.init_generator = InitGenerator(game_rules)
+        self.init_generator = InitGenerator(game_rules, [player[1] for player in players])
         self.players_roots: dict[str, FieldState] = {
-            player[1]: self.init_generator.get_start_state(player, known_spawns) for player in players}
+            player[1]: self.init_generator.get_start_state(player, known_spawns)
+            for player in players}
         self.leaves_matcher = LeavesMatcher(self.init_generator.get_unique_obj_amount(), self.players_roots)
 
         self.real_field: list[list[cell.Cell | None]] = []
 
     def get_fields(self, player_name: str) -> list[tuple[list[list[cell.Cell | None]], dict[str, int]]]:
         """returns all player leaves data"""
-        leaves = self.players_roots.get(player_name).get_leaf_nodes()
+        # leaves = self.players_roots.get(player_name).get_leaf_nodes()
+        leaves = self.players_roots.get(player_name).get_real_spawn_leaves()
         return [leaf.get_current_data() for leaf in leaves]
+
+    def turn_prepare(self, player_name: str):
+        # before decision-making:
+        # удалить все свои листы с правильным спавном, которые противоречат листам противников
+        self.leaves_matcher.match_real_spawn_leaves(player_name)
+        if not self.has_real_field(player_name):
+            print('matcher err!!!')
 
     def process_turn_resp(self, raw_response: dict):
         action = Actions[raw_response.get('action')]
@@ -27,13 +36,19 @@ class BotAI:
         response: dict = raw_response.get('response')
 
         for node in self.players_roots.get(player_name).get_leaf_nodes()[::-1]:
-            node.process_action(action, direction, response)
+            # before turn processing:
+            # делать ход во всех своих листах, которые противники считают возможными,
+            # то есть хотя бы 1 противник думает что данный лист возможен
+            # и во всех листах с настоящим спавном
+            if node.check_compatibility():
+                node.process_action(action, direction, response)
 
         if not self.has_real_field(player_name):
             print('proc err!!!')
-        self.leaves_matcher.match_leaves(player_name)
-        if not self.has_real_field(player_name):
-            print('matcher err!!!')
+
+        # at the turn end:
+        # удалить все свои листы, которые противоречат листам противников,
+        # но кажется что это не нужно
 
     def has_real_field(self, player_name: str):
         if not len(self.players_roots.get(player_name).next_states):

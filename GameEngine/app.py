@@ -17,7 +17,7 @@ def main():
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
     spawn: dict[str, int] = {'x': 3, 'y': 1}
-    spawn2: dict[str, int] = {'x': 2, 'y': 2}
+    spawn2: dict[str, int] = {'x': 3, 'y': 1}
 
     players = [
         (spawn, 'Skipper'),
@@ -43,6 +43,7 @@ def main():
         response = game.field.action_handler(Actions.info)
         print(response.get_turn_info(), response.get_info())
         bot.process_turn_resp(response.get_raw_info())
+        bot.turn_prepare(game.get_current_player().name)
 
     while is_running:
         act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
@@ -58,7 +59,7 @@ def main():
             # print('Has bad nodes - ', bot.has_bad_nodes(player_name))
             if game.is_win_condition(rules):
                 is_running = False
-
+            bot.turn_prepare(game.get_current_player().name)
     gui.close()
 
 
