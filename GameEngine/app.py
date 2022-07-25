@@ -6,7 +6,7 @@ from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions
 
 from GameEngine.rules import rules
-from bots_ai.turn_state import BotAI
+from bots_ai.core import BotAI
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
 
     bot = None
 
-    random.seed(5)
+    random.seed(6)
     game = Game(rules=rules)
     field = game.field
     for i, player in enumerate(players, 1):

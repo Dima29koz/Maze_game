@@ -9,7 +9,7 @@ from GUI.button import Button
 from GUI.bot_ai_spectator import BotAISpectator
 from GUI.config import *
 
-from bots_ai.turn_state import BotAI
+from bots_ai.core import BotAI
 
 
 class SpectatorGUI:

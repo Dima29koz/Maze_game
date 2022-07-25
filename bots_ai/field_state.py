@@ -66,6 +66,17 @@ class FieldState:
             pl_pos_x, pl_pos_y,
             self)
 
+    def get_leaf_nodes(self):
+        leaves: list[FieldState] = []
+        self._collect_leaf_nodes(leaves)
+        return leaves
+
+    def _collect_leaf_nodes(self, leaves: list):
+        if not self.next_states:
+            leaves.append(self)
+        for state in self.next_states:
+            state._collect_leaf_nodes(leaves)
+
     def _move_player(self, target_cell: CELL):
         self.pl_pos_x, self.pl_pos_y = target_cell.x, target_cell.y
 

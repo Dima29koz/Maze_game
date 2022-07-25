@@ -1,4 +1,4 @@
-from bots_ai.turn_state import BotAI
+from bots_ai.core import BotAI
 
 
 class BotAISpectator:
