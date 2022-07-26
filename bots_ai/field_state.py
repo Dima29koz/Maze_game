@@ -299,7 +299,7 @@ class FieldState:
             self._update_cell_type(type_cell_turn_end, self.pl_pos_x, self.pl_pos_y)
         else:
             player_cell = self.get_player_cell()
-            possible_directions = self._get_possible_river_directions(player_cell)
+            possible_directions = self.get_possible_river_directions(player_cell)
             [self._add_modified_leaf(player_cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
 
     def _calc_possible_river_trajectories(
@@ -392,7 +392,7 @@ class FieldState:
             if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
                 raise UnreachableState()
 
-        possible_river_dirs = self._get_possible_river_directions(current_cell, turn_direction, washed)
+        possible_river_dirs = self.get_possible_river_directions(current_cell, turn_direction, washed)
         if not possible_river_dirs:
             raise UnreachableState()
 
@@ -406,8 +406,8 @@ class FieldState:
         else:
             raise UnreachableState()
 
-    def _get_possible_river_directions(self, river_cell: CELL, turn_direction: Directions = None,
-                                       washed: bool = False) -> list[Directions]:
+    def get_possible_river_directions(self, river_cell: CELL, turn_direction: Directions = None,
+                                      washed: bool = False) -> list[Directions]:
         dirs = []
 
         if not washed and turn_direction:

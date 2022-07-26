@@ -47,7 +47,7 @@ class LeavesMatcher:
     def _match_node(self, node: FieldState,
                     other_players: dict[str, list[FieldState]], active_player: str):
         for player in other_players:
-            matchable_nodes = self._match_with_player(node.field, other_players[player], active_player)
+            matchable_nodes = self._match_with_player(node, other_players[player], active_player)
             if not matchable_nodes:
                 raise MatchingError()
             if len(matchable_nodes) == 1:
@@ -57,17 +57,18 @@ class LeavesMatcher:
 
                 self.join_nodes(node, matchable_nodes[0])
 
-    def _match_with_player(self, field: list[list[cell.Cell | cell.CellRiver | None]],
+    def _match_with_player(self, node: FieldState,
                            other_nodes: list[FieldState], active_player: str):
         matchable_nodes = []
         for pl_node in other_nodes[::-1]:
-            if self._is_matchable(field, pl_node.field):
+            if self._is_matchable(node, pl_node):
                 matchable_nodes.append(pl_node)
                 pl_node.update_compatibility(active_player, True)
         return matchable_nodes
 
-    def _is_matchable(self, field: list[list[cell.Cell | cell.CellRiver | None]],
-                      other_field: list[list[cell.Cell | cell.CellRiver | None]]):
+    def _is_matchable(self, node: FieldState, other_node: FieldState):
+        field = node.field
+        other_field = other_node.field
         unique_objs = self._unique_objs_amount.copy()
         for y, row in enumerate(field):
             for x, self_cell in enumerate(row):
@@ -85,12 +86,19 @@ class LeavesMatcher:
                             unique_objs[type(self_cell)] -= 1
                         else:
                             return False
+                    if type(self_cell) is cell.CellRiver:
+                        if self_cell.direction not in other_node.get_possible_river_directions(other_cell):
+                            return False
                     continue
+
                 if type(self_cell) is UnknownCell:
                     if unique_objs.get(type(other_cell)) is not None:
                         if unique_objs.get(type(other_cell)) > 0:
                             unique_objs[type(other_cell)] -= 1
                         else:
+                            return False
+                    if type(other_cell) is cell.CellRiver:
+                        if other_cell.direction not in node.get_possible_river_directions(self_cell):
                             return False
                     continue
 
