@@ -4,22 +4,23 @@ from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
 from bots_ai.initial_generator import InitGenerator
 from bots_ai.leaves_matcher import LeavesMatcher
+from bots_ai.player_state import PlayerState
 
 
 class BotAI:
-    def __init__(self, game_rules: dict, players: list[tuple[dict[str, int | None], str]], known_spawns=False):
+    def __init__(self, game_rules: dict, players: list[tuple[dict[str, int | None], str]]):
         self.init_generator = InitGenerator(game_rules, [player[1] for player in players])
-        self.players_roots: dict[str, FieldState] = {
-            player[1]: self.init_generator.get_start_state(player, known_spawns)
+        self.players: dict[str, PlayerState] = {
+            player[1]: PlayerState(self.init_generator.get_start_state(player), player[1])
             for player in players}
-        self.leaves_matcher = LeavesMatcher(self.init_generator.get_unique_obj_amount(), self.players_roots)
+        self.leaves_matcher = LeavesMatcher(self.init_generator.get_unique_obj_amount(), self.players)
 
         self.real_field: list[list[cell.Cell | None]] = []
 
     def get_fields(self, player_name: str) -> list[tuple[list[list[cell.Cell | None]], dict[str, int]]]:
         """returns all player leaves data"""
-        # leaves = self.players_roots.get(player_name).get_leaf_nodes()
-        leaves = self.players_roots.get(player_name).get_real_spawn_leaves()
+        leaves = self.players.get(player_name).get_leaf_nodes()
+        # leaves = self.players.get(player_name).get_real_spawn_leaves()
         return [leaf.get_current_data() for leaf in leaves]
 
     def turn_prepare(self, player_name: str):
@@ -34,14 +35,7 @@ class BotAI:
         direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
-
-        for node in self.players_roots.get(player_name).get_leaf_nodes()[::-1]:
-            # before turn processing:
-            # делать ход во всех своих листах, которые противники считают возможными,
-            # то есть хотя бы 1 противник думает что данный лист возможен
-            # и во всех листах с настоящим спавном
-            if node.check_compatibility():
-                node.process_action(action, direction, response)
+        self.players.get(player_name).process_turn(action, direction, response)
 
         if not self.has_real_field(player_name):
             print('proc err!!!')
@@ -51,10 +45,10 @@ class BotAI:
         # но кажется что это не нужно
 
     def has_real_field(self, player_name: str):
-        if not len(self.players_roots.get(player_name).next_states):
+        if not len(self.players.get(player_name).root.next_states):
             return False
         flag = False
-        for node in self.players_roots.get(player_name).get_leaf_nodes():
+        for node in self.players.get(player_name).get_leaf_nodes():
             cropped_field = [row[1:-1] for row in node.field[1:-1]]
             if self.is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
                 node.is_real = True  # todo
@@ -62,10 +56,10 @@ class BotAI:
         return flag
 
     def get_spawn_amount(self, player_name: str):
-        return len(self.players_roots.get(player_name).next_states)
+        return len(self.players.get(player_name).root.next_states)
 
     def has_bad_nodes(self, player_name: str):
-        for node in self.players_roots.get(player_name).get_leaf_nodes():
+        for node in self.players.get(player_name).get_leaf_nodes():
             if not self.is_node_is_valid(node):
                 for row in node.field:
                     print(row)

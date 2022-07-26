@@ -17,16 +17,15 @@ class InitGenerator:
         self._unique_objs = self._gen_field_objs_amount()
         self._spawn_points = self._gen_spawn_points()
 
-    def get_start_state(self, player, known_spawns: bool):
+    def get_start_state(self, player):
         other_players = copy(self._players)
         other_players.remove(player[1])
         field = self._generate_start_field()
         root_state = FieldState(
             field, self.get_unique_obj_amount(),
-            self._size_x, self._size_y, {player_name: True for player_name in other_players})
+            {player_name: True for player_name in other_players})
         real_spawn = (player[0].get('x'), player[0].get('y'))
-        points = self._spawn_points if not known_spawns else [real_spawn]
-        for point in points:
+        for point in self._spawn_points:
             next_state = root_state.copy(*point)
             if point == real_spawn:
                 next_state.is_real_spawn = True

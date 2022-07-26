@@ -32,7 +32,7 @@ def main():
     for i, player in enumerate(players, 1):
         field.spawn_player(*player, turn=i)
 
-    bot = BotAI(rules, players, known_spawns=False)
+    bot = BotAI(rules, players)
     bot.real_field = field.field
     gui = SpectatorGUI(field, bot)
 

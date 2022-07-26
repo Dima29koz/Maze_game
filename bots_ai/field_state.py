@@ -19,14 +19,11 @@ class FieldState:
 
     def __init__(self, field: list[list[CELL | None]],
                  remaining_obj_amount: dict,
-                 size_x: int, size_y: int,
                  enemy_compatibility: dict[str, bool],
                  pl_pos_x: int = None, pl_pos_y: int = None,
                  is_real_spawn: bool = False,
                  parent=None):
         self.field = field
-        self.size_x = size_x
-        self.size_y = size_y
         self.pl_pos_x = pl_pos_x if pl_pos_x is not None else 0
         self.pl_pos_y = pl_pos_y if pl_pos_y is not None else 0
         self.remaining_obj_amount = remaining_obj_amount
@@ -67,35 +64,10 @@ class FieldState:
         return FieldState(
             [copy(row) for row in self.field],
             self.remaining_obj_amount.copy(),
-            self.size_x, self.size_y,
             self.enemy_compatibility.copy(),
             pl_pos_x, pl_pos_y,
             self.is_real_spawn,
             self)
-
-    def get_leaf_nodes(self):
-        """
-        :return: list of all leaves of a tree
-        """
-        leaves: list[FieldState] = []
-        self._collect_leaf_nodes(leaves)
-        return leaves
-
-    def get_real_spawn_leaves(self):
-        """
-        :return: list of only real-spawn leaves of a tree
-        """
-        leaves: list[FieldState] = []
-        self._collect_real_spawn_nodes(leaves)
-        return leaves
-
-    def get_compatible_leaves(self, target_player: str):
-        """
-        :return: list of all leaves of a tree which compatible with target player
-        """
-        leaves: list[FieldState] = []
-        self._collect_compatible_nodes(leaves, target_player)
-        return leaves
 
     def update_compatibility(self, player_name: str, value: bool):
         self.enemy_compatibility[player_name] = value
@@ -105,29 +77,6 @@ class FieldState:
             self.remove()
             return False
         return True
-
-    def is_impossible(self):
-        return False  # todo
-
-    def _collect_leaf_nodes(self, leaves: list):
-        if not self.next_states:
-            leaves.append(self)
-        for state in self.next_states:
-            state._collect_leaf_nodes(leaves)
-
-    def _collect_real_spawn_nodes(self, leaves: list):
-        if not self.next_states:
-            leaves.append(self)
-        for state in self.next_states:
-            if state.is_real_spawn:
-                state._collect_real_spawn_nodes(leaves)
-
-    def _collect_compatible_nodes(self, leaves: list, target_player: str):
-        if not self.next_states:
-            leaves.append(self)
-        for state in self.next_states:
-            if state.enemy_compatibility[target_player]:
-                state._collect_compatible_nodes(leaves, target_player)
 
     def _move_player(self, target_cell: CELL):
         self.pl_pos_x, self.pl_pos_y = target_cell.x, target_cell.y
@@ -427,16 +376,15 @@ class FieldState:
             return
 
     def _get_possible_leaves(
-            self, current_cell: CELL, turn_direction: Directions = None, is_final: bool = False,
-            washed: bool = False, next_cell_is_mouth: bool = False):
+            self, current_cell: CELL, turn_direction: Directions = None,
+            washed: bool = False):
 
         if washed:
             prev_cell = self._get_neighbour_cell(current_cell, -turn_direction)
             if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
                 return []
 
-        possible_river_dirs = self._get_possible_river_directions(current_cell, turn_direction, washed,
-                                                                  next_cell_is_mouth)
+        possible_river_dirs = self._get_possible_river_directions(current_cell, turn_direction, washed)
         if not possible_river_dirs:
             return []
 
@@ -451,7 +399,7 @@ class FieldState:
             return []
 
     def _get_possible_river_directions(self, river_cell: CELL, turn_direction: Directions = None,
-                                       washed: bool = False, next_cell_is_mouth: bool = False) -> list[Directions]:
+                                       washed: bool = False) -> list[Directions]:
         dirs = []
 
         if not washed and turn_direction:
@@ -541,7 +489,8 @@ class FieldState:
         if start_cell.x == previous_cell.x and start_cell.y == previous_cell.y:
             return True
         if type(previous_cell) is cell.CellRiver:
-            return self._is_river_is_looped(start_cell, self._get_neighbour_cell(previous_cell, previous_cell.direction))
+            return self._is_river_is_looped(
+                start_cell, self._get_neighbour_cell(previous_cell, previous_cell.direction))
         return False
 
     def _is_cause_of_isolated_mouth(self, target_cell) -> bool:

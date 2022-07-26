@@ -4,19 +4,20 @@ from typing import Type
 from GameEngine.field import cell
 from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
+from bots_ai.player_state import PlayerState
 from bots_ai.exceptions import MatchingError
 
 
 class LeavesMatcher:
     def __init__(self,
                  unique_objs_amount: dict[Type[cell.Cell], int],
-                 players_roots: dict[str, FieldState]):
+                 players: dict[str, PlayerState]):
         self._unique_objs_amount = unique_objs_amount
-        self._players_roots = players_roots
+        self._players = players
 
     def match_real_spawn_leaves(self, active_player: str):
         active_player_nodes = self._get_player_real_spawn_leaves(active_player)
-        other_players = list(self._players_roots.keys())
+        other_players = list(self._players.keys())
         other_players.remove(active_player)
         if not other_players:
             return
@@ -33,13 +34,13 @@ class LeavesMatcher:
                 node.remove()
 
     def _get_player_leaves(self, player_name: str) -> list[FieldState]:
-        return self._players_roots.get(player_name).get_leaf_nodes()
+        return self._players.get(player_name).get_leaf_nodes()
 
     def _get_player_real_spawn_leaves(self, player_name: str) -> list[FieldState]:
-        return self._players_roots.get(player_name).get_real_spawn_leaves()
+        return self._players.get(player_name).get_real_spawn_leaves()
 
     def _get_player_compatible_leaves(self, player_name: str, target_player: str) -> list[FieldState]:
-        leaves = self._players_roots.get(player_name).get_compatible_leaves(target_player)
+        leaves = self._players.get(player_name).get_compatible_leaves(target_player)
         [leaf.update_compatibility(target_player, False) for leaf in leaves]
         return leaves
 
