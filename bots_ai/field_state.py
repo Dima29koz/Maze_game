@@ -224,15 +224,18 @@ class FieldState:
             neighbour_cell = self._get_neighbour_cell(current_cell, current_cell.direction)
             self._move_player(neighbour_cell)
         elif type_cell_turn_end is cell.CellRiver:
-            self._calc_possible_river_trajectories(
+            final_states = self._calc_possible_river_trajectories(
                 end_cell, type_cell_turn_end, type_cell_turn_end, False, current_cell.direction)
+            if not (len(final_states) == 1 and final_states[0] is self):
+                [state._set_parent(self) for state in final_states]
+                self.next_states = final_states
         elif type_cell_turn_end is cell.CellRiverMouth:
             self._update_cell_type(type_cell_turn_end, end_cell.x, end_cell.y)
             self._move_player(end_cell)
         else:
             raise UnreachableState()
 
-    def _movement_processor(self, direction: Directions, response: dict):
+    def _movement_processor(self, turn_direction: Directions, response: dict):
         is_diff_cells: bool = response.get('diff_cells')
         type_cell_turn_end: Type[CELL] = response.get('type_cell_at_end_of_turn')
         type_cell_after_wall_check: Type[CELL] = response.get('type_cell_after_wall_check')
@@ -243,24 +246,24 @@ class FieldState:
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
         start_cell = self.get_player_cell()
-        new_cell = self._get_neighbour_cell(start_cell, direction)
+        new_cell = self._get_neighbour_cell(start_cell, turn_direction)
         if not is_wall_passed:
             if new_cell:
-                if type(new_cell) is cell.CellRiver and new_cell.direction is -direction:
+                if type(new_cell) is cell.CellRiver and new_cell.direction is -turn_direction:
                     raise UnreachableState()
-                if type(start_cell) is cell.CellRiver and start_cell.direction is direction:
+                if type(start_cell) is cell.CellRiver and start_cell.direction is turn_direction:
                     raise UnreachableState()
-            self._add_wall(start_cell, direction, wall_type)
+            self._add_wall(start_cell, turn_direction, wall_type)
 
             new_cell = start_cell
-            direction = -direction
+            turn_direction = -turn_direction
         elif type_cell_turn_end is not cell.CellExit and type(start_cell) is not cell.CellExit:
-            self._add_wall(start_cell, direction, wall.WallEmpty)
+            self._add_wall(start_cell, turn_direction, wall.WallEmpty)
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
-            self._update_cell_type(cell.CellExit, start_cell.x, start_cell.y, direction)
-            new_cell = self._get_neighbour_cell(start_cell, direction)
+            self._update_cell_type(cell.CellExit, start_cell.x, start_cell.y, turn_direction)
+            new_cell = self._get_neighbour_cell(start_cell, turn_direction)
 
         #  попытка сходить за пределы карты - значит всю ветку можно удалить
         if new_cell is None:
@@ -282,8 +285,11 @@ class FieldState:
         # река-устье: type_cell_after_wall_check == river, type_cell_turn_end == mouth, is_diff_cells = True
         # река: type_cell_after_wall_check == river, type_cell_turn_end == river, is_diff_cells = False
 
-        self._calc_possible_river_trajectories(
-            new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, direction)
+        final_states = self._calc_possible_river_trajectories(
+            new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, turn_direction)
+        if not (len(final_states) == 1 and final_states[0] is self):
+            [state._set_parent(self) for state in final_states]
+            self.next_states = final_states
 
     def _info_processor(self, direction: Directions, response: dict):
         type_cell_turn_end: Type[cell.Cell] = response.get('type_cell_at_end_of_turn')
@@ -302,16 +308,21 @@ class FieldState:
             type_cell_turn_end: Type[CELL], is_diff_cells: bool, turn_direction: Directions):
         # ... , река, ...
         if type_cell_after_wall_check is cell.CellRiver and not is_diff_cells:
-            next_states = self._get_possible_leaves(current_cell, turn_direction)
-            if not (len(next_states) == 1 and next_states[0] is self):
-                [state._set_parent(self) for state in next_states]
-                self.next_states = next_states
-            return
+            try:
+                final_states = self._get_possible_leaves(current_cell, turn_direction)
+                if not final_states:
+                    raise UnreachableState()
+                return final_states
+            except UnreachableState:
+                raise
 
         # ... , река-река / река-устье, ...
 
         # все варианты течения первой клетки
-        new_states = self._get_possible_leaves(current_cell, turn_direction, washed=True)
+        try:
+            new_states = self._get_possible_leaves(current_cell, turn_direction, washed=True)
+        except UnreachableState:
+            raise
 
         if type_cell_turn_end is not cell.CellRiverMouth:
             # все варианты течения второй клетки
@@ -333,10 +344,7 @@ class FieldState:
                     pass
             if not final_states:
                 raise UnreachableState()
-            if not (len(final_states) == 1 and final_states[0] is self):
-                [state._set_parent(self) for state in final_states]
-                self.next_states = final_states
-            return
+            return final_states
         else:  # смыло до устья
             final_states: list[FieldState] = []
             new_states2: list[FieldState] = []
@@ -370,23 +378,23 @@ class FieldState:
                         pass
             if not final_states:
                 raise UnreachableState()
-            if not (len(final_states) == 1 and final_states[0] is self):
-                [state._set_parent(self) for state in final_states]
-                self.next_states = final_states
-            return
+            return final_states
 
     def _get_possible_leaves(
             self, current_cell: CELL, turn_direction: Directions = None,
             washed: bool = False):
+        """
+        Вернет список состояний поля после добавления 1 клетки реки, или exception если добавить не получилось
+        """
 
         if washed:
             prev_cell = self._get_neighbour_cell(current_cell, -turn_direction)
             if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
-                return []
+                raise UnreachableState()
 
         possible_river_dirs = self._get_possible_river_directions(current_cell, turn_direction, washed)
         if not possible_river_dirs:
-            return []
+            raise UnreachableState()
 
         if type(current_cell) is UnknownCell:
             leaves = [self._get_modified_copy(current_cell, cell.CellRiver, direction)
@@ -396,7 +404,7 @@ class FieldState:
             self._move_player(current_cell)
             return [self]
         else:
-            return []
+            raise UnreachableState()
 
     def _get_possible_river_directions(self, river_cell: CELL, turn_direction: Directions = None,
                                        washed: bool = False) -> list[Directions]:

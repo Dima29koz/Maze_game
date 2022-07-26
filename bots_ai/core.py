@@ -9,11 +9,11 @@ from bots_ai.player_state import PlayerState
 
 class BotAI:
     def __init__(self, game_rules: dict, players: list[tuple[dict[str, int | None], str]]):
-        self.init_generator = InitGenerator(game_rules, [player[1] for player in players])
+        init_generator = InitGenerator(game_rules, [player[1] for player in players])
         self.players: dict[str, PlayerState] = {
-            player[1]: PlayerState(self.init_generator.get_start_state(player), player[1])
+            player[1]: PlayerState(init_generator.get_start_state(player), player[1])
             for player in players}
-        self.leaves_matcher = LeavesMatcher(self.init_generator.get_unique_obj_amount(), self.players)
+        self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players)
 
         self.real_field: list[list[cell.Cell | None]] = []
 

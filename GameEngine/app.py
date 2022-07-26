@@ -17,7 +17,7 @@ def main():
     rules['generator_rules']['river_rules']['min_coverage'] = 90
     rules['generator_rules']['river_rules']['max_coverage'] = 100
     spawn: dict[str, int] = {'x': 3, 'y': 1}
-    spawn2: dict[str, int] = {'x': 3, 'y': 1}
+    spawn2: dict[str, int] = {'x': 1, 'y': 4}
 
     players = [
         (spawn, 'Skipper'),
@@ -26,7 +26,7 @@ def main():
 
     bot = None
 
-    random.seed(6)
+    random.seed(7)
     game = Game(rules=rules)
     field = game.field
     for i, player in enumerate(players, 1):
