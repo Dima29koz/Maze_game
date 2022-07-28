@@ -112,6 +112,12 @@ class Field:
         return [{'x': player.cell.x, 'y': player.cell.y, 'name': player.name}
                 for player in self.players if player.is_alive]
 
+    def get_spawn_points(self):
+        try:
+            return [{'point': player.spawn_point, 'name': player.name} for player in self.players]
+        except AttributeError:
+            return []
+
     def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
         """handle player action"""
         action_to_handler = {

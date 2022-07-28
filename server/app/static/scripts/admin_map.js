@@ -7,6 +7,11 @@ function drawMap(field, treasures, players, rules, current_user) {
     if (typeof field === "string") {
        let div = document.getElementById('err-msg');
        div.innerText = field;
+       if(drawingCanvas && drawingCanvas.getContext) {
+           let context = drawingCanvas.getContext('2d');
+           context.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+       }
+       return
     }
     else {
         let div = document.getElementById('err-msg');

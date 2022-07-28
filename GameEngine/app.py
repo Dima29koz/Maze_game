@@ -14,7 +14,7 @@ def main():
     # rules['generator_rules']['exits_amount'] = 20
     rules['generator_rules']['is_separated_armory'] = True
     rules['generator_rules']['seed'] = 0.2887757181832208
-    # rules['gameplay_rules']['fast_win'] = False
+    rules['gameplay_rules']['fast_win'] = False
     rules['gameplay_rules']['diff_outer_concrete_walls'] = True
     # rules['generator_rules']['river_rules']['min_coverage'] = 90
     # rules['generator_rules']['river_rules']['max_coverage'] = 100
