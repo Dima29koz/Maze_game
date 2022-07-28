@@ -13,7 +13,9 @@
             let response = fetch(`../api/game_field/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
-                drawMap(response_json.field, response_json.treasures, response_json.players, current_user);
+                drawMap(response_json.field, response_json.treasures,
+                    response_json.players, response_json.rules, current_user);
+                console.log(response_json.rules);
             });
         }
     </script>

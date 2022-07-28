@@ -1,4 +1,4 @@
-function drawMap(field, treasures, players, current_user) {
+function drawMap(field, treasures, players, rules, current_user) {
     const div = document.getElementById('div-map');
     const drawingCanvas = document.getElementById('map-debug');
 
@@ -10,7 +10,7 @@ function drawMap(field, treasures, players, current_user) {
     }
     else {
         let div = document.getElementById('err-msg');
-        div.innerText = '';
+        div.innerText = 'seed: ' + rules.generator_rules.seed;
     }
     let tile_size = height < width ? height / field.length - 1 : width / field[0].length;
     if(drawingCanvas && drawingCanvas.getContext) {

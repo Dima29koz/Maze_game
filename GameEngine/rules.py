@@ -2,6 +2,7 @@
 
 rules = {
     'generator_rules': {
+        'seed': 0,
         'rows': 5, 'cols': 5,
         'exits_amount': 2,
         'is_not_rect': False,

@@ -1,4 +1,4 @@
-from random import choice, sample, randint
+from random import choice, sample, randint, seed
 
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.entities.treasure import Treasure, TreasureTypes
@@ -17,6 +17,7 @@ class FieldGenerator:
     """
 
     def __init__(self, generator_rules: dict):
+        seed(generator_rules['seed'])
         self.rows = generator_rules['rows'] + 2
         self.cols = generator_rules['cols'] + 2
         self.pattern: list[list[PatternCell]] = [[]]
@@ -151,16 +152,21 @@ class FieldGenerator:
                     neighbour.add_wall(-direction, WallEmpty())
 
     def _generate_outer_walls(self) -> list[Cell]:
-        outer_cells = set()
+        outer_cells = []
         for row in self.field:
             for cell in row:
-                if cell:
-                    for direction in Directions:
-                        if self._get_neighbour_cell(cell, direction) is None:
-                            cell.add_wall(direction, WallOuter())
-                            outer_cells.add(cell)
+                if cell and self._is_cell_outer(cell):
+                    outer_cells.append(cell)
 
-        return list(outer_cells)
+        return outer_cells
+
+    def _is_cell_outer(self, cell: Cell):
+        is_outer = False
+        for direction in Directions:
+            if self._get_neighbour_cell(cell, direction) is None:
+                cell.add_wall(direction, WallOuter())
+                is_outer = True
+        return is_outer
 
     def _create_exit(self, outer_cells: list[Cell], amount: int):
         exit_cells = []
@@ -181,9 +187,7 @@ class FieldGenerator:
     def _spawn_treasures(self, treasures_rules: list[int]):
         treasures = []
 
-        treasure_cells = set()
-        while len(treasure_cells) < sum(treasures_rules):
-            treasure_cells.add(choice(self.ground_cells))
+        treasure_cells = sample(self.ground_cells, sum(treasures_rules))
 
         for _ in range(treasures_rules[0]):
             cell = treasure_cells.pop()

@@ -1,3 +1,4 @@
+import random
 from copy import copy
 from datetime import datetime
 
@@ -102,6 +103,7 @@ class GameRoom(db.Model):
         self.rules['players_amount'] = rules_form.players_amount.data
         self.rules['bots_amount'] = rules_form.bots_amount.data
         self.rules['generator_rules']['is_not_rect'] = rules_form.is_not_rect.data
+        self.rules['generator_rules']['seed'] = random.random()
         self.rules['generator_rules']['is_separated_armory'] = rules_form.is_separated_armory.data
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = rules_form.is_same_wall_outer_concrete.data
         self.set_creator(creator)
@@ -265,6 +267,7 @@ class GameRoom(db.Model):
             'field': self.game.field.get_field_list(),
             'treasures': self.game.field.get_treasures_list(),
             'players': self.game.field.get_players_list(),
+            'rules': self.rules
         }
 
     def _on_win(self, winner: Player) -> dict:

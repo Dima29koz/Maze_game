@@ -54,21 +54,13 @@ class LeavesMatcher:
                 print('len of matched nodes is:', len(matchable_nodes))
                 return
 
-            if len(matchable_nodes) == 1:
-                print('matching 1 time')
+            for matchable_node in matchable_nodes:
                 try:
-                    merged_node = node.copy().merge_with(matchable_nodes[0])
-                    if merged_node:
-                        node.field = merged_node.field
-                except MergingError:
-                    matchable_nodes[0].update_compatibility(active_player, False)
-
-            else:
-                print('matching less then 8 times')
-                for matchable_node in matchable_nodes:
                     merged_node = node.copy().merge_with(matchable_node)
                     if merged_node:
                         node.next_states.append(merged_node)
+                except MergingError:
+                    matchable_node.update_compatibility(active_player, False)
 
     def _match_with_player(self, node: FieldState,
                            other_nodes: list[FieldState], active_player: str):

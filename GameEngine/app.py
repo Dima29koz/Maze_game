@@ -1,5 +1,4 @@
 """runs game local for testing GameEngine"""
-import random
 
 from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
@@ -12,10 +11,13 @@ from bots_ai.core import BotAI
 def main():
     # rules['generator_rules']['river_rules']['has_river'] = False
     # rules['generator_rules']['walls']['has_walls'] = False
-    rules['generator_rules']['exits_amount'] = 20
-    rules['gameplay_rules']['fast_win'] = False
-    rules['generator_rules']['river_rules']['min_coverage'] = 90
-    rules['generator_rules']['river_rules']['max_coverage'] = 100
+    # rules['generator_rules']['exits_amount'] = 20
+    rules['generator_rules']['is_separated_armory'] = True
+    rules['generator_rules']['seed'] = 0.2887757181832208
+    # rules['gameplay_rules']['fast_win'] = False
+    rules['gameplay_rules']['diff_outer_concrete_walls'] = True
+    # rules['generator_rules']['river_rules']['min_coverage'] = 90
+    # rules['generator_rules']['river_rules']['max_coverage'] = 100
     spawn: dict[str, int] = {'x': 3, 'y': 1}
     spawn2: dict[str, int] = {'x': 1, 'y': 4}
 
@@ -26,7 +28,6 @@ def main():
 
     bot = None
 
-    random.seed(7)
     game = Game(rules=rules)
     field = game.field
     for i, player in enumerate(players, 1):
