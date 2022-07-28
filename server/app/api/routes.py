@@ -20,6 +20,17 @@ def get_game_data(room_id):
     )
 
 
+@api.route('/api/room_data/<room_id>')
+def get_room_data(room_id):
+    """returns json with game_data"""
+    room = get_room_by_id(room_id)
+    return jsonify(
+        turns=room.get_turns(),
+        spawn_points=room.game.field.get_spawn_points(),
+        rules=room.rules,
+    )
+
+
 @api.route('/api/players_stat/<room_id>')
 @login_required
 def get_players_stat(room_id):
