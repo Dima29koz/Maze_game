@@ -3,7 +3,7 @@ from typing import Type, Union
 
 from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
-from bots_ai.exceptions import UnreachableState, OnlyAllowedDir
+from bots_ai.exceptions import UnreachableState, OnlyAllowedDir, MergingError
 from bots_ai.field_obj import UnknownCell, UnknownWall, UnbreakableWall
 
 R_CELL = Union[
@@ -427,7 +427,7 @@ class FieldState:
         if not washed and turn_direction:
             prev_cell = self._get_neighbour_cell(river_cell, -turn_direction)
             if type(prev_cell) is cell.CellRiverMouth or (
-               type(prev_cell) is cell.CellRiver and prev_cell.direction is not turn_direction):
+                    type(prev_cell) is cell.CellRiver and prev_cell.direction is not turn_direction):
                 if not self._has_known_input_river(prev_cell, -turn_direction):
                     if self._is_river_is_looped(river_cell, prev_cell):
                         return []
@@ -442,19 +442,20 @@ class FieldState:
                 continue
 
             try:
-                if self._is_river_direction_available(river_cell, direction):
+                if self.is_river_direction_available(river_cell, direction):
                     dirs.append(direction)
             except OnlyAllowedDir:
                 return [direction]
 
         return dirs
 
-    def _is_river_direction_available(self, river_cell: UnknownCell | cell.CellRiver, direction: Directions,
-                                      no_raise: bool = False):
+    def is_river_direction_available(self, river_cell: UnknownCell | cell.CellRiver, direction: Directions,
+                                     no_raise: bool = False):
         """
 
         :param river_cell: cell to be checked
         :param direction: direction to be checked
+        :param no_raise: if True func return True if direction is the only available against raising OnlyAllowedDir exc.
         :return: True if direction is available
         :raises OnlyAllowedDir: if direction is the only allowed
         """
@@ -539,3 +540,54 @@ class FieldState:
                 if self._is_the_only_allowed_dir(neighbour_cell, direction):
                     return True
         return False
+
+    def merge_with(self, pl_node: 'FieldState'):
+        is_changed = False
+        for y, row in enumerate(self.field):
+            for x, self_cell in enumerate(row):
+                other_cell = pl_node.field[y][x]
+                if self_cell is None and other_cell is None:
+                    continue
+                if self_cell is None and type(other_cell) is cell.CellExit:
+                    is_changed = True
+                    self.merge_cells(other_cell, x, y, no_walls=True)
+                if type(self_cell) is cell.CellExit and other_cell is None:
+                    continue
+                if type(self_cell) is UnknownCell and type(other_cell) is not UnknownCell:
+                    if type(other_cell) is cell.CellRiver:
+                        if not self.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
+                            raise MergingError()
+                    is_changed = True
+                    self.merge_cells(other_cell, x, y)
+                new_walls = self.merge_walls(self.field[y][x].walls.copy(), other_cell.walls)
+                if new_walls:
+                    is_changed = True
+                    self.field[y][x] = copy(self.field[y][x])
+                    self.field[y][x].walls = new_walls
+        if is_changed:
+            return self
+        return
+
+    def merge_cells(self, other_cell: CELL | None, x: int, y: int, no_walls: bool = False):
+        self.field[y][x] = copy(other_cell)
+        if not no_walls:
+            new_walls = self.merge_walls(self.field[y][x].walls.copy(), other_cell.walls)
+            if new_walls:
+                self.field[y][x].walls = new_walls
+        else:
+            self.field[y][x].walls = other_cell.walls.copy()
+
+    @staticmethod
+    def merge_walls(self_walls: dict[Directions, WALL], other_walls: dict[Directions, WALL]):
+        is_changed = False
+        for direction in Directions:
+            if type(self_walls[direction]) is not type(other_walls[direction]):
+                if type(self_walls[direction]) is UnknownWall:
+                    is_changed = True
+                    self_walls[direction] = other_walls[direction]
+                if type(self_walls[direction]) is wall.WallConcrete and type(other_walls[direction]) is wall.WallEmpty:
+                    is_changed = False
+                    self_walls[direction] = other_walls[direction]
+        if is_changed:
+            return self_walls
+        return

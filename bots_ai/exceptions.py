@@ -8,3 +8,7 @@ class OnlyAllowedDir(Exception):
 
 class MatchingError(Exception):
     pass
+
+
+class MergingError(Exception):
+    pass
