@@ -584,10 +584,10 @@ class FieldState:
             if type(self_walls[direction]) is not type(other_walls[direction]):
                 if type(self_walls[direction]) is UnknownWall:
                     is_changed = True
-                    self_walls[direction] = other_walls[direction]
+                    self_walls[direction] = copy(other_walls[direction])
                 if type(self_walls[direction]) is wall.WallConcrete and type(other_walls[direction]) is wall.WallEmpty:
-                    is_changed = False
-                    self_walls[direction] = other_walls[direction]
+                    is_changed = True
+                    self_walls[direction] = copy(other_walls[direction])
         if is_changed:
             return self_walls
         return

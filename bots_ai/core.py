@@ -69,20 +69,20 @@ class BotAI:
     @staticmethod
     def is_node_is_real(
             n_field: list[list[cell.Cell | cell.CellRiver | None]],
-            field: list[list[cell.Cell | cell.CellRiver | None]]):
-        for y, row in enumerate(field):
-            for x, obj in enumerate(row):
+            real_field: list[list[cell.Cell | cell.CellRiver | None]]):
+        for y, row in enumerate(real_field):
+            for x, real_cell in enumerate(row):
                 target_cell = n_field[y][x]
-                if obj is None and target_cell is None:
+                if real_cell is None and target_cell is None:
                     continue
-                if target_cell is None and type(obj) is cell.CellExit:
+                if target_cell is None and type(real_cell) is cell.CellExit:
                     continue
                 if type(target_cell) is UnknownCell:
                     continue
-                if type(target_cell) is type(obj):
+                if type(target_cell) is type(real_cell):
                     if type(target_cell) is cell.CellRiver:
-                        idx = obj.river.index(obj)
-                        if target_cell.direction is not obj - obj.river[idx + 1]:
+                        idx = real_cell.river.index(real_cell)
+                        if target_cell.direction is not (real_cell - real_cell.river[idx + 1]):
                             return False
                     continue
                 else:

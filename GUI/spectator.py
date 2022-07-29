@@ -55,12 +55,12 @@ class SpectatorGUI:
             max_y = self.res[1] // 3
             fields, fields_amount = self.bot_spectator.get_real_spawn_leaves(active_player)
             f, amount = self.bot_spectator.get_fields(active_player)
-            self.draw_leaves(fields, fields_amount, start_y=0)
+            self.draw_leaves(fields, start_y=0)
             self.draw_text('real spawn leaves', f'{fields_amount} / {amount}', 0)
             for i, other_player in enumerate(self.bot_spectator.get_other_players(active_player), 1):
                 fields, fields_amount = self.bot_spectator.get_compatible_leaves(active_player, other_player, 40)
                 f, amount = self.bot_spectator.get_fields(other_player)
-                self.draw_leaves(fields, fields_amount, start_y=max_y * 1)
+                self.draw_leaves(fields, start_y=max_y * 1)
                 self.draw_text('other player comp. leaves', f'{fields_amount} / {amount}', i)
 
         pygame.display.flip()
@@ -71,7 +71,7 @@ class SpectatorGUI:
         place = text.get_rect(topleft=(10, HEIGHT - 25 - 25*y))
         self.sc.blit(text, place)
 
-    def draw_leaves(self, fields, fields_amount, start_y):
+    def draw_leaves(self, fields, start_y):
         dx = len(self.field.field[0]) * self.tile_size + DIST
         pygame.draw.line(self.sc, (255, 0, 0),
                          (dx, start_y), (self.res[0], start_y), 2)

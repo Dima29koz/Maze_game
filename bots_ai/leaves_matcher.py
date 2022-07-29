@@ -103,13 +103,13 @@ class LeavesMatcher:
             return True
 
         if type(other_cell) is UnknownCell:
-            if unique_objs.get(type(self_cell)) is not None:
+            if type(self_cell) in unique_objs:
                 if unique_objs.get(type(self_cell)) > 0:
                     unique_objs[type(self_cell)] -= 1
                 else:
                     return False
             if type(self_cell) is cell.CellRiver:
-                if self_cell.direction not in other_node.get_possible_river_directions(other_cell):
+                if not other_node.is_river_direction_available(other_cell, self_cell.direction, no_raise=True):
                     return False
             return True
 
@@ -125,16 +125,3 @@ class LeavesMatcher:
             return True
 
         return False
-
-    def join_nodes(self, node: FieldState, other_node: FieldState):
-        for y, row in enumerate(node.field):
-            for x, cell_obj in enumerate(row):
-                other_cell = other_node.field[y][x]
-                if cell_obj is None and other_cell is not None:
-                    node.field[y][x] = deepcopy(other_cell)
-                    continue
-                if type(cell_obj) is UnknownCell and type(other_cell) is not UnknownCell:
-                    walls = node.field[y][x].walls
-                    node.field[y][x] = deepcopy(other_cell)
-                    node.field[y][x].walls = walls
-                    continue
