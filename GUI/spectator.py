@@ -10,6 +10,7 @@ from GUI.bot_ai_spectator import BotAISpectator
 from GUI.config import *
 
 from bots_ai.core import BotAI
+from bots_ai.field_obj import Position
 
 
 class SpectatorGUI:
@@ -71,7 +72,7 @@ class SpectatorGUI:
         place = text.get_rect(topleft=(10, HEIGHT - 25 - 25*y))
         self.sc.blit(text, place)
 
-    def draw_leaves(self, fields, start_y):
+    def draw_leaves(self, fields: list[tuple[list[list], dict[str, Position | None]]], start_y):
         dx = len(self.field.field[0]) * self.tile_size + DIST
         pygame.draw.line(self.sc, (255, 0, 0),
                          (dx, start_y), (self.res[0], start_y), 2)
@@ -84,7 +85,7 @@ class SpectatorGUI:
                 i = 0
                 start_y += f_size_y * TILE_LEAF + DIST
                 start_x = dx + (f_size_x * TILE_LEAF + DIST) * i
-            self.painter.draw(grid=field[0], players=[field[1]],
+            self.painter.draw(grid=field[0], players=field[1],
                               start_x=start_x, start_y=start_y, tile_size=TILE_LEAF, pl=True)
             i += 1
 

@@ -3,6 +3,7 @@ import pygame
 from GUI.utils import get_cell_color, get_wall_color
 from GameEngine.field import cell as c
 from GameEngine.globalEnv.enums import Directions, TreasureTypes
+from bots_ai.field_obj import Position
 
 riv_dirs = {
     Directions.top: '/\\',
@@ -113,37 +114,42 @@ class Painter:
                              (x + ts // 3 + 2, y + ts // 3 + 2,
                               ts // 3 - 2, ts // 3 - 2))
 
-    def draw_players(self, players, dx, dy, ts):
-        for player in players:
-            if type(player) is dict or player.is_alive:
-                self.draw_player(player, dx, dy, ts)
+    def draw_players(self, players: dict | list, dx, dy, ts):
+        if type(players) is list:
+            for player in players:
+                if player.is_alive:
+                    self.draw_player(player, dx, dy, ts)
+        elif type(players) is dict:
+            for player in players.items():
+                self.draw_bot_ai_player(*player, dx, dy, ts)
 
     def draw_player(self, player, dx, dy, ts):
-        if type(player) is dict:
-            x = player.get('x') * ts + dx
-            y = player.get('y') * ts + dy
-            name = 'player'
-            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
-                             (x + 2, y + 2), (x + ts - 2, y + 2), 2)
+        x = player.cell.x * ts + ts // 2 + dx
+        y = player.cell.y * ts + ts // 2 + dy
+        name = player.name
+        if player.is_active:
+            pygame.draw.circle(self.sc, (255, 255, 255),
+                               (x, y), ts // 3.5)
+        pygame.draw.circle(self.sc, pygame.Color(abs(hash(name)) % 255, 155, 155),
+                           (x, y), ts // 4)
 
-            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
-                             (x + ts - 2, y + 2), (x + ts - 2, y + ts - 4), 2)
+        if player.treasure:
+            x, y = player.cell.x * ts, player.cell.y * ts
+            self.draw_treasure(player.treasure, x, y, ts)
 
-            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
-                             (x + ts - 2, y + ts - 4), (x + 2, y + ts - 4), 2)
+    def draw_bot_ai_player(self, player_name, pl_pos, dx, dy, ts):
+        if not pl_pos:
+            return
+        x, y = pl_pos.get()
+        x, y = x * ts + dx, y * ts + dy
+        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                         (x + 2, y + 2), (x + ts - 2, y + 2), 2)
 
-            pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
-                             (x + 2, y + ts - 4), (x + 2, y + 2), 2)
-        else:
-            x = player.cell.x * ts + ts // 2 + dx
-            y = player.cell.y * ts + ts // 2 + dy
-            name = player.name
-            if player.is_active:
-                pygame.draw.circle(self.sc, (255, 255, 255),
-                                   (x, y), ts // 3.5)
-            pygame.draw.circle(self.sc, pygame.Color(abs(hash(name)) % 255, 155, 155),
-                               (x, y), ts // 4)
+        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                         (x + ts - 2, y + 2), (x + ts - 2, y + ts - 4), 2)
 
-            if player.treasure:
-                x, y = player.cell.x * ts, player.cell.y * ts
-                self.draw_treasure(player.treasure, x, y, ts)
+        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                         (x + ts - 2, y + ts - 4), (x + 2, y + ts - 4), 2)
+
+        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+                         (x + 2, y + ts - 4), (x + 2, y + 2), 2)

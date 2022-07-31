@@ -11,9 +11,13 @@ from GameEngine.rules import rules as ru
 from bots_ai.core import BotAI
 
 
-def get_game_data(room_id: int) -> dict:
-    response = requests.get(f'http://192.168.1.118:5000/api/room_data/{room_id}')
-    return response.json()
+def get_game_data(room_id: int) -> dict | None:
+    try:
+        response = requests.get(f'http://192.168.1.118:5000/api/room_data/{room_id}')
+        return response.json()
+    except Exception as ex:
+        print(ex)
+        return
 
 
 def get_turn(turns: list[dict]):
@@ -64,6 +68,8 @@ def main(room_id: int = None):
         turns = []
     else:
         resp = get_game_data(room_id)
+        if not resp:
+            return
         rules = resp.get('rules')
         turns = get_turn(resp.get('turns'))
         players = []
@@ -101,4 +107,5 @@ def main(room_id: int = None):
 
 if __name__ == "__main__":
     # ids: 42
-    main(room_id=43)
+
+    main(room_id=None)

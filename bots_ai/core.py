@@ -17,12 +17,6 @@ class BotAI:
 
         self.real_field: list[list[cell.Cell | None]] = []
 
-    def get_fields(self, player_name: str) -> list[tuple[list[list[cell.Cell | None]], dict[str, int]]]:
-        """returns all player leaves data"""
-        leaves = self.players.get(player_name).get_leaf_nodes()
-        # leaves = self.players.get(player_name).get_real_spawn_leaves()
-        return [leaf.get_current_data() for leaf in leaves]
-
     def turn_prepare(self, player_name: str):
         # before decision-making:
         # удалить все свои листы с правильным спавном, которые противоречат листам противников
@@ -35,7 +29,7 @@ class BotAI:
         direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
-        self.players.get(player_name).process_turn(action, direction, response)
+        self.players.get(player_name).process_turn(player_name, action, direction, response)
 
         if not self.has_real_field(player_name):
             print('proc err!!!')

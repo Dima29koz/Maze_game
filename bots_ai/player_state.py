@@ -7,14 +7,14 @@ class PlayerState:
         self.root = tree_root
         self.name = name
 
-    def process_turn(self, action: Actions, direction: Directions | None, response: dict):
+    def process_turn(self, player_name: str, action: Actions, direction: Directions | None, response: dict):
         # before turn processing:
         # делать ход во всех своих листах, которые противники считают возможными,
         # то есть хотя бы 1 противник думает что данный лист возможен
         # и во всех листах с настоящим спавном
         for node in self.get_leaf_nodes()[::-1]:
             if node.check_compatibility():
-                node.process_action(action, direction, response)
+                node.process_action(player_name, action, direction, response)
 
     def get_leaf_nodes(self):
         """

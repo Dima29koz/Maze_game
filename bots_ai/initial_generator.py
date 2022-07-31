@@ -2,7 +2,7 @@ from copy import copy
 from typing import Type
 
 from GameEngine.field import cell
-from bots_ai.field_obj import UnknownCell
+from bots_ai.field_obj import UnknownCell, Position
 from bots_ai.field_state import FieldState
 
 
@@ -23,10 +23,12 @@ class InitGenerator:
         field = self._generate_start_field()
         root_state = FieldState(
             field, self.get_unique_obj_amount(),
-            {player_name: True for player_name in other_players})
+            {player_name: True for player_name in other_players},
+            {player_name: None for player_name in self._players}
+        )
         real_spawn = (player[0].get('x'), player[0].get('y'))
         for point in self._spawn_points:
-            next_state = root_state.copy(*point)
+            next_state = root_state.copy(player[1], Position(*point))
             if point == real_spawn:
                 next_state.is_real_spawn = True
             root_state.next_states.append(next_state)

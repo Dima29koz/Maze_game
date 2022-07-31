@@ -4,7 +4,7 @@ from typing import Type, Union
 from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from bots_ai.exceptions import UnreachableState, OnlyAllowedDir, MergingError
-from bots_ai.field_obj import UnknownCell, UnknownWall, UnbreakableWall
+from bots_ai.field_obj import UnknownCell, UnknownWall, UnbreakableWall, Position
 
 R_CELL = Union[
     cell.Cell, cell.CellRiver, cell.CellRiverMouth,
@@ -30,30 +30,33 @@ class FieldState:
     def __init__(self, field: list[list[CELL | None]],
                  remaining_obj_amount: dict[Type[R_CELL], int],
                  enemy_compatibility: dict[str, bool],
-                 pl_pos_x: int = None, pl_pos_y: int = None,
+                 players_positions: dict[str, Position | None],
                  is_real_spawn: bool = False,
-                 parent: 'FieldState' = None):
+                 parent: 'FieldState' = None, current_player: str = ''):
         self.field = field
-        self.pl_pos_x = pl_pos_x if pl_pos_x is not None else 0
-        self.pl_pos_y = pl_pos_y if pl_pos_y is not None else 0
+        self.players_positions = players_positions
         self.remaining_obj_amount = remaining_obj_amount
         self.next_states: list[FieldState] = []
         self.parent: FieldState | None = parent
         self.is_real_spawn = is_real_spawn
         self.enemy_compatibility = enemy_compatibility
 
+        self.current_player: str = current_player
+
         self.is_real = False  # todo only for testing
 
     def get_current_data(self):
-        return self.field, {'x': self.pl_pos_x, 'y': self.pl_pos_y}
+        return self.field, self.players_positions
 
     def get_player_cell(self):
-        return self.field[self.pl_pos_y][self.pl_pos_x]
+        x, y = self.players_positions.get(self.current_player).get()
+        return self.field[y][x]
 
     def remove(self):
         self.parent._remove_leaf(self)
 
-    def process_action(self, action: Actions, direction: Directions | None, response: dict):
+    def process_action(self, current_player: str, action: Actions, direction: Directions | None, response: dict):
+        self.current_player = current_player
         try:
             match action:
                 case Actions.swap_treasure:
@@ -71,16 +74,19 @@ class FieldState:
         except UnreachableState:
             self.remove()
 
-    def copy(self, pl_pos_x: int = None, pl_pos_y: int = None):
-        if pl_pos_x is None and pl_pos_y is None:
-            pl_pos_x, pl_pos_y = self.pl_pos_x, self.pl_pos_y
+    def copy(self, player_name: str = None, position: Position = None):
         return FieldState(
             [copy(row) for row in self.field],
             self.remaining_obj_amount.copy(),
             self.enemy_compatibility.copy(),
-            pl_pos_x, pl_pos_y,
+            self.players_positions.copy() if not position else self.update_player_position(player_name, position),
             self.is_real_spawn,
-            self)
+            self, self.current_player)
+
+    def update_player_position(self, player_name: str, position: Position):
+        pl_positions = self.players_positions.copy()
+        pl_positions[player_name] = position
+        return pl_positions
 
     def update_compatibility(self, player_name: str, value: bool):
         self.enemy_compatibility[player_name] = value
@@ -92,7 +98,7 @@ class FieldState:
         return True
 
     def _move_player(self, target_cell: CELL):
-        self.pl_pos_x, self.pl_pos_y = target_cell.x, target_cell.y
+        self.players_positions[self.current_player] = Position(target_cell.x, target_cell.y)
 
     def _update_cell_type(self, new_type: Type[CELL] | None, pos_x: int, pos_y: int,
                           direction: Directions = None):
@@ -189,7 +195,7 @@ class FieldState:
     def _get_modified_copy(self, target_cell: CELL, new_type: Type[CELL], direction: Directions = None):
         new_state = self.copy()
         new_state._update_cell_type(new_type, target_cell.x, target_cell.y, direction)
-        if new_state.pl_pos_x != target_cell.x or new_state.pl_pos_y != target_cell.y:
+        if new_state.players_positions.get(self.current_player) != Position(target_cell.x, target_cell.y):
             new_state._move_player(target_cell)
         return new_state
 
@@ -309,7 +315,7 @@ class FieldState:
         cell_treasures_amount: int = response.get('cell_treasures_amount')
 
         if type_cell_turn_end is not cell.CellRiver:
-            self._update_cell_type(type_cell_turn_end, self.pl_pos_x, self.pl_pos_y)
+            self._update_cell_type(type_cell_turn_end, *self.players_positions.get(self.current_player).get())
         else:
             player_cell = self.get_player_cell()
             possible_directions = self.get_possible_river_directions(player_cell)

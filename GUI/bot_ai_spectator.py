@@ -8,8 +8,9 @@ class BotAISpectator:
 
     def get_fields(self, player_name: str):
         """return list of tree leaves limited by `limit` param and total leaves amount"""
-        fields = self.bot.get_fields(player_name)
-        return fields[:self.limit], len(fields)
+        leaves = self.bot.players.get(player_name).get_leaf_nodes()
+        leaves = [leaf.get_current_data() for leaf in leaves]
+        return leaves[:self.limit], len(leaves)
 
     def get_real_spawn_leaves(self, player_name: str):
         leaves = self.bot.players.get(player_name).get_real_spawn_leaves()
