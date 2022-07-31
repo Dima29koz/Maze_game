@@ -42,12 +42,12 @@ class Actions(Enum):
     """
     describes actions
 
-    :param skip: action `skip`
-    :param move: action `move`
-    :param shoot_bow: action `shoot_bow`
-    :param throw_bomb: action `throw_bomb`
-    :param swap_treasure: action `swap_treasure`
-    :param info: action `info`
+    :cvar skip: action `skip`
+    :cvar move: action `move`
+    :cvar shoot_bow: action `shoot_bow`
+    :cvar throw_bomb: action `throw_bomb`
+    :cvar swap_treasure: action `swap_treasure`
+    :cvar info: action `info`
     """
     skip = auto()
     move = auto()
@@ -61,9 +61,9 @@ class TreasureTypes(Enum):
     """
     describes treasure types
 
-    :param very: treasure type `very`
-    :param spurious: treasure type `spurious`
-    :param mined: treasure type `mined`
+    :cvar very: treasure type `very`
+    :cvar spurious: treasure type `spurious`
+    :cvar mined: treasure type `mined`
     """
     very = auto()
     spurious = auto()

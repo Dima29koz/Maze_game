@@ -4,13 +4,13 @@ from pygame.locals import *
 from GUI.painter import Painter
 from GameEngine.field.field import Field
 from GameEngine.globalEnv.enums import Directions, Actions
+from GameEngine.globalEnv.types import Position
 from GUI.utils import get_key_act
 from GUI.button import Button
 from GUI.bot_ai_spectator import BotAISpectator
 from GUI.config import *
 
 from bots_ai.core import BotAI
-from bots_ai.field_obj import Position
 
 
 class SpectatorGUI:

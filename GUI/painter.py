@@ -3,7 +3,7 @@ import pygame
 from GUI.utils import get_cell_color, get_wall_color
 from GameEngine.field import cell as c
 from GameEngine.globalEnv.enums import Directions, TreasureTypes
-from bots_ai.field_obj import Position
+from GameEngine.globalEnv.types import Position
 
 riv_dirs = {
     Directions.top: '/\\',

@@ -2,7 +2,8 @@ from copy import copy
 from typing import Type
 
 from GameEngine.field import cell
-from bots_ai.field_obj import UnknownCell, Position
+from GameEngine.globalEnv.types import Position
+from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
 
 

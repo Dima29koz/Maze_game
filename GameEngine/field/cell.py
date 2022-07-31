@@ -1,6 +1,7 @@
 from typing import Type
 
 from GameEngine.globalEnv.enums import Directions
+from GameEngine.globalEnv.types import Position
 from GameEngine.field.wall import WallEmpty, WallOuter, WallEntrance
 
 
@@ -18,6 +19,7 @@ class Cell:
     """
     def __init__(self, x: int, y: int):
         self.x, self.y = x, y
+        self.position = Position(x, y)
         self.walls: dict[Directions, WallEmpty] = {
             Directions.top: WallEmpty(),
             Directions.right: WallEmpty(),
