@@ -2,6 +2,7 @@ from copy import deepcopy
 from typing import Type
 
 from GameEngine.field import cell
+from GameEngine.globalEnv.types import Position
 from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState, CELL, WALL
 from bots_ai.player_state import PlayerState
@@ -72,7 +73,7 @@ class LeavesMatcher:
         return matchable_nodes
 
     def _is_nodes_matchable(self, node: FieldState, other_node: FieldState):
-        field = node.field
+        field = node.field.get_field()
         unique_objs = self._unique_objs_amount.copy()
         for y in range(len(field)):
             for x in range(len(field[0])):
@@ -82,8 +83,8 @@ class LeavesMatcher:
 
     def _is_cells_matchable(self, node: FieldState, other_node: FieldState,
                             x: int, y: int, unique_objs: dict[Type[CELL], int]):
-        self_cell = node.field[y][x]
-        other_cell = other_node.field[y][x]
+        self_cell = node.field.get_cell(Position(x, y))
+        other_cell = other_node.field.get_cell(Position(x, y))
 
         if self_cell is None and (other_cell is None or type(other_cell) is cell.CellExit):
             return True
@@ -98,7 +99,7 @@ class LeavesMatcher:
                 else:
                     return False
             if type(other_cell) is cell.CellRiver:
-                if not node.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
+                if not node.field.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
                     return False
             return True
 
@@ -109,7 +110,7 @@ class LeavesMatcher:
                 else:
                     return False
             if type(self_cell) is cell.CellRiver:
-                if not other_node.is_river_direction_available(other_cell, self_cell.direction, no_raise=True):
+                if not other_node.field.is_river_direction_available(other_cell, self_cell.direction, no_raise=True):
                     return False
             return True
 

@@ -43,7 +43,7 @@ class BotAI:
             return False
         flag = False
         for node in self.players.get(player_name).get_leaf_nodes():
-            cropped_field = [row[1:-1] for row in node.field[1:-1]]
+            cropped_field = [row[1:-1] for row in node.field.get_field()[1:-1]]
             if self.is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
                 node.is_real = True  # todo
                 flag = True
@@ -85,7 +85,7 @@ class BotAI:
 
     @staticmethod
     def is_node_is_valid(node: FieldState):
-        for row in node.field:
+        for row in node.field.get_field():
             for cell_obj in row:
                 if type(cell_obj) is cell.CellRiverMouth:
                     may_have_input = False

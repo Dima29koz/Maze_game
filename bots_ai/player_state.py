@@ -40,20 +40,20 @@ class PlayerState:
         self._collect_compatible_nodes(self.root, leaves, target_player)
         return leaves
 
-    def _collect_leaf_nodes(self, node, leaves: list):
+    def _collect_leaf_nodes(self, node: FieldState, leaves: list):
         if not node.next_states:
             leaves.append(node)
         for state in node.next_states:
             self._collect_leaf_nodes(state, leaves)
 
-    def _collect_real_spawn_nodes(self, node, leaves: list):
+    def _collect_real_spawn_nodes(self, node: FieldState, leaves: list):
         if not node.next_states:
             leaves.append(node)
         for state in node.next_states:
             if state.is_real_spawn:
                 self._collect_real_spawn_nodes(state, leaves)
 
-    def _collect_compatible_nodes(self, node, leaves: list, target_player: str):
+    def _collect_compatible_nodes(self, node: FieldState, leaves: list, target_player: str):
         if not node.next_states:
             leaves.append(node)
         for state in node.next_states:

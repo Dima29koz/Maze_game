@@ -5,6 +5,7 @@ from GameEngine.field import cell
 from GameEngine.globalEnv.types import Position
 from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
+from bots_ai.grid import Grid
 
 
 class InitGenerator:
@@ -23,7 +24,7 @@ class InitGenerator:
         other_players.remove(player[1])
         field = self._generate_start_field()
         root_state = FieldState(
-            field, self.get_unique_obj_amount(),
+            Grid(field), self.get_unique_obj_amount(),
             {player_name: True for player_name in other_players},
             {player_name: None for player_name in self._players}
         )
