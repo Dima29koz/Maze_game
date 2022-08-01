@@ -33,8 +33,8 @@ class Grid:
     def get_cell(self, position: Position) -> CELL | None:
         return self._field[position.y][position.x]
 
-    def get_neighbour_cell(self, current_cell: CELL, direction: Directions) -> CELL | None:
-        x, y = direction.calc(current_cell.x, current_cell.y)
+    def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
+        x, y = direction.calc(position.x, position.y)
         try:
             return self._field[y][x]
         except IndexError:
@@ -49,10 +49,10 @@ class Grid:
     def set_walls(self, position: Position, walls: dict[Directions, WALL]):
         self._field[position.y][position.x].walls = walls
 
-    def add_wall(self, current_cell: CELL, direction: Directions, wall_type: Type[WALL],
-                 neighbour_wall_type: Type[WALL] | None = None):
-        self.update_wall(current_cell.position, direction, wall_type)
-        neighbour = self.get_neighbour_cell(current_cell, direction)
+    def add_wall(self, position: Position, direction: Directions, wall_type: Type[WALL],
+                 neighbour_wall_type: Type[WALL] = None):
+        self.update_wall(position, direction, wall_type)
+        neighbour = self.get_neighbour_cell(position, direction)
         if neighbour:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
@@ -75,7 +75,7 @@ class Grid:
         for dir_ in Directions:
             if dir_ is -direction:
                 continue
-            neighbour_cell = self.get_neighbour_cell(cell_exit, dir_)
+            neighbour_cell = self.get_neighbour_cell(cell_exit.position, dir_)
             if neighbour_cell:
                 if type(neighbour_cell) is cell.CellExit:
                     continue
@@ -88,11 +88,11 @@ class Grid:
                                       turn_direction: Directions = None,
                                       washed: bool = False) -> list[Directions]:
         if not washed and turn_direction:
-            prev_cell = self.get_neighbour_cell(river_cell, -turn_direction)
+            prev_cell = self.get_neighbour_cell(river_cell.position, -turn_direction)
             if type(prev_cell) is cell.CellRiverMouth or (
                     type(prev_cell) is cell.CellRiver and prev_cell.direction is not turn_direction):
-                if not self.has_known_input_river(prev_cell, -turn_direction):
-                    if self.is_river_is_looped(river_cell, prev_cell):
+                if not self.has_known_input_river(prev_cell.position, -turn_direction):
+                    if self.is_river_is_looped(river_cell.position, prev_cell):
                         return []
                     return [-turn_direction]
                 else:
@@ -125,7 +125,7 @@ class Grid:
         # река не может течь в стену
         if type(river_cell.walls[direction]) not in [wall.WallEmpty, UnknownWall]:
             return False
-        neighbour_cell = self.get_neighbour_cell(river_cell, direction)
+        neighbour_cell = self.get_neighbour_cell(river_cell.position, direction)
         if neighbour_cell is None:
             return False
 
@@ -138,31 +138,32 @@ class Grid:
             return False
 
         # река не имеет развилок
-        if self.has_known_input_river(neighbour_cell, direction):
+        if self.has_known_input_river(neighbour_cell.position, direction):
             return False
 
-        if type(neighbour_cell) is cell.CellRiverMouth and self._is_the_only_allowed_dir(neighbour_cell, direction):
+        if type(neighbour_cell) is cell.CellRiverMouth and \
+                self._is_the_only_allowed_dir(neighbour_cell.position, direction):
             if no_raise:
                 return True
             raise OnlyAllowedDir()
 
         # река не может течь по кругу
-        if self.is_river_is_looped(river_cell, neighbour_cell):
+        if self.is_river_is_looped(river_cell.position, neighbour_cell):
             return False
         return True
 
-    def is_cause_of_isolated_mouth(self, target_cell) -> bool:
+    def is_cause_of_isolated_mouth(self, position: Position) -> bool:
         for direction in Directions:
-            neighbour_cell = self.get_neighbour_cell(target_cell, direction)
+            neighbour_cell = self.get_neighbour_cell(position, direction)
             if neighbour_cell and type(neighbour_cell) is cell.CellRiverMouth:
-                if self._is_the_only_allowed_dir(neighbour_cell, direction):
+                if self._is_the_only_allowed_dir(neighbour_cell.position, direction):
                     return True
         return False
 
-    def has_known_input_river(self, target_cell: CELL, turn_direction: Directions, ignore_dir=False) -> bool:
+    def has_known_input_river(self, position: Position, turn_direction: Directions, ignore_dir=False) -> bool:
         """
 
-        :param target_cell: cell to be checked
+        :param position: position of cell to be checked
         :param turn_direction: direction of turn
         :param ignore_dir: if True all directions will be checked
         :return: True if target_cell has known input river
@@ -170,38 +171,38 @@ class Grid:
         for direction in Directions:
             if not ignore_dir and direction is -turn_direction:
                 continue
-            neighbour_cell = self.get_neighbour_cell(target_cell, direction)
+            neighbour_cell = self.get_neighbour_cell(position, direction)
             if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:
                 return True
 
-    def _is_the_only_allowed_dir(self, target_cell: CELL, turn_direction: Directions) -> bool:
+    def _is_the_only_allowed_dir(self, position: Position, turn_direction: Directions) -> bool:
         """
 
-        :param target_cell: cell to be checked
+        :param position: position of cell to be checked
         :param turn_direction: direction of turn
         :return: True if target cell have only 1 possible direction to input
         """
         for direction in Directions:
             if direction is -turn_direction:
                 continue
-            neighbour_cell = self.get_neighbour_cell(target_cell, direction)
+            neighbour_cell = self.get_neighbour_cell(position, direction)
             if (type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction) or \
                     type(neighbour_cell) is UnknownCell:
                 return False
         return True
 
-    def is_river_is_looped(self, start_cell: cell.CellRiver, previous_cell: CELL) -> bool:
+    def is_river_is_looped(self, start_position: Position, previous_cell: CELL) -> bool:
         """
 
-        :param start_cell: current river cell
+        :param start_position: position to start checking
         :param previous_cell: previous river cell
         :return: True if river is circled
         """
-        if start_cell.x == previous_cell.x and start_cell.y == previous_cell.y:
+        if start_position == previous_cell.position:
             return True
         if type(previous_cell) is cell.CellRiver:
             return self.is_river_is_looped(
-                start_cell, self.get_neighbour_cell(previous_cell, previous_cell.direction))
+                start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
     def merge_with(self, other_field: 'Grid'):

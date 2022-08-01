@@ -36,8 +36,13 @@ class FieldState:
     def get_current_data(self):
         return self.field.get_field(), self.players_positions
 
-    def get_player_cell(self):
+    def get_player_cell(self) -> CELL | None:
         return self.field.get_cell(self.players_positions.get(self.current_player))
+
+    def get_player_pos(self, player_name: str = None) -> Position | None:
+        if not player_name:
+            player_name = self.current_player
+        return self.players_positions.get(player_name)
 
     def remove(self):
         self.parent._remove_leaf(self)
@@ -89,12 +94,12 @@ class FieldState:
 
     def _update_cell_type(self, new_type: Type[CELL] | None, position: Position, direction: Directions = None):
         target_cell = self.field.get_cell(position) if new_type is not cell.CellExit else \
-            self.field.get_neighbour_cell(self.field.get_cell(position), direction)
+            self.field.get_neighbour_cell(position, direction)
         if target_cell is not None and new_type not in [cell.CellRiverMouth, cell.CellRiver]:
-            if self.field.has_known_input_river(target_cell, direction, ignore_dir=True):
+            if self.field.has_known_input_river(target_cell.position, direction, ignore_dir=True):
                 raise UnreachableState()
         if target_cell is not None and new_type is not cell.CellRiver:
-            if self.field.is_cause_of_isolated_mouth(target_cell):
+            if self.field.is_cause_of_isolated_mouth(target_cell.position):
                 raise UnreachableState()
 
         if new_type is None:
@@ -125,7 +130,7 @@ class FieldState:
         self.field.set_walls(position, copy(walls))
 
         if direction:
-            self.field.add_wall(self.field.get_cell(position), direction, wall.WallEmpty)
+            self.field.add_wall(position, direction, wall.WallEmpty)
 
     def _remove_leaf(self, leaf: 'FieldState'):
         self.next_states.remove(leaf)
@@ -135,14 +140,14 @@ class FieldState:
     def _set_parent(self, parent: 'FieldState'):
         self.parent = parent
 
-    def _add_modified_leaf(self, target_cell: CELL, new_type: Type[R_CELL], direction: Directions = None):
-        self.next_states.append(self._get_modified_copy(target_cell, new_type, direction))
+    def _add_modified_leaf(self, position: Position, new_type: Type[R_CELL], direction: Directions = None):
+        self.next_states.append(self._get_modified_copy(position, new_type, direction))
 
-    def _get_modified_copy(self, target_cell: CELL, new_type: Type[CELL], direction: Directions = None):
+    def _get_modified_copy(self, position: Position, new_type: Type[CELL], direction: Directions = None):
         new_state = self.copy()
-        new_state._update_cell_type(new_type, target_cell.position, direction)
-        if new_state.players_positions.get(self.current_player) != target_cell.position:
-            new_state._move_player(target_cell.position)
+        new_state._update_cell_type(new_type, position, direction)
+        if new_state.players_positions.get(self.current_player) != position:
+            new_state._move_player(position)
         return new_state
 
     def _treasure_swap_processor(self, response: dict):
@@ -165,12 +170,12 @@ class FieldState:
         if is_destroyed:
             if not current_cell.walls[direction].breakable:
                 raise UnreachableState()
-            self.field.add_wall(current_cell, direction, wall.WallEmpty)
+            self.field.add_wall(current_cell.position, direction, wall.WallEmpty)
         else:
             if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
                 raise UnreachableState()
             if type(current_cell.walls[direction]) is UnknownWall:
-                self.field.add_wall(current_cell, direction, UnbreakableWall)
+                self.field.add_wall(current_cell.position, direction, UnbreakableWall)
 
         self._pass_processor(response)
 
@@ -182,11 +187,11 @@ class FieldState:
         current_cell = self.get_player_cell()
         if type(current_cell) is not cell.CellRiver:
             return  # todo add cell mechanics activator
-        end_cell = self.field.get_neighbour_cell(current_cell, current_cell.direction)
+        end_cell = self.field.get_neighbour_cell(current_cell.position, current_cell.direction)
         if type(end_cell) not in [type_cell_turn_end, UnknownCell]:
             raise UnreachableState()
         if type(end_cell) is type_cell_turn_end:
-            neighbour_cell = self.field.get_neighbour_cell(current_cell, current_cell.direction)
+            neighbour_cell = self.field.get_neighbour_cell(current_cell.position, current_cell.direction)
             self._move_player(neighbour_cell.position)
         elif type_cell_turn_end is cell.CellRiver:
             final_states = self._calc_possible_river_trajectories(
@@ -211,24 +216,24 @@ class FieldState:
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
         start_cell = self.get_player_cell()
-        new_cell = self.field.get_neighbour_cell(start_cell, turn_direction)
+        new_cell = self.field.get_neighbour_cell(start_cell.position, turn_direction)
         if not is_wall_passed:
             if new_cell:
                 if type(new_cell) is cell.CellRiver and new_cell.direction is -turn_direction:
                     raise UnreachableState()
                 if type(start_cell) is cell.CellRiver and start_cell.direction is turn_direction:
                     raise UnreachableState()
-            self.field.add_wall(start_cell, turn_direction, wall_type)
+            self.field.add_wall(start_cell.position, turn_direction, wall_type)
 
             new_cell = start_cell
             turn_direction = -turn_direction
         elif type_cell_turn_end is not cell.CellExit and type(start_cell) is not cell.CellExit:
-            self.field.add_wall(start_cell, turn_direction, wall.WallEmpty)
+            self.field.add_wall(start_cell.position, turn_direction, wall.WallEmpty)
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
             self._update_cell_type(cell.CellExit, start_cell.position, turn_direction)
-            new_cell = self.field.get_neighbour_cell(start_cell, turn_direction)
+            new_cell = self.field.get_neighbour_cell(start_cell.position, turn_direction)
 
         #  попытка сходить за пределы карты - значит всю ветку можно удалить
         if new_cell is None:
@@ -265,7 +270,7 @@ class FieldState:
         else:
             player_cell = self.get_player_cell()
             possible_directions = self.field.get_possible_river_directions(player_cell)
-            [self._add_modified_leaf(player_cell, type_cell_turn_end, dir_) for dir_ in possible_directions]
+            [self._add_modified_leaf(player_cell.position, type_cell_turn_end, dir_) for dir_ in possible_directions]
 
     def _calc_possible_river_trajectories(
             self, current_cell: UnknownCell | cell.CellRiver,
@@ -291,7 +296,7 @@ class FieldState:
                 riv_dir = new_state.get_player_cell().direction
                 try:
                     new_states2 += new_state._get_possible_leaves(
-                        new_state.field.get_neighbour_cell(new_state.get_player_cell(), riv_dir), riv_dir)
+                        new_state.field.get_neighbour_cell(new_state.get_player_pos(), riv_dir), riv_dir)
                 except UnreachableState:
                     pass
             final_states: list[FieldState] = []
@@ -299,7 +304,7 @@ class FieldState:
                 riv_dir = new_state.get_player_cell().direction
                 try:
                     final_states += new_state._get_possible_leaves(
-                        new_state.field.get_neighbour_cell(new_state.get_player_cell(), riv_dir), riv_dir)
+                        new_state.field.get_neighbour_cell(new_state.get_player_pos(), riv_dir), riv_dir)
                 except UnreachableState:
                     pass
             if not final_states:
@@ -310,7 +315,7 @@ class FieldState:
             new_states2: list[FieldState] = []
             for new_state in new_states:
                 riv_dir = new_state.get_player_cell().direction
-                current_cell = new_state.field.get_neighbour_cell(new_state.get_player_cell(), riv_dir)
+                current_cell = new_state.field.get_neighbour_cell(new_state.get_player_pos(), riv_dir)
                 if type(current_cell) is cell.CellRiverMouth:
                     new_state._move_player(current_cell.position)
                     final_states.append(new_state)
@@ -321,19 +326,19 @@ class FieldState:
                         pass
                     if type(current_cell) is UnknownCell:
                         try:
-                            final_states.append(new_state._get_modified_copy(current_cell, type_cell_turn_end))
+                            final_states.append(new_state._get_modified_copy(current_cell.position, type_cell_turn_end))
                         except UnreachableState:
                             pass
 
             for new_state in new_states2:
                 riv_dir = new_state.get_player_cell().direction
-                current_cell = new_state.field.get_neighbour_cell(new_state.get_player_cell(), riv_dir)
+                current_cell = new_state.field.get_neighbour_cell(new_state.get_player_pos(), riv_dir)
                 if type(current_cell) is cell.CellRiverMouth:
                     new_state._move_player(current_cell.position)
                     final_states.append(new_state)
                 else:
                     try:
-                        final_states.append(new_state._get_modified_copy(current_cell, type_cell_turn_end))
+                        final_states.append(new_state._get_modified_copy(current_cell.position, type_cell_turn_end))
                     except UnreachableState:
                         pass
             if not final_states:
@@ -354,7 +359,7 @@ class FieldState:
         """
 
         if washed:
-            prev_cell = self.field.get_neighbour_cell(current_cell, -turn_direction)
+            prev_cell = self.field.get_neighbour_cell(current_cell.position, -turn_direction)
             if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
                 raise UnreachableState()
 
@@ -363,7 +368,7 @@ class FieldState:
             raise UnreachableState()
 
         if type(current_cell) is UnknownCell:
-            leaves = [self._get_modified_copy(current_cell, cell.CellRiver, direction)
+            leaves = [self._get_modified_copy(current_cell.position, cell.CellRiver, direction)
                       for direction in possible_river_dirs]
             return leaves
         elif type(current_cell) is cell.CellRiver and current_cell.direction in possible_river_dirs:
