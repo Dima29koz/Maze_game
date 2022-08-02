@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Type
 
 from GameEngine.field import cell
@@ -7,6 +6,8 @@ from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState, CELL, WALL
 from bots_ai.player_state import PlayerState
 from bots_ai.exceptions import MatchingError, MergingError
+
+MAX_MATCHABLE_NODES = 8
 
 
 class LeavesMatcher:
@@ -23,19 +24,21 @@ class LeavesMatcher:
         if not other_players:
             return
 
-        other_players_nodes: dict[str, list[FieldState]] = {
-            player: self._get_player_compatible_leaves(player, active_player) for player in other_players}
+        other_players_nodes: list[tuple[str, list[FieldState]]] = [
+            (player, self._get_player_compatible_leaves(player, active_player)) for player in other_players]
+
         for node in active_player_nodes[::-1]:
             try:
-                self._match_node(node, other_players_nodes, active_player)
+                final_nodes: list[FieldState] = []
+                self._match_node(node, other_players_nodes.copy(), active_player, final_nodes)
+                if not final_nodes:
+                    node.remove()
+                for final_node in final_nodes:
+                    if final_node != node:
+                        final_node.set_parent(node)
+                        node.next_states.append(final_node)
             except MatchingError:
-                if node.is_real:  # todo for testing
-                    for row in node.field:
-                        print(row)
                 node.remove()
-
-    def _get_player_leaves(self, player_name: str) -> list[FieldState]:
-        return self._players.get(player_name).get_leaf_nodes()
 
     def _get_player_real_spawn_leaves(self, player_name: str) -> list[FieldState]:
         return self._players.get(player_name).get_real_spawn_leaves()
@@ -46,22 +49,51 @@ class LeavesMatcher:
         return leaves
 
     def _match_node(self, node: FieldState,
-                    other_players: dict[str, list[FieldState]], active_player: str):
-        for player in other_players:
-            matchable_nodes = self._match_with_player(node, other_players[player], active_player)
-            if not matchable_nodes:
-                raise MatchingError()
-            if len(matchable_nodes) > 8:
-                print('len of matched nodes is:', len(matchable_nodes))
-                return
+                    other_players: list[tuple[str, list[FieldState]]],
+                    active_player: str,
+                    final_nodes):
+        player_name, pl_nodes = other_players.pop()
+        merged_nodes = self.merge_node_with_player(node, pl_nodes, active_player, player_name)
 
-            for matchable_node in matchable_nodes:
-                try:
-                    merged_node = node.copy().merge_with(matchable_node)
-                    if merged_node:
-                        node.next_states.append(merged_node)
-                except MergingError:
-                    matchable_node.update_compatibility(active_player, False)
+        if not other_players:
+            final_nodes += merged_nodes
+            return
+        for merged_node in merged_nodes:
+            self._match_node(merged_node, other_players.copy(), active_player, final_nodes)
+
+    def merge_node_with_player(self, node: FieldState, other_pl_nodes: list[FieldState],
+                               active_pl_name: str, other_pl_name: str) -> list[FieldState]:
+        """
+
+        :param node: node to be merged
+        :param other_pl_nodes: nodes for merging
+        :param active_pl_name:
+        :param other_pl_name:
+        :return: list of merged nodes
+        :raises MatchingError: if node is not matchable with other player nodes
+        """
+
+        if node.players_positions.get(other_pl_name):
+            return [node]
+        # node еще не содержит инфы о player
+        matchable_nodes = self._match_with_player(node, other_pl_nodes, active_pl_name)
+        if not matchable_nodes:
+            return []
+        if len(matchable_nodes) > MAX_MATCHABLE_NODES:
+            print('len of matched nodes is:', len(matchable_nodes))
+            return [node]
+
+        merged_nodes: list[FieldState] = []
+        for matchable_node in matchable_nodes:
+            try:
+                merged_node = node.merge_with(matchable_node, other_pl_name)
+                if merged_node:
+                    merged_nodes.append(merged_node)
+            except MergingError:
+                matchable_node.update_compatibility(active_pl_name, False)
+        if not merged_nodes:
+            return []
+        return merged_nodes
 
     def _match_with_player(self, node: FieldState,
                            other_nodes: list[FieldState], active_player: str):

@@ -56,12 +56,14 @@ class SpectatorGUI:
             max_y = self.res[1] // 3
             fields, fields_amount = self.bot_spectator.get_real_spawn_leaves(active_player)
             f, amount = self.bot_spectator.get_fields(active_player)
-            self.draw_leaves(fields, start_y=0)
+            if fields_amount:
+                self.draw_leaves(fields, start_y=0)
             self.draw_text('real spawn leaves', f'{fields_amount} / {amount}', 0)
             for i, other_player in enumerate(self.bot_spectator.get_other_players(active_player), 1):
-                fields, fields_amount = self.bot_spectator.get_compatible_leaves(active_player, other_player, 40)
+                fields, fields_amount = self.bot_spectator.get_compatible_leaves(active_player, other_player)
                 f, amount = self.bot_spectator.get_fields(other_player)
-                self.draw_leaves(fields, start_y=max_y * 1)
+                if fields_amount:
+                    self.draw_leaves(fields, start_y=max_y * i)
                 self.draw_text('other player comp. leaves', f'{fields_amount} / {amount}', i)
 
         pygame.display.flip()
@@ -76,16 +78,16 @@ class SpectatorGUI:
         dx = len(self.field.field[0]) * self.tile_size + DIST
         pygame.draw.line(self.sc, (255, 0, 0),
                          (dx, start_y), (self.res[0], start_y), 2)
-        f_size_x = len(fields[0][0][0])
-        f_size_y = len(fields[0][0])
+        cols = len(fields[0][0][0])
+        rows = len(fields[0][0])
         i = 0
-        for field in fields:
-            start_x = dx + (f_size_x * TILE_LEAF + DIST) * i
-            if start_x + f_size_x * TILE_LEAF + DIST > RES[0]:
+        for field, players in fields:
+            start_x = dx + (cols * TILE_LEAF + DIST) * i
+            if start_x + cols * TILE_LEAF + DIST > RES[0]:
                 i = 0
-                start_y += f_size_y * TILE_LEAF + DIST
-                start_x = dx + (f_size_x * TILE_LEAF + DIST) * i
-            self.painter.draw(grid=field[0], players=field[1],
+                start_y += rows * TILE_LEAF + DIST
+                start_x = dx + (cols * TILE_LEAF + DIST) * i
+            self.painter.draw(grid=field, players=players,
                               start_x=start_x, start_y=start_y, tile_size=TILE_LEAF, pl=True)
             i += 1
 

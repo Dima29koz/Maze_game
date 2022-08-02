@@ -1,10 +1,9 @@
 from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Directions, Actions
-from bots_ai.field_obj import UnknownCell
-from bots_ai.field_state import FieldState
 from bots_ai.initial_generator import InitGenerator
 from bots_ai.leaves_matcher import LeavesMatcher
 from bots_ai.player_state import PlayerState
+from bots_ai.utils import is_node_is_real, is_node_is_valid
 
 
 class BotAI:
@@ -22,17 +21,18 @@ class BotAI:
         # удалить все свои листы с правильным спавном, которые противоречат листам противников
         self.leaves_matcher.match_real_spawn_leaves(player_name)
         if not self.has_real_field(player_name):
-            print('matcher err!!!')
+            print(f'{player_name} matcher err!!!')
 
     def process_turn_resp(self, raw_response: dict):
         action = Actions[raw_response.get('action')]
         direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
-        self.players.get(player_name).process_turn(player_name, action, direction, response)
+        for player in self.players:
+            self.players.get(player).process_turn(player_name, action, direction, response)
 
-        if not self.has_real_field(player_name):
-            print('proc err!!!')
+            if not self.has_real_field(player_name):
+                print('proc err!!!')
 
         # at the turn end:
         # удалить все свои листы, которые противоречат листам противников,
@@ -44,7 +44,7 @@ class BotAI:
         flag = False
         for node in self.players.get(player_name).get_leaf_nodes():
             cropped_field = [row[1:-1] for row in node.field.get_field()[1:-1]]
-            if self.is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
+            if is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
                 node.is_real = True  # todo
                 flag = True
         return flag
@@ -54,52 +54,11 @@ class BotAI:
 
     def has_bad_nodes(self, player_name: str):
         for node in self.players.get(player_name).get_leaf_nodes():
-            if not self.is_node_is_valid(node):
+            if not is_node_is_valid(node):
                 for row in node.field:
                     print(row)
                 return True
         return False
-
-    @staticmethod
-    def is_node_is_real(
-            n_field: list[list[cell.Cell | cell.CellRiver | None]],
-            real_field: list[list[cell.Cell | cell.CellRiver | None]]):
-        for y, row in enumerate(real_field):
-            for x, real_cell in enumerate(row):
-                target_cell = n_field[y][x]
-                if real_cell is None and target_cell is None:
-                    continue
-                if target_cell is None and type(real_cell) is cell.CellExit:
-                    continue
-                if type(target_cell) is UnknownCell:
-                    continue
-                if type(target_cell) is type(real_cell):
-                    if type(target_cell) is cell.CellRiver:
-                        idx = real_cell.river.index(real_cell)
-                        if target_cell.direction is not (real_cell - real_cell.river[idx + 1]):
-                            return False
-                    continue
-                else:
-                    return False
-        return True
-
-    @staticmethod
-    def is_node_is_valid(node: FieldState):
-        for row in node.field.get_field():
-            for cell_obj in row:
-                if type(cell_obj) is cell.CellRiverMouth:
-                    may_have_input = False
-                    for direction in Directions:
-                        x, y = direction.calc(cell_obj.x, cell_obj.y)
-                        neighbour = node.field[y][x]
-                        if neighbour:
-                            if type(neighbour) is cell.CellRiver and neighbour.direction is -direction:
-                                may_have_input = True
-                            if type(neighbour) is UnknownCell:
-                                may_have_input = True
-                    if not may_have_input:
-                        return False
-        return True
 
 
 if __name__ == "__main__":

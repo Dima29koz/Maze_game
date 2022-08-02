@@ -45,6 +45,8 @@ def setup_game_local():
     # rules['generator_rules']['river_rules']['has_river'] = False
     # rules['generator_rules']['walls']['has_walls'] = False
     # rules['generator_rules']['exits_amount'] = 20
+    # rules['generator_rules']['rows'] = 7
+    # rules['generator_rules']['cols'] = 7
     rules['generator_rules']['is_separated_armory'] = True
     # rules['generator_rules']['seed'] = random.random()
     rules['generator_rules']['seed'] = 5
@@ -54,10 +56,12 @@ def setup_game_local():
     # rules['generator_rules']['river_rules']['max_coverage'] = 100
     spawn: dict[str, int] = {'x': 1, 'y': 1}
     spawn2: dict[str, int] = {'x': 2, 'y': 3}
+    spawn3: dict[str, int] = {'x': 4, 'y': 2}
 
     players = [
         (spawn, 'Skipper'),
         (spawn2, 'Tester'),
+        (spawn3, 'player'),
     ]
     return rules, players
 

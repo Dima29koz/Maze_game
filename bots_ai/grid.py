@@ -205,7 +205,7 @@ class Grid:
                 start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
-    def merge_with(self, other_field: 'Grid'):
+    def merge_with(self, other_field: 'Grid', remaining_obj_amount: dict[Type[R_CELL], int]):
         is_changed = False
         for y, row in enumerate(self._field):
             for x, self_cell in enumerate(row):
@@ -222,6 +222,11 @@ class Grid:
                         if not self.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
                             raise MergingError()
                     is_changed = True
+                    if type(other_cell) in remaining_obj_amount:
+                        if remaining_obj_amount.get(type(other_cell)) > 0:
+                            remaining_obj_amount[type(other_cell)] -= 1
+                        else:
+                            raise MergingError()
                     self.merge_cells(other_cell, x, y)
                 new_walls = self.merge_walls(self._field[y][x].walls.copy(), other_cell.walls)
                 if new_walls:

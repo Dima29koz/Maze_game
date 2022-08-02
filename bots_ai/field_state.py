@@ -48,6 +48,8 @@ class FieldState:
         self.parent._remove_leaf(self)
 
     def process_action(self, current_player: str, action: Actions, direction: Directions | None, response: dict):
+        if not self.players_positions.get(current_player):
+            return
         self.current_player = current_player
         try:
             match action:
@@ -137,7 +139,7 @@ class FieldState:
         if not self.next_states and self.parent:
             self.parent._remove_leaf(self)
 
-    def _set_parent(self, parent: 'FieldState'):
+    def set_parent(self, parent: 'FieldState'):
         self.parent = parent
 
     def _add_modified_leaf(self, position: Position, new_type: Type[R_CELL], direction: Directions = None):
@@ -197,7 +199,7 @@ class FieldState:
             final_states = self._calc_possible_river_trajectories(
                 end_cell, type_cell_turn_end, type_cell_turn_end, False, current_cell.direction)
             if not (len(final_states) == 1 and final_states[0] is self):
-                [state._set_parent(self) for state in final_states]
+                [state.set_parent(self) for state in final_states]
                 self.next_states = final_states
         elif type_cell_turn_end is cell.CellRiverMouth:
             self._update_cell_type(type_cell_turn_end, end_cell.position)
@@ -258,7 +260,7 @@ class FieldState:
         final_states = self._calc_possible_river_trajectories(
             new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, turn_direction)
         if not (len(final_states) == 1 and final_states[0] is self):
-            [state._set_parent(self) for state in final_states]
+            [state.set_parent(self) for state in final_states]
             self.next_states = final_states
 
     def _info_processor(self, response: dict):
@@ -377,7 +379,8 @@ class FieldState:
         else:
             raise UnreachableState()
 
-    def merge_with(self, pl_node: 'FieldState'):
-        if self.field.merge_with(pl_node.field):
-            return self
-        return
+    def merge_with(self, other_node: 'FieldState', other_player: str):
+        merged_node = self.copy()
+        merged_node.field.merge_with(other_node.field, merged_node.remaining_obj_amount)
+        merged_node.players_positions[other_player] = other_node.get_player_pos(other_player)
+        return merged_node

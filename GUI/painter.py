@@ -130,7 +130,7 @@ class Painter:
         if player.is_active:
             pygame.draw.circle(self.sc, (255, 255, 255),
                                (x, y), ts // 3.5)
-        pygame.draw.circle(self.sc, pygame.Color(abs(hash(name)) % 255, 155, 155),
+        pygame.draw.circle(self.sc, self.get_player_color(name),
                            (x, y), ts // 4)
 
         if player.treasure:
@@ -142,14 +142,29 @@ class Painter:
             return
         x, y = pl_pos.get()
         x, y = x * ts + dx, y * ts + dy
-        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+        pygame.draw.line(self.sc, self.get_player_color(player_name),
                          (x + 2, y + 2), (x + ts - 2, y + 2), 2)
 
-        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+        pygame.draw.line(self.sc, self.get_player_color(player_name),
                          (x + ts - 2, y + 2), (x + ts - 2, y + ts - 4), 2)
 
-        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+        pygame.draw.line(self.sc, self.get_player_color(player_name),
                          (x + ts - 2, y + ts - 4), (x + 2, y + ts - 4), 2)
 
-        pygame.draw.line(self.sc, pygame.Color(255, 0, 0),
+        pygame.draw.line(self.sc, self.get_player_color(player_name),
                          (x + 2, y + ts - 4), (x + 2, y + 2), 2)
+
+    @staticmethod
+    def get_player_color(player_name: str):
+        match player_name:
+            case 'Skipper':
+                return pygame.Color(255, 1, 1)
+            case 'Tester':
+                return pygame.Color(1, 255, 1)
+            case 'player':
+                return pygame.Color(1, 1, 255)
+            case _:
+                return pygame.Color(
+                    abs(hash(player_name)) % 255,
+                    abs(hash(player_name)) % 255,
+                    abs(hash(player_name)) % 255)
