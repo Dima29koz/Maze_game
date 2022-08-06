@@ -8,6 +8,7 @@ from GameEngine.globalEnv.types import Position
 from bots_ai.exceptions import UnreachableState
 from bots_ai.field_obj import UnknownCell, UnknownWall, UnbreakableWall, NoneCell
 from bots_ai.grid import Grid, R_CELL, R_WALL, CELL, WALL
+from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
 class FieldState:
@@ -19,6 +20,7 @@ class FieldState:
                  remaining_obj_amount: dict[Type[R_CELL], int],
                  enemy_compatibility: dict[str, bool],
                  players_positions: dict[str, Position | None],
+                 preprocessed_rules: RulesPreprocessor,
                  is_real_spawn: bool = False,
                  parent: 'FieldState' = None, current_player: str = ''):
         self.field = field
@@ -28,6 +30,7 @@ class FieldState:
         self.parent: FieldState | None = parent
         self.is_real_spawn = is_real_spawn
         self.enemy_compatibility = enemy_compatibility
+        self.preprocessed_rules = preprocessed_rules
 
         self.current_player: str = current_player
 
@@ -74,6 +77,7 @@ class FieldState:
             self.remaining_obj_amount.copy(),
             self.enemy_compatibility.copy(),
             self.players_positions.copy() if not position else self.update_player_position(player_name, position),
+            self.preprocessed_rules,
             self.is_real_spawn,
             self, self.current_player)
 
@@ -95,8 +99,7 @@ class FieldState:
         self.players_positions[self.current_player] = position
 
     def _update_cell_type(self, new_type: Type[CELL], position: Position, direction: Directions = None):
-        target_cell = self.field.get_cell(position) if new_type is not cell.CellExit else \
-            self.field.get_neighbour_cell(position, direction)
+        target_cell = self.field.get_cell(position)
         if type(target_cell) is not NoneCell and new_type not in [cell.CellRiverMouth, cell.CellRiver]:
             if self.field.has_known_input_river(target_cell.position, direction, ignore_dir=True):
                 raise UnreachableState()
@@ -111,7 +114,7 @@ class FieldState:
             return
 
         if new_type is cell.CellExit:
-            if type(target_cell) not in [UnknownCell, NoneCell]:
+            if type(target_cell) not in self.preprocessed_rules.exit_location:
                 raise UnreachableState()
             self.field.create_exit(direction, position)
             return
@@ -227,6 +230,8 @@ class FieldState:
                 raise UnreachableState()
             if type(start_cell) is cell.CellRiver and start_cell.direction is turn_direction:
                 raise UnreachableState()
+            if type(new_cell) is NoneCell:
+                wall_type = wall.WallOuter
             self.field.add_wall(start_cell.position, turn_direction, wall_type)
 
             new_cell = start_cell
@@ -236,8 +241,8 @@ class FieldState:
 
         # хотим пройти в выход, но он еще не создан
         if type_cell_turn_end is cell.CellExit and type(new_cell) is not cell.CellExit:
-            self._update_cell_type(cell.CellExit, start_cell.position, turn_direction)
-            new_cell = self.field.get_neighbour_cell(start_cell.position, turn_direction)
+            self._update_cell_type(cell.CellExit, new_cell.position, -turn_direction)
+            new_cell = self.field.get_cell(new_cell.position)
 
         #  попытка сходить за пределы карты - значит всю ветку можно удалить
         if type(new_cell) is NoneCell:

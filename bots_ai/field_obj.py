@@ -28,3 +28,11 @@ class UnknownCell(cell.Cell):
 class NoneCell(cell.Cell):
     def __init__(self, x: int, y: int):
         super().__init__(x, y)
+        self.walls: dict[Directions, UnknownWall] = {
+            Directions.top: UnknownWall(),
+            Directions.right: UnknownWall(),
+            Directions.bottom: UnknownWall(),
+            Directions.left: UnknownWall()}
+
+    def __repr__(self):
+        return '='

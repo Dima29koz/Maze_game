@@ -68,19 +68,19 @@ class Grid:
     def create_exit(self, direction: Directions, position: Position) -> None:
         """
 
-        :param direction: direction of exit wall
-        :param position: position of cell which neighbour`s to exit
+        :param direction: direction of entrance wall
+        :param position: position of exit cell
         """
-        cell_exit = cell.CellExit(*direction.calc(position.x, position.y), -direction)
+        cell_exit = cell.CellExit(position.x, position.y, direction)
         for dir_ in Directions:
-            if dir_ is -direction:
+            if dir_ is direction:
                 continue
-            neighbour_cell = self.get_neighbour_cell(cell_exit.position, dir_)
+            neighbour_cell = self.get_neighbour_cell(position, dir_)
             if neighbour_cell and type(neighbour_cell) is not NoneCell:
                 if type(neighbour_cell) is cell.CellExit:
                     continue
                 self.update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
-        self.get_cell(position).add_wall(direction, wall.WallExit())
+        self.get_neighbour_cell(position, direction).add_wall(-direction, wall.WallExit())
         self.set_cell(cell_exit, cell_exit.position)
 
     def get_possible_river_directions(self,
@@ -205,7 +205,9 @@ class Grid:
                 start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
-    def merge_with(self, other_field: 'Grid', remaining_obj_amount: dict[Type[R_CELL], int]):
+    def merge_with(self,
+                   other_field: 'Grid',
+                   remaining_obj_amount: dict[Type[R_CELL], int]):
         is_changed = False
         for y, row in enumerate(self._field):
             for x, self_cell in enumerate(row):

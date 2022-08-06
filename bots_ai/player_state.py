@@ -7,7 +7,7 @@ from bots_ai.rules_preprocessor import RulesPreprocessor
 class PlayerState:
     def __init__(self, init_generator: InitGenerator, name: str):
         self.root = init_generator.get_start_state(name)
-        self.preprocessed_rules = init_generator.rules_preprocessor
+        self.preprocessed_rules: RulesPreprocessor = init_generator.rules_preprocessor
         self.name = name
 
     def process_turn(self, player_name: str, action: Actions, direction: Directions | None, response: dict):

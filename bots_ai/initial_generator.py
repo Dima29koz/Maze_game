@@ -1,8 +1,9 @@
 from typing import Type
 
 from GameEngine.field import cell
+from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_obj import UnknownCell, NoneCell
+from bots_ai.field_obj import UnknownCell, NoneCell, UnbreakableWall
 from bots_ai.field_state import FieldState
 from bots_ai.grid import Grid
 from bots_ai.rules_preprocessor import RulesPreprocessor
@@ -26,7 +27,8 @@ class InitGenerator:
         root_state = FieldState(
             Grid(field), self.get_unique_obj_amount(),
             {player_name: True for player_name in other_players},
-            {player_name: None for player_name in self._players}
+            {player_name: None for player_name in self._players},
+            self.rules_preprocessor
         )
         for position in self._spawn_points:
             next_state = root_state.copy(player_name, position)
@@ -58,11 +60,26 @@ class InitGenerator:
         yr = range(1, self._size_y + 1)
         return [Position(x, y) for y in yr for x in xr]
 
-    def _generate_start_field(self):
+    def _generate_start_field(self) -> list[list[UnknownCell | NoneCell]]:
         none_cols = [0, self._cols - 1]
         none_rows = [0, self._rows - 1]
 
         field = [[UnknownCell(col, row)
                   if row not in none_rows and col not in none_cols else NoneCell(col, row)
                   for col in range(self._cols)] for row in range(self._rows)]
+        self._create_border_walls(field)
         return field
+
+    @staticmethod
+    def _create_border_walls(field: list[list[UnknownCell | NoneCell]]):
+        for row in field:
+            for cell_obj in row:
+                if type(cell_obj) is NoneCell:
+                    for direction in Directions:
+                        x, y = direction.calc(cell_obj.x, cell_obj.y)
+                        try:
+                            neighbour = field[y][x]
+                        except IndexError:
+                            neighbour = None
+                        if neighbour and type(neighbour) is not NoneCell:
+                            neighbour.add_wall(-direction, UnbreakableWall())
