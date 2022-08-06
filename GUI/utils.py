@@ -1,3 +1,4 @@
+import pygame
 from pygame.locals import *
 
 from GameEngine.field import cell as c
@@ -78,3 +79,18 @@ def get_wall_color(wall):
         return 200, 200, 200
     else:
         return 'darkslategray'
+
+
+def get_player_color(player_name: str):
+    match player_name:
+        case 'Skipper':
+            return pygame.Color(255, 1, 1)
+        case 'Tester':
+            return pygame.Color(1, 255, 1)
+        case 'player':
+            return pygame.Color(1, 1, 255)
+        case _:
+            return pygame.Color(
+                abs(hash(player_name)) % 255,
+                abs(hash(player_name)) % 255,
+                abs(hash(player_name)) % 255)

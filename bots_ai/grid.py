@@ -5,7 +5,7 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
 from bots_ai.exceptions import MergingError, OnlyAllowedDir
-from bots_ai.field_obj import UnknownCell, UnbreakableWall, UnknownWall
+from bots_ai.field_obj import UnknownCell, UnbreakableWall, UnknownWall, NoneCell
 
 R_CELL = Union[
     cell.Cell, cell.CellRiver, cell.CellRiverMouth,
@@ -13,7 +13,7 @@ R_CELL = Union[
     cell.CellArmoryExplosive, cell.CellArmoryWeapon,
 ]
 
-CELL = Union[R_CELL, UnknownCell]
+CELL = Union[R_CELL, UnknownCell, NoneCell]
 
 R_WALL = Union[
     wall.WallEmpty, wall.WallExit, wall.WallOuter,
@@ -24,13 +24,13 @@ WALL = Union[R_WALL, UnbreakableWall, UnknownWall]
 
 
 class Grid:
-    def __init__(self, field: list[list[CELL | None]]):
+    def __init__(self, field: list[list[CELL]]):
         self._field = field
 
-    def get_field(self) -> list[list[CELL | None]]:
+    def get_field(self) -> list[list[CELL]]:
         return self._field
 
-    def get_cell(self, position: Position) -> CELL | None:
+    def get_cell(self, position: Position) -> CELL:
         return self._field[position.y][position.x]
 
     def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
@@ -40,7 +40,7 @@ class Grid:
         except IndexError:
             return None
 
-    def set_cell(self, new_cell: CELL | None, position: Position):
+    def set_cell(self, new_cell: CELL, position: Position):
         self._field[position.y][position.x] = new_cell
 
     def copy(self) -> 'Grid':
@@ -53,7 +53,7 @@ class Grid:
                  neighbour_wall_type: Type[WALL] = None):
         self.update_wall(position, direction, wall_type)
         neighbour = self.get_neighbour_cell(position, direction)
-        if neighbour:
+        if type(neighbour) is not NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
             self.update_wall(neighbour.position, -direction, neighbour_wall_type)
@@ -76,7 +76,7 @@ class Grid:
             if dir_ is -direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(cell_exit.position, dir_)
-            if neighbour_cell:
+            if neighbour_cell and type(neighbour_cell) is not NoneCell:
                 if type(neighbour_cell) is cell.CellExit:
                     continue
                 self.update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
@@ -126,7 +126,7 @@ class Grid:
         if type(river_cell.walls[direction]) not in [wall.WallEmpty, UnknownWall]:
             return False
         neighbour_cell = self.get_neighbour_cell(river_cell.position, direction)
-        if neighbour_cell is None:
+        if type(neighbour_cell) is NoneCell:
             return False
 
         # река не может течь в сушу
@@ -210,12 +210,12 @@ class Grid:
         for y, row in enumerate(self._field):
             for x, self_cell in enumerate(row):
                 other_cell = other_field._field[y][x]
-                if self_cell is None and other_cell is None:
+                if type(self_cell) is NoneCell and type(other_cell) is NoneCell:
                     continue
-                if self_cell is None and type(other_cell) is cell.CellExit:
+                if type(self_cell) is NoneCell and type(other_cell) is cell.CellExit:
                     is_changed = True
                     self.merge_cells(other_cell, x, y, no_walls=True)
-                if type(self_cell) is cell.CellExit and other_cell is None:
+                if type(self_cell) is cell.CellExit and type(other_cell) is NoneCell:
                     continue
                 if type(self_cell) is UnknownCell and type(other_cell) is not UnknownCell:
                     if type(other_cell) is cell.CellRiver:
@@ -237,7 +237,7 @@ class Grid:
             return self
         return
 
-    def merge_cells(self, other_cell: CELL | None, x: int, y: int, no_walls: bool = False):
+    def merge_cells(self, other_cell: CELL, x: int, y: int, no_walls: bool = False):
         self._field[y][x] = copy(other_cell)
         if not no_walls:
             new_walls = self.merge_walls(self._field[y][x].walls.copy(), other_cell.walls)

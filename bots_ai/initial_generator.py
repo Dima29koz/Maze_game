@@ -2,7 +2,7 @@ from typing import Type
 
 from GameEngine.field import cell
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_obj import UnknownCell
+from bots_ai.field_obj import UnknownCell, NoneCell
 from bots_ai.field_state import FieldState
 from bots_ai.grid import Grid
 from bots_ai.rules_preprocessor import RulesPreprocessor
@@ -63,6 +63,6 @@ class InitGenerator:
         none_rows = [0, self._rows - 1]
 
         field = [[UnknownCell(col, row)
-                  if row not in none_rows and col not in none_cols else None
+                  if row not in none_rows and col not in none_cols else NoneCell(col, row)
                   for col in range(self._cols)] for row in range(self._rows)]
         return field
