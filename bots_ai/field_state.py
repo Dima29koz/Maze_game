@@ -142,6 +142,12 @@ class FieldState:
     def set_parent(self, parent: 'FieldState'):
         self.parent = parent
 
+    def set_next_states(self, next_states: list['FieldState']):
+        for state in next_states:
+            if state is not self:
+                state.set_parent(self)
+                self.next_states.append(state)
+
     def _add_modified_leaf(self, position: Position, new_type: Type[R_CELL], direction: Directions = None):
         self.next_states.append(self._get_modified_copy(position, new_type, direction))
 
@@ -259,9 +265,7 @@ class FieldState:
 
         final_states = self._calc_possible_river_trajectories(
             new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, turn_direction)
-        if not (len(final_states) == 1 and final_states[0] is self):
-            [state.set_parent(self) for state in final_states]
-            self.next_states = final_states
+        self.set_next_states(final_states)
 
     def _info_processor(self, response: dict):
         type_cell_turn_end: Type[R_CELL] = response.get('type_cell_at_end_of_turn')

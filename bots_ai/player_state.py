@@ -1,10 +1,13 @@
 from GameEngine.globalEnv.enums import Actions, Directions
 from bots_ai.field_state import FieldState
+from bots_ai.initial_generator import InitGenerator
+from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
 class PlayerState:
-    def __init__(self, tree_root: FieldState, name: str):
-        self.root = tree_root
+    def __init__(self, init_generator: InitGenerator, name: str):
+        self.root = init_generator.get_start_state(name)
+        self.preprocessed_rules = init_generator.rules_preprocessor
         self.name = name
 
     def process_turn(self, player_name: str, action: Actions, direction: Directions | None, response: dict):

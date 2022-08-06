@@ -1,11 +1,11 @@
 """runs game local for testing GameEngine"""
-import random
 
 import requests
 
 from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions, Directions
+from GameEngine.globalEnv.types import Position
 
 from GameEngine.rules import rules as ru
 from bots_ai.core import BotAI
@@ -85,7 +85,9 @@ def main(room_id: int = None):
     for i, player in enumerate(players, 1):
         field.spawn_player(*player, turn=i)
 
-    bot = BotAI(rules, players)
+    players_: dict[str, Position] = {
+        player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in players}
+    bot = BotAI(rules, players_)
     bot.real_field = field.field
     gui = SpectatorGUI(field, bot)
 

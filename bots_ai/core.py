@@ -1,5 +1,6 @@
 from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Directions, Actions
+from GameEngine.globalEnv.types import Position
 from bots_ai.initial_generator import InitGenerator
 from bots_ai.leaves_matcher import LeavesMatcher
 from bots_ai.player_state import PlayerState
@@ -7,11 +8,11 @@ from bots_ai.utils import is_node_is_real, is_node_is_valid
 
 
 class BotAI:
-    def __init__(self, game_rules: dict, players: list[tuple[dict[str, int | None], str]]):
-        init_generator = InitGenerator(game_rules, [player[1] for player in players])
+    def __init__(self, game_rules: dict, players: dict[str, Position]):
+        init_generator = InitGenerator(game_rules, players)
         self.players: dict[str, PlayerState] = {
-            player[1]: PlayerState(init_generator.get_start_state(player), player[1])
-            for player in players}
+            player_name: PlayerState(init_generator, player_name)
+            for player_name in players.keys()}
         self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players)
 
         self.real_field: list[list[cell.Cell | None]] = []

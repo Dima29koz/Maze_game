@@ -1,4 +1,3 @@
-from copy import copy
 from typing import Type
 
 from GameEngine.field import cell
@@ -6,10 +5,11 @@ from GameEngine.globalEnv.types import Position
 from bots_ai.field_obj import UnknownCell
 from bots_ai.field_state import FieldState
 from bots_ai.grid import Grid
+from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
 class InitGenerator:
-    def __init__(self, game_rules: dict, players: list[str]):
+    def __init__(self, game_rules: dict, players: dict[str, Position]):
         self._rules = game_rules
         self._players = players
         self._size_x: int = game_rules.get('generator_rules').get('cols')
@@ -18,20 +18,19 @@ class InitGenerator:
         self._rows = self._size_y + 2
         self._unique_objs = self._gen_field_objs_amount()
         self._spawn_points = self._gen_spawn_points()
+        self.rules_preprocessor = RulesPreprocessor(game_rules)
 
-    def get_start_state(self, player):
-        other_players = copy(self._players)
-        other_players.remove(player[1])
+    def get_start_state(self, player_name: str):
+        other_players = [pl_name for pl_name in self._players.keys()]
         field = self._generate_start_field()
         root_state = FieldState(
             Grid(field), self.get_unique_obj_amount(),
             {player_name: True for player_name in other_players},
             {player_name: None for player_name in self._players}
         )
-        real_spawn = (player[0].get('x'), player[0].get('y'))
-        for point in self._spawn_points:
-            next_state = root_state.copy(player[1], Position(*point))
-            if point == real_spawn:
+        for position in self._spawn_points:
+            next_state = root_state.copy(player_name, position)
+            if position == self._players.get(player_name):
                 next_state.is_real_spawn = True
             root_state.next_states.append(next_state)
         return root_state
@@ -57,7 +56,7 @@ class InitGenerator:
     def _gen_spawn_points(self):
         xr = range(1, self._size_x + 1)
         yr = range(1, self._size_y + 1)
-        return [(x, y) for y in yr for x in xr]
+        return [Position(x, y) for y in yr for x in xr]
 
     def _generate_start_field(self):
         none_cols = [0, self._cols - 1]
