@@ -45,7 +45,7 @@ class Painter:
         x, y = cell.x * ts + dx, cell.y * ts + dy
         pygame.draw.rect(self.sc, pygame.Color(get_cell_color(cell)),
                          (x + 2, y + 2, ts - 2, ts - 2))
-        if type(cell) in [c.CellRiver, c.CellRiverMouth]:
+        if type(cell) in [c.CellRiver, c.CellRiverMouth, c.CellRiverBridge]:
             self.draw_river_dir(cell, x, y, ts)
         if type(cell) == c.CellClinic:
             self.draw_clinic(x, y, ts)

@@ -84,7 +84,7 @@ class CellRiver(Cell):
         return self.river[idx + 1]
 
     def active(self, previous_cell):
-        if self.__is_same_river(previous_cell):
+        if self._is_same_river(previous_cell):
             return self
         else:
             idx = self.river.index(self)
@@ -95,7 +95,7 @@ class CellRiver(Cell):
         index = self.river.index(self)
         return self.river[index + 1]
 
-    def __is_same_river(self, previous_cell):
+    def _is_same_river(self, previous_cell):
         if isinstance(previous_cell, CellRiver) and previous_cell is not self:
             if previous_cell in self.river:
                 if abs(self.river.index(self) - self.river.index(previous_cell)) == 1:
@@ -130,6 +130,14 @@ class CellRiver(Cell):
                 return '←'
             case _:
                 return 'r'
+
+
+class CellRiverBridge(CellRiver):
+    def __init__(self, x: int, y: int, direction: Directions = None):
+        super().__init__(x, y, direction)
+
+    def active(self, previous_cell):
+        return self
 
 
 class CellRiverMouth(CellRiver):

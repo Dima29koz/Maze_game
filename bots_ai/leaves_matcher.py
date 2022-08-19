@@ -33,10 +33,8 @@ class LeavesMatcher:
                 self._match_node(node, other_players_nodes.copy(), active_player, final_nodes)
                 if not final_nodes:
                     node.remove()
-                for final_node in final_nodes:
-                    if final_node != node:
-                        final_node.set_parent(node)
-                        node.next_states.append(final_node)
+                    continue
+                node.set_next_states(final_nodes)
             except MatchingError:
                 node.remove()
 
@@ -90,7 +88,9 @@ class LeavesMatcher:
                 if merged_node:
                     merged_nodes.append(merged_node)
             except MergingError:
-                matchable_node.update_compatibility(active_pl_name, False)
+                # matchable_node.update_compatibility(active_pl_name, False)
+                # todo bug here можно представить в виде списка листов с которыми матчится
+                pass
         if not merged_nodes:
             return []
         return merged_nodes

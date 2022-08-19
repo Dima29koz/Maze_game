@@ -8,6 +8,7 @@ from GameEngine.field.wall import *
 info = {
     Cell: {'name': {'ru': 'суша'}, 'mechanics': {'ru': ''}},
     CellRiver: {'name': {'ru': 'река'}, 'mechanics': {'ru': ''}},
+    CellRiverBridge: {'name': {'ru': 'мост'}, 'mechanics': {'ru': ''}},
     CellRiverMouth: {'name': {'ru': 'устье'}, 'mechanics': {'ru': ''}},
     CellExit: {'name': {'ru': 'выход'}, 'mechanics': {'ru': ''}},
     CellClinic: {'name': {'ru': 'Медпункт'}, 'mechanics': {'ru': 'запас здоровья восстановлен'}},

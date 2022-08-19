@@ -13,7 +13,8 @@ from bots_ai.core import BotAI
 
 def get_game_data(room_id: int) -> dict | None:
     try:
-        response = requests.get(f'http://192.168.1.118:5000/api/room_data/{room_id}')
+        response = requests.get(f'http://127.0.0.1:5000/api/room_data/{room_id}')
+        # response = requests.get(f'http://192.168.1.118:5000/api/room_data/{room_id}')
         return response.json()
     except Exception as ex:
         print(ex)
@@ -30,11 +31,11 @@ def process_turn(game, bot, action, direction, rules):
     print(response.get_turn_info(), response.get_info())
     player_name = response.get_turn_info().get('player_name')
     # print(response.get_raw_info().get('response'))
-    bot.process_turn_resp(response.get_raw_info())
-    print('spawns: ', bot.get_spawn_amount(player_name))
+    # bot.process_turn_resp(response.get_raw_info())
+    # print('spawns: ', bot.get_spawn_amount(player_name))
     # print('Has bad nodes - ', bot.has_bad_nodes(player_name))
 
-    bot.turn_prepare(game.get_current_player().name)
+    # bot.turn_prepare(game.get_current_player().name)
     if game.is_win_condition(rules):
         return False
     return True
@@ -49,19 +50,19 @@ def setup_game_local():
     # rules['generator_rules']['cols'] = 7
     rules['generator_rules']['is_separated_armory'] = True
     # rules['generator_rules']['seed'] = random.random()
-    rules['generator_rules']['seed'] = 5
+    rules['generator_rules']['seed'] = 6
     rules['gameplay_rules']['fast_win'] = False
     rules['gameplay_rules']['diff_outer_concrete_walls'] = True
     # rules['generator_rules']['river_rules']['min_coverage'] = 90
     # rules['generator_rules']['river_rules']['max_coverage'] = 100
-    spawn: dict[str, int] = {'x': 1, 'y': 1}
+    spawn: dict[str, int] = {'x': 3, 'y': 2}
     spawn2: dict[str, int] = {'x': 2, 'y': 3}
     spawn3: dict[str, int] = {'x': 4, 'y': 2}
 
     players = [
         (spawn, 'Skipper'),
-        (spawn2, 'Tester'),
-        (spawn3, 'player'),
+        # (spawn2, 'Tester'),
+        # (spawn3, 'player'),
     ]
     return rules, players
 
@@ -87,8 +88,9 @@ def main(room_id: int = None):
 
     players_: dict[str, Position] = {
         player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in players}
-    bot = BotAI(rules, players_)
-    bot.real_field = field.field
+    # bot = BotAI(rules, players_)
+    bot = None
+    # bot.real_field = field.field
     gui = SpectatorGUI(field, bot)
 
     state = Actions.move
@@ -98,8 +100,8 @@ def main(room_id: int = None):
         act = (Actions.info, None) if room_id is None else next(turns)
         response = game.field.action_handler(*act)
         print(response.get_turn_info(), response.get_info())
-        bot.process_turn_resp(response.get_raw_info())
-        bot.turn_prepare(game.get_current_player().name)
+        # bot.process_turn_resp(response.get_raw_info())
+        # bot.turn_prepare(game.get_current_player().name)
 
     while is_running:
         act_pl_abilities = field.get_player_allowed_abilities(game.get_current_player())
