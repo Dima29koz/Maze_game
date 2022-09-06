@@ -1,29 +1,37 @@
-server.app.main package
+server.app.game package
 =======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   server.app.game.events
 
 Submodules
 ----------
 
-server.app.main.forms module
+server.app.game.forms module
 ----------------------------
 
-.. automodule:: server.app.main.forms
+.. automodule:: server.app.game.forms
    :members:
    :undoc-members:
    :show-inheritance:
 
-server.app.main.models module
+server.app.game.models module
 -----------------------------
 
-.. automodule:: server.app.main.models
+.. automodule:: server.app.game.models
    :members:
    :undoc-members:
    :show-inheritance:
 
-server.app.main.routes module
+server.app.game.routes module
 -----------------------------
 
-.. automodule:: server.app.main.routes
+.. automodule:: server.app.game.routes
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,7 +39,7 @@ server.app.main.routes module
 Module contents
 ---------------
 
-.. automodule:: server.app.main
+.. automodule:: server.app.game
    :members:
    :undoc-members:
    :show-inheritance:

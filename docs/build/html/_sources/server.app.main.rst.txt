@@ -1,17 +1,15 @@
 server.app.main package
 =======================
 
-.. toctree::
-   :maxdepth: 4
-
-   server.app.main.events
-
+Submodules
+----------
 
 server.app.main.forms module
 ----------------------------
 
 .. automodule:: server.app.main.forms
    :members:
+   :undoc-members:
    :show-inheritance:
 
 server.app.main.models module
@@ -19,6 +17,7 @@ server.app.main.models module
 
 .. automodule:: server.app.main.models
    :members:
+   :undoc-members:
    :show-inheritance:
 
 server.app.main.routes module

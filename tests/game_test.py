@@ -1,8 +1,10 @@
 import unittest
 
+import server.app.main.models
 from server.app import create_app, sio, db
+from server.app.game.forms import RulesForm
 from server.config import TestConfig
-from server.app.main import models
+from server.app.game import models
 
 
 class TestCase(unittest.TestCase):
@@ -24,9 +26,14 @@ class TestCase(unittest.TestCase):
 
     @classmethod
     def setUpData(cls):
-        u1 = models.User('Tester1', '1')
-        u2 = models.User('Tester2', '1')
-        room = models.GameRoom('test_room', '1', 2, 1, u1)
+        u1 = server.app.main.models.User('Tester1', '1')
+        u2 = server.app.main.models.User('Tester2', '1')
+        rules_form = RulesForm()
+        rules_form.room_name.data = 'test_room'
+        rules_form.pwd.data = '1'
+        rules_form.players_amount.data = 2
+        rules_form.bots_amount.data = 1
+        room = models.GameRoom(rules_form, u1)
         room.add_player(u2)
         room.game.field.spawn_player({'x': 1, 'y': 1}, u1.user_name, 1)
         room.game.field.spawn_player({'x': 1, 'y': 1}, u2.user_name, 1)
@@ -72,7 +79,7 @@ class TestGame(TestCase):
         self.assertEqual(rv.get_json()[0:2], init_stats)
 
     def test_action(self):
-        self.client1.emit('action', {'action': 'shoot_bow', 'direction': 'bottom'}, namespace='/game')
+        self.client1.emit('action', {'room_id': 1, 'action': 'shoot_bow', 'direction': 'bottom'}, namespace='/game')
         rv1 = self.client1.get_received(namespace='/game')[-1]
         rv2 = self.client2.get_received(namespace='/game')[-1]
         self.assertEqual(rv1, rv2)
@@ -81,8 +88,8 @@ class TestGame(TestCase):
         self.assertEqual(rv1.get('args')[0].get('players_stat')[1].get('health'), 1)
 
     def test_get_allowed_abilities(self):
-        self.client1.emit('get_allowed_abilities', namespace='/game')
-        self.client2.emit('get_allowed_abilities', namespace='/game')
+        self.client1.emit('get_allowed_abilities', {'room_id': 1}, namespace='/game')
+        self.client2.emit('get_allowed_abilities', {'room_id': 1}, namespace='/game')
         rv1 = self.client1.get_received(namespace='/game')[-1]
         rv2 = self.client2.get_received(namespace='/game')[-1]
         self.assertEqual(rv1.get('args')[0].get('is_active'), True)

@@ -1,18 +1,21 @@
-server.app.main.events package
+server.app.game.events package
 ==============================
 
-server.app.main.events.game module
+Submodules
+----------
+
+server.app.game.events.game module
 ----------------------------------
 
-.. automodule:: server.app.main.events.game
+.. automodule:: server.app.game.events.game
    :members:
    :undoc-members:
    :show-inheritance:
 
-server.app.main.events.game\_room module
+server.app.game.events.game\_room module
 ----------------------------------------
 
-.. automodule:: server.app.main.events.game_room
+.. automodule:: server.app.game.events.game_room
    :members:
    :undoc-members:
    :show-inheritance:
@@ -20,7 +23,7 @@ server.app.main.events.game\_room module
 Module contents
 ---------------
 
-.. automodule:: server.app.main.events
+.. automodule:: server.app.game.events
    :members:
    :undoc-members:
    :show-inheritance:

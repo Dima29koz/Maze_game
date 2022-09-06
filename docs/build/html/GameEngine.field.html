@@ -63,10 +63,7 @@
 </ul>
 </dd>
 <dt class="field-even">Variables</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>neighbours</strong> – neighbours of cell</p></li>
-<li><p><strong>walls</strong> – walls of cell</p></li>
-</ul>
+<dd class="field-even"><p><strong>walls</strong> – walls of cell</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -79,23 +76,6 @@
 <dt class="sig sig-object py" id="GameEngine.field.cell.Cell.add_wall">
 <span class="sig-name descname"><span class="pre">add_wall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wall</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GameEngine.field.wall.WallEmpty" title="GameEngine.field.wall.WallEmpty"><span class="pre">GameEngine.field.wall.WallEmpty</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.Cell.add_wall" title="Permalink to this definition">¶</a></dt>
 <dd><p>add wall by direction</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.cell.Cell.break_wall">
-<span class="sig-name descname"><span class="pre">break_wall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#GameEngine.field.wall.WallEmpty" title="GameEngine.field.wall.WallEmpty"><span class="pre">GameEngine.field.wall.WallEmpty</span></a></span></span><a class="headerlink" href="#GameEngine.field.cell.Cell.break_wall" title="Permalink to this definition">¶</a></dt>
-<dd><p>Break wall by direction if wall is breakable</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>wall that was broken</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.field.cell.Cell.change_neighbours">
-<span class="sig-name descname"><span class="pre">change_neighbours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neighbours</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.Cell.change_neighbours" title="Permalink to this definition">¶</a></dt>
-<dd><p>set cell neighbours</p>
 </dd></dl>
 
 <dl class="py method">
@@ -202,7 +182,7 @@
 
 <dl class="py class">
 <dt class="sig sig-object py" id="GameEngine.field.cell.CellExit">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.cell.</span></span><span class="sig-name descname"><span class="pre">CellExit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.CellExit" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.cell.</span></span><span class="sig-name descname"><span class="pre">CellExit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.CellExit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.cell.Cell</span></code></a></p>
 <p>Exit cell object</p>
 <dl class="py method">
@@ -240,6 +220,18 @@
 <dt class="sig sig-object py" id="GameEngine.field.cell.CellRiver.treasure_movement">
 <span class="sig-name descname"><span class="pre">treasure_movement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.CellRiver.treasure_movement" title="Permalink to this definition">¶</a></dt>
 <dd><p>treasure movement handler</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="GameEngine.field.cell.CellRiverBridge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.field.cell.</span></span><span class="sig-name descname"><span class="pre">CellRiverBridge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.CellRiverBridge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#GameEngine.field.cell.CellRiver" title="GameEngine.field.cell.CellRiver"><code class="xref py py-class docutils literal notranslate"><span class="pre">GameEngine.field.cell.CellRiver</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GameEngine.field.cell.CellRiverBridge.active">
+<span class="sig-name descname"><span class="pre">active</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">previous_cell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.cell.CellRiverBridge.active" title="Permalink to this definition">¶</a></dt>
+<dd><p>active handler</p>
 </dd></dl>
 
 </dd></dl>
@@ -296,6 +288,17 @@
 <dt class="sig sig-object py" id="GameEngine.field.field.Field.action_handler">
 <span class="sig-name descname"><span class="pre">action_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Actions" title="GameEngine.globalEnv.enums.Actions"><span class="pre">GameEngine.globalEnv.enums.Actions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><span class="pre">GameEngine.field.response.RespHandler</span></a></span></span><a class="headerlink" href="#GameEngine.field.field.Field.action_handler" title="Permalink to this definition">¶</a></dt>
 <dd><p>handle player action</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GameEngine.field.field.Field.break_wall">
+<span class="sig-name descname"><span class="pre">break_wall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><span class="pre">GameEngine.field.cell.Cell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions" title="GameEngine.globalEnv.enums.Directions"><span class="pre">GameEngine.globalEnv.enums.Directions</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.field.field.Field.break_wall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break wall by direction if wall is breakable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>wall that was broken</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

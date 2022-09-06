@@ -50,88 +50,14 @@
             
   <section id="server-app-main-events-package">
 <h1>server.app.main.events package<a class="headerlink" href="#server-app-main-events-package" title="Permalink to this headline">¶</a></h1>
-<section id="module-server.app.main.events.game">
-<span id="server-app-main-events-game-module"></span><h2>server.app.main.events.game module<a class="headerlink" href="#module-server.app.main.events.game" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.events.game.</span></span><span class="sig-name descname"><span class="pre">GameNamespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_socketio.namespace.Namespace</span></code></p>
-<p>Handle events on game page</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_action">
-<span class="sig-name descname"><span class="pre">on_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_action" title="Permalink to this definition">¶</a></dt>
-<dd><p>handle player`s turn;
-emits <cite>turn_info</cite>, <cite>win_msg</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_disconnect">
-<span class="sig-name descname"><span class="pre">on_disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>User disconnect from a game</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_get_allowed_abilities">
-<span class="sig-name descname"><span class="pre">on_get_allowed_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_get_allowed_abilities" title="Permalink to this definition">¶</a></dt>
-<dd><p>emits <cite>set_allowed_abilities</cite> with data[is_active, allowed_abilities]</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game.GameNamespace.on_join">
-<span class="sig-name descname"><span class="pre">on_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game.GameNamespace.on_join" title="Permalink to this definition">¶</a></dt>
-<dd><p>added user to socketIO room;
-emits <cite>join</cite></p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="server-app-main-events-game-module">
+<h2>server.app.main.events.game module<a class="headerlink" href="#server-app-main-events-game-module" title="Permalink to this headline">¶</a></h2>
 </section>
-<section id="module-server.app.main.events.game_room">
-<span id="server-app-main-events-game-room-module"></span><h2>server.app.main.events.game_room module<a class="headerlink" href="#module-server.app.main.events.game_room" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.events.game_room.GameRoomNamespace">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.events.game_room.</span></span><span class="sig-name descname"><span class="pre">GameRoomNamespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game_room.GameRoomNamespace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_socketio.namespace.Namespace</span></code></p>
-<p>Handle events on game_room page</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game_room.GameRoomNamespace.on_disconnect">
-<span class="sig-name descname"><span class="pre">on_disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game_room.GameRoomNamespace.on_disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>User disconnect from a room</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game_room.GameRoomNamespace.on_join">
-<span class="sig-name descname"><span class="pre">on_join</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game_room.GameRoomNamespace.on_join" title="Permalink to this definition">¶</a></dt>
-<dd><p>added user to room;
-emits <cite>join</cite>, <cite>get_spawn</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game_room.GameRoomNamespace.on_leave">
-<span class="sig-name descname"><span class="pre">on_leave</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game_room.GameRoomNamespace.on_leave" title="Permalink to this definition">¶</a></dt>
-<dd><p>User leaves a room</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game_room.GameRoomNamespace.on_set_spawn">
-<span class="sig-name descname"><span class="pre">on_set_spawn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game_room.GameRoomNamespace.on_set_spawn" title="Permalink to this definition">¶</a></dt>
-<dd><p>added spawned player to game;
-emits <cite>set_spawn</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.events.game_room.GameRoomNamespace.on_start">
-<span class="sig-name descname"><span class="pre">on_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.events.game_room.GameRoomNamespace.on_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>starting Game
-emits <cite>start</cite></p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="server-app-main-events-game-room-module">
+<h2>server.app.main.events.game_room module<a class="headerlink" href="#server-app-main-events-game-room-module" title="Permalink to this headline">¶</a></h2>
 </section>
-<section id="module-server.app.main.events">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-server.app.main.events" title="Permalink to this headline">¶</a></h2>
-<p>initialization of socketIO eventHandlerNamespace</p>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -146,9 +72,9 @@ emits <cite>start</cite></p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">server.app.main.events package</a><ul>
-<li><a class="reference internal" href="#module-server.app.main.events.game">server.app.main.events.game module</a></li>
-<li><a class="reference internal" href="#module-server.app.main.events.game_room">server.app.main.events.game_room module</a></li>
-<li><a class="reference internal" href="#module-server.app.main.events">Module contents</a></li>
+<li><a class="reference internal" href="#server-app-main-events-game-module">server.app.main.events.game module</a></li>
+<li><a class="reference internal" href="#server-app-main-events-game-room-module">server.app.main.events.game_room module</a></li>
+<li><a class="reference internal" href="#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>

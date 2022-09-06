@@ -50,6 +50,7 @@
  | <a href="#I"><strong>I</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
@@ -63,6 +64,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.app.game.html#server.app.game.models.TurnInfo.action">action (server.app.game.models.TurnInfo attribute)</a>
+</li>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.action_handler">action_handler() (GameEngine.field.field.Field method)</a>
 </li>
       <li><a href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Actions">Actions (class in GameEngine.globalEnv.enums)</a>
@@ -82,24 +85,26 @@
 </li>
         <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiver.active">(GameEngine.field.cell.CellRiver method)</a>
 </li>
+        <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiverBridge.active">(GameEngine.field.cell.CellRiverBridge method)</a>
+</li>
         <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiverMouth.active">(GameEngine.field.cell.CellRiverMouth method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.add">add() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.add">add() (server.app.game.models.GameRoom method)</a>
 
       <ul>
         <li><a href="server.app.main.html#server.app.main.models.User.add">(server.app.main.models.User method)</a>
 </li>
       </ul></li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.add_game">add_game() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.add_game">add_game() (server.app.game.models.GameRoom method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.add_player">add_player() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.add_player">add_player() (server.app.game.models.GameRoom method)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.cell.Cell.add_wall">add_wall() (GameEngine.field.cell.Cell method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.routes.admin_map">admin_map() (in module server.app.main.routes)</a>
+      <li><a href="server.app.game.html#server.app.game.routes.admin_map">admin_map() (in module server.app.game.routes)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -111,7 +116,9 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="GameEngine.field.html#GameEngine.field.cell.Cell.break_wall">break_wall() (GameEngine.field.cell.Cell method)</a>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.bots_amount">bots_amount (server.app.game.forms.RulesForm attribute)</a>
+</li>
+      <li><a href="GameEngine.field.html#GameEngine.field.field.Field.break_wall">break_wall() (GameEngine.field.field.Field method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -133,17 +140,17 @@
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.cell.CellClinic">CellClinic (class in GameEngine.field.cell)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.cell.CellExit">CellExit (class in GameEngine.field.cell)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiver">CellRiver (class in GameEngine.field.cell)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiverBridge">CellRiverBridge (class in GameEngine.field.cell)</a>
+</li>
       <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiverMouth">CellRiverMouth (class in GameEngine.field.cell)</a>
 </li>
-      <li><a href="GameEngine.field.html#GameEngine.field.cell.Cell.change_neighbours">change_neighbours() (GameEngine.field.cell.Cell method)</a>
-</li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.check_password">check_password() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.check_password">check_password() (server.app.game.models.GameRoom method)</a>
 
       <ul>
         <li><a href="server.app.main.html#server.app.main.models.User.check_password">(server.app.main.models.User method)</a>
@@ -153,16 +160,44 @@
 </li>
       <li><a href="server.app.html#server.app.create_app">create_app() (in module server.app)</a>
 </li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.creator">creator (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.creator_id">creator_id (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.html#server.config.BaseConfig.CSRF_ENABLED">CSRF_ENABLED (server.config.BaseConfig attribute)</a>
+
+      <ul>
+        <li><a href="server.html#server.config.TestConfig.CSRF_ENABLED">(server.config.TestConfig attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.html#server.config.DevelopmentConfig">DevelopmentConfig (class in server.config)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.date">date (server.app.game.models.GameRoom attribute)</a>
+
+      <ul>
+        <li><a href="server.app.game.html#server.app.game.models.TurnInfo.date">(server.app.game.models.TurnInfo attribute)</a>
 </li>
+        <li><a href="server.app.main.html#server.app.main.models.User.date">(server.app.main.models.User attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="server.html#server.config.BaseConfig.DEBUG">DEBUG (server.config.BaseConfig attribute)</a>
+
+      <ul>
+        <li><a href="server.html#server.config.DevelopmentConfig.DEBUG">(server.config.DevelopmentConfig attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.html#server.config.BaseConfig.DEBUG_TB_INTERCEPT_REDIRECTS">DEBUG_TB_INTERCEPT_REDIRECTS (server.config.BaseConfig attribute)</a>
+</li>
+      <li><a href="server.html#server.config.DevelopmentConfig">DevelopmentConfig (class in server.config)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.TurnInfo.direction">direction (server.app.game.models.TurnInfo attribute)</a>
+</li>
       <li><a href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Directions">Directions (class in GameEngine.globalEnv.enums)</a>
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.drop_treasure">drop_treasure() (GameEngine.entities.player.Player method)</a>
@@ -187,9 +222,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.html#GameEngine.game.Game">Game (class in GameEngine.game)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.routes.game">game() (in module server.app.main.routes)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.game">game (server.app.game.models.GameRoom attribute)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.routes.game_room">game_room() (in module server.app.main.routes)</a>
+      <li><a href="server.app.game.html#server.app.game.routes.game_page">game_page() (in module server.app.game.routes)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.routes.game_room">game_room() (in module server.app.game.routes)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.TurnInfo.game_room_id">game_room_id (server.app.game.models.TurnInfo attribute)</a>
 </li>
       <li>
     GameEngine.app
@@ -268,18 +307,20 @@
         <li><a href="GameEngine.html#module-GameEngine.rules">module</a>
 </li>
       </ul></li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace">GameNamespace (class in server.app.main.events.game)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game.GameNamespace">GameNamespace (class in server.app.game.events.game)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom">GameRoom (class in server.app.main.models)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom">GameRoom (class in server.app.game.models)</a>
 </li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace">GameRoomNamespace (class in server.app.main.events.game_room)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game_room.GameRoomNamespace">GameRoomNamespace (class in server.app.game.events.game_room)</a>
+</li>
+      <li><a href="server.app.main.html#server.app.main.models.User.games">games (server.app.main.models.User attribute)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_active_player">get_active_player() (GameEngine.field.field.Field method)</a>
 </li>
-      <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_alive_pl_amount">get_alive_pl_amount() (GameEngine.field.field.Field method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_alive_pl_amount">get_alive_pl_amount() (GameEngine.field.field.Field method)</a>
+</li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.get_allowed_abilities">get_allowed_abilities() (GameEngine.entities.player.Player method)</a>
 
       <ul>
@@ -313,10 +354,10 @@
 </li>
         <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandlerSwapTreasure.get_info">(GameEngine.field.response.RespHandlerSwapTreasure method)</a>
 </li>
-        <li><a href="server.app.main.html#server.app.main.models.GameRoom.get_info">(server.app.main.models.GameRoom method)</a>
+        <li><a href="server.app.game.html#server.app.game.models.GameRoom.get_info">(server.app.game.models.GameRoom method)</a>
 </li>
       </ul></li>
-      <li><a href="server.app.main.html#server.app.main.models.get_not_ended_room_by_name">get_not_ended_room_by_name() (in module server.app.main.models)</a>
+      <li><a href="server.app.game.html#server.app.game.models.get_not_ended_room_by_name">get_not_ended_room_by_name() (in module server.app.game.models)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.get_player_allowed_abilities">get_player_allowed_abilities() (GameEngine.field.field.Field method)</a>
 </li>
@@ -324,7 +365,9 @@
 </li>
       <li><a href="server.app.api.html#server.app.api.routes.get_players_stat">get_players_stat() (in module server.app.api.routes)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.get_room_by_id">get_room_by_id() (in module server.app.main.models)</a>
+      <li><a href="server.app.game.html#server.app.game.models.get_room_by_id">get_room_by_id() (in module server.app.game.models)</a>
+</li>
+      <li><a href="server.app.api.html#server.app.api.routes.get_room_data">get_room_data() (in module server.app.api.routes)</a>
 </li>
       <li><a href="GameEngine.html#GameEngine.game.Game.get_spawn_point">get_spawn_point() (GameEngine.game.Game method)</a>
 </li>
@@ -334,7 +377,7 @@
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandler.get_turn_info">get_turn_info() (GameEngine.field.response.RespHandler method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.get_turns">get_turns() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.get_turns">get_turns() (server.app.game.models.GameRoom method)</a>
 </li>
       <li><a href="server.app.api.html#server.app.api.routes.get_user_avatar">get_user_avatar() (in module server.app.api.routes)</a>
 </li>
@@ -344,7 +387,7 @@
 </li>
       <li><a href="server.app.api.html#server.app.api.routes.get_user_games">get_user_games() (in module server.app.api.routes)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.get_user_won_games_amount">get_user_won_games_amount() (in module server.app.main.models)</a>
+      <li><a href="server.app.game.html#server.app.game.models.get_user_won_games_amount">get_user_won_games_amount() (in module server.app.game.models)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -370,6 +413,14 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.id">id (server.app.game.models.GameRoom attribute)</a>
+
+      <ul>
+        <li><a href="server.app.game.html#server.app.game.models.TurnInfo.id">(server.app.game.models.TurnInfo attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.models.User.id">(server.app.main.models.User attribute)</a>
+</li>
+      </ul></li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.treasure.Treasure.idle">idle() (GameEngine.entities.treasure.Treasure method)</a>
 
       <ul>
@@ -392,6 +443,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="server.app.main.html#server.app.main.routes.index">index() (in module server.app.main.routes)</a>
 </li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.is_ended">is_ended (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.is_not_rect">is_not_rect (server.app.game.forms.RulesForm attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.is_running">is_running (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.is_same_wall_outer_concrete">is_same_wall_outer_concrete (server.app.game.forms.RulesForm attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.is_separated_armory">is_separated_armory (server.app.game.forms.RulesForm attribute)</a>
+</li>
       <li><a href="GameEngine.html#GameEngine.game.Game.is_win_condition">is_win_condition() (GameEngine.game.Game method)</a>
 </li>
   </ul></td>
@@ -400,13 +461,21 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.app.game.html#server.app.game.models.load_user">load_user() (in module server.app.game.models)</a>
+</li>
+      <li><a href="server.html#server.config.BaseConfig.LOGGER">LOGGER (server.config.BaseConfig attribute)</a>
+
+      <ul>
+        <li><a href="server.html#server.config.DevelopmentConfig.LOGGER">(server.config.DevelopmentConfig attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="server.app.main.html#server.app.main.routes.login">login() (in module server.app.main.routes)</a>
 </li>
       <li><a href="server.app.main.html#server.app.main.forms.LoginForm">LoginForm (class in server.app.main.forms)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.html#server.app.main.forms.LoginRoomForm">LoginRoomForm (class in server.app.main.forms)</a>
+      <li><a href="server.app.game.html#server.app.game.forms.LoginRoomForm">LoginRoomForm (class in server.app.game.forms)</a>
 </li>
       <li><a href="server.app.main.html#server.app.main.routes.logout">logout() (in module server.app.main.routes)</a>
 </li>
@@ -418,6 +487,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.html#GameEngine.game.Game.make_turn">make_turn() (GameEngine.game.Game method)</a>
 </li>
+      <li><a href="server.html#server.config.BaseConfig.MANAGE_SESSION">MANAGE_SESSION (server.config.BaseConfig attribute)</a>
+
+      <ul>
+        <li><a href="server.html#server.config.ProductionConfig.MANAGE_SESSION">(server.config.ProductionConfig attribute)</a>
+</li>
+      </ul></li>
       <li>
     module
 
@@ -444,17 +519,29 @@
 </li>
         <li><a href="GameEngine.html#module-GameEngine.rules">GameEngine.rules</a>
 </li>
+        <li><a href="server.html#module-server">server</a>
+</li>
         <li><a href="server.app.html#module-server.app">server.app</a>
+</li>
+        <li><a href="server.app.api.html#module-server.app.api">server.app.api</a>
 </li>
         <li><a href="server.app.api.html#module-server.app.api.routes">server.app.api.routes</a>
 </li>
+        <li><a href="server.app.game.html#module-server.app.game">server.app.game</a>
+</li>
+        <li><a href="server.app.game.events.html#module-server.app.game.events">server.app.game.events</a>
+</li>
+        <li><a href="server.app.game.events.html#module-server.app.game.events.game">server.app.game.events.game</a>
+</li>
+        <li><a href="server.app.game.events.html#module-server.app.game.events.game_room">server.app.game.events.game_room</a>
+</li>
+        <li><a href="server.app.game.html#module-server.app.game.forms">server.app.game.forms</a>
+</li>
+        <li><a href="server.app.game.html#module-server.app.game.models">server.app.game.models</a>
+</li>
+        <li><a href="server.app.game.html#module-server.app.game.routes">server.app.game.routes</a>
+</li>
         <li><a href="server.app.main.html#module-server.app.main">server.app.main</a>
-</li>
-        <li><a href="server.app.main.events.html#module-server.app.main.events">server.app.main.events</a>
-</li>
-        <li><a href="server.app.main.events.html#module-server.app.main.events.game">server.app.main.events.game</a>
-</li>
-        <li><a href="server.app.main.events.html#module-server.app.main.events.game_room">server.app.main.events.game_room</a>
 </li>
         <li><a href="server.app.main.html#module-server.app.main.forms">server.app.main.forms</a>
 </li>
@@ -472,40 +559,54 @@
   </ul></td>
 </tr></table>
 
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.app.game.html#server.app.game.forms.LoginRoomForm.name">name (server.app.game.forms.LoginRoomForm attribute)</a>
+
+      <ul>
+        <li><a href="server.app.game.html#server.app.game.models.GameRoom.name">(server.app.game.models.GameRoom attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.forms.LoginForm.name">(server.app.main.forms.LoginForm attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_action">on_action() (server.app.main.events.game.GameNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game.GameNamespace.on_action">on_action() (server.app.game.events.game.GameNamespace method)</a>
 </li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_disconnect">on_disconnect() (server.app.main.events.game.GameNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game.GameNamespace.on_disconnect">on_disconnect() (server.app.game.events.game.GameNamespace method)</a>
 
       <ul>
-        <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_disconnect">(server.app.main.events.game_room.GameRoomNamespace method)</a>
+        <li><a href="server.app.game.events.html#server.app.game.events.game_room.GameRoomNamespace.on_disconnect">(server.app.game.events.game_room.GameRoomNamespace method)</a>
 </li>
       </ul></li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_get_allowed_abilities">on_get_allowed_abilities() (server.app.main.events.game.GameNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game.GameNamespace.on_get_allowed_abilities">on_get_allowed_abilities() (server.app.game.events.game.GameNamespace method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.on_get_field">on_get_field() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.on_get_field">on_get_field() (server.app.game.models.GameRoom method)</a>
 </li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game.GameNamespace.on_join">on_join() (server.app.main.events.game.GameNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game.GameNamespace.on_join">on_join() (server.app.game.events.game.GameNamespace method)</a>
 
       <ul>
-        <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_join">(server.app.main.events.game_room.GameRoomNamespace method)</a>
+        <li><a href="server.app.game.events.html#server.app.game.events.game_room.GameRoomNamespace.on_join">(server.app.game.events.game_room.GameRoomNamespace method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_leave">on_leave() (server.app.main.events.game_room.GameRoomNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game_room.GameRoomNamespace.on_leave">on_leave() (server.app.game.events.game_room.GameRoomNamespace method)</a>
 </li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_set_spawn">on_set_spawn() (server.app.main.events.game_room.GameRoomNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game_room.GameRoomNamespace.on_set_spawn">on_set_spawn() (server.app.game.events.game_room.GameRoomNamespace method)</a>
 </li>
-      <li><a href="server.app.main.events.html#server.app.main.events.game_room.GameRoomNamespace.on_start">on_start() (server.app.main.events.game_room.GameRoomNamespace method)</a>
+      <li><a href="server.app.game.events.html#server.app.game.events.game_room.GameRoomNamespace.on_start">on_start() (server.app.game.events.game_room.GameRoomNamespace method)</a>
 
       <ul>
-        <li><a href="server.app.main.html#server.app.main.models.GameRoom.on_start">(server.app.main.models.GameRoom method)</a>
+        <li><a href="server.app.game.html#server.app.game.models.GameRoom.on_start">(server.app.game.models.GameRoom method)</a>
 </li>
       </ul></li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.on_turn">on_turn() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.on_turn">on_turn() (server.app.game.models.GameRoom method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -517,11 +618,33 @@
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player">Player (class in GameEngine.entities.player)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.app.game.html#server.app.game.models.TurnInfo.player_name">player_name (server.app.game.models.TurnInfo attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.players">players (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.players_amount">players_amount (server.app.game.forms.RulesForm attribute)</a>
+</li>
       <li><a href="server.html#server.config.ProductionConfig">ProductionConfig (class in server.config)</a>
 </li>
       <li><a href="server.app.main.html#server.app.main.routes.profile">profile() (in module server.app.main.routes)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="server.app.game.html#server.app.game.forms.LoginRoomForm.pwd">pwd (server.app.game.forms.LoginRoomForm attribute)</a>
+
+      <ul>
+        <li><a href="server.app.game.html#server.app.game.forms.RulesForm.pwd">(server.app.game.forms.RulesForm attribute)</a>
+</li>
+        <li><a href="server.app.game.html#server.app.game.models.GameRoom.pwd">(server.app.game.models.GameRoom attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.forms.LoginForm.pwd">(server.app.main.forms.LoginForm attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.forms.RegistrationForm.pwd">(server.app.main.forms.RegistrationForm attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.models.User.pwd">(server.app.main.models.User attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="server.app.main.html#server.app.main.forms.RegistrationForm.pwd2">pwd2 (server.app.main.forms.RegistrationForm attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -533,7 +656,9 @@
 </li>
       <li><a href="server.app.main.html#server.app.main.forms.RegistrationForm">RegistrationForm (class in server.app.main.forms)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.remove_player">remove_player() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.main.html#server.app.main.forms.LoginForm.remember">remember (server.app.main.forms.LoginForm attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.remove_player">remove_player() (server.app.game.models.GameRoom method)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandler">RespHandler (class in GameEngine.field.response)</a>
 </li>
@@ -545,10 +670,10 @@
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandlerShootBow">RespHandlerShootBow (class in GameEngine.field.response)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandlerSkip">RespHandlerSkip (class in GameEngine.field.response)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandlerSwapTreasure">RespHandlerSwapTreasure (class in GameEngine.field.response)</a>
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.restore_armory">restore_armory() (GameEngine.entities.player.Player method)</a>
@@ -557,13 +682,17 @@
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.restore_bombs">restore_bombs() (GameEngine.entities.player.Player method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.routes.room_create">room_create() (in module server.app.main.routes)</a>
+      <li><a href="server.app.game.html#server.app.game.routes.room_create">room_create() (in module server.app.game.routes)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.routes.room_join">room_join() (in module server.app.main.routes)</a>
+      <li><a href="server.app.game.html#server.app.game.routes.room_join">room_join() (in module server.app.game.routes)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.room_name">room_name (server.app.game.forms.RulesForm attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.rules">rules (server.app.game.models.GameRoom attribute)</a>
 </li>
       <li><a href="server.app.main.html#server.app.main.routes.rules">rules() (in module server.app.main.routes)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.forms.RulesForm">RulesForm (class in server.app.main.forms)</a>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm">RulesForm (class in server.app.game.forms)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -571,10 +700,19 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.save">save() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.save">save() (server.app.game.models.GameRoom method)</a>
 
       <ul>
-        <li><a href="server.app.main.html#server.app.main.models.TurnInfo.save">(server.app.main.models.TurnInfo method)</a>
+        <li><a href="server.app.game.html#server.app.game.models.TurnInfo.save">(server.app.game.models.TurnInfo method)</a>
+</li>
+      </ul></li>
+      <li><a href="server.html#server.config.BaseConfig.SECRET_KEY">SECRET_KEY (server.config.BaseConfig attribute)</a>
+</li>
+      <li>
+    server
+
+      <ul>
+        <li><a href="server.html#module-server">module</a>
 </li>
       </ul></li>
       <li>
@@ -585,6 +723,13 @@
 </li>
       </ul></li>
       <li>
+    server.app.api
+
+      <ul>
+        <li><a href="server.app.api.html#module-server.app.api">module</a>
+</li>
+      </ul></li>
+      <li>
     server.app.api.routes
 
       <ul>
@@ -592,35 +737,63 @@
 </li>
       </ul></li>
       <li>
+    server.app.game
+
+      <ul>
+        <li><a href="server.app.game.html#module-server.app.game">module</a>
+</li>
+      </ul></li>
+      <li>
+    server.app.game.events
+
+      <ul>
+        <li><a href="server.app.game.events.html#module-server.app.game.events">module</a>
+</li>
+      </ul></li>
+      <li>
+    server.app.game.events.game
+
+      <ul>
+        <li><a href="server.app.game.events.html#module-server.app.game.events.game">module</a>
+</li>
+      </ul></li>
+      <li>
+    server.app.game.events.game_room
+
+      <ul>
+        <li><a href="server.app.game.events.html#module-server.app.game.events.game_room">module</a>
+</li>
+      </ul></li>
+      <li>
+    server.app.game.forms
+
+      <ul>
+        <li><a href="server.app.game.html#module-server.app.game.forms">module</a>
+</li>
+      </ul></li>
+      <li>
+    server.app.game.models
+
+      <ul>
+        <li><a href="server.app.game.html#module-server.app.game.models">module</a>
+</li>
+      </ul></li>
+      <li>
+    server.app.game.routes
+
+      <ul>
+        <li><a href="server.app.game.html#module-server.app.game.routes">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     server.app.main
 
       <ul>
         <li><a href="server.app.main.html#module-server.app.main">module</a>
 </li>
       </ul></li>
-      <li>
-    server.app.main.events
-
-      <ul>
-        <li><a href="server.app.main.events.html#module-server.app.main.events">module</a>
-</li>
-      </ul></li>
-      <li>
-    server.app.main.events.game
-
-      <ul>
-        <li><a href="server.app.main.events.html#module-server.app.main.events.game">module</a>
-</li>
-      </ul></li>
-      <li>
-    server.app.main.events.game_room
-
-      <ul>
-        <li><a href="server.app.main.events.html#module-server.app.main.events.game_room">module</a>
-</li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     server.app.main.forms
 
@@ -649,7 +822,7 @@
         <li><a href="server.html#module-server.config">module</a>
 </li>
       </ul></li>
-      <li><a href="server.app.main.html#server.app.main.models.GameRoom.set_creator">set_creator() (server.app.main.models.GameRoom method)</a>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.set_creator">set_creator() (server.app.game.models.GameRoom method)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandler.set_info">set_info() (GameEngine.field.response.RespHandler method)</a>
 </li>
@@ -661,6 +834,26 @@
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.field.Field.spawn_player">spawn_player() (GameEngine.field.field.Field method)</a>
 </li>
+      <li><a href="server.html#server.config.DevelopmentConfig.SQLALCHEMY_DATABASE_URI">SQLALCHEMY_DATABASE_URI (server.config.DevelopmentConfig attribute)</a>
+
+      <ul>
+        <li><a href="server.html#server.config.ProductionConfig.SQLALCHEMY_DATABASE_URI">(server.config.ProductionConfig attribute)</a>
+</li>
+        <li><a href="server.html#server.config.TestConfig.SQLALCHEMY_DATABASE_URI">(server.config.TestConfig attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="server.html#server.config.BaseConfig.SQLALCHEMY_TRACK_MODIFICATIONS">SQLALCHEMY_TRACK_MODIFICATIONS (server.config.BaseConfig attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.forms.LoginRoomForm.submit">submit (server.app.game.forms.LoginRoomForm attribute)</a>
+
+      <ul>
+        <li><a href="server.app.game.html#server.app.game.forms.RulesForm.submit">(server.app.game.forms.RulesForm attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.forms.LoginForm.submit">(server.app.main.forms.LoginForm attribute)</a>
+</li>
+        <li><a href="server.app.main.html#server.app.main.forms.RegistrationForm.submit">(server.app.main.forms.RegistrationForm attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -671,6 +864,8 @@
 </li>
       <li><a href="server.html#server.config.TestConfig">TestConfig (class in server.config)</a>
 </li>
+      <li><a href="server.html#server.config.TestConfig.TESTING">TESTING (server.config.TestConfig attribute)</a>
+</li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.throw_bomb">throw_bomb() (GameEngine.entities.player.Player method)</a>
 </li>
       <li><a href="GameEngine.entities.html#GameEngine.entities.player.Player.to_dict">to_dict() (GameEngine.entities.player.Player method)</a>
@@ -680,7 +875,7 @@
 </li>
         <li><a href="GameEngine.field.html#GameEngine.field.cell.CellRiver.to_dict">(GameEngine.field.cell.CellRiver method)</a>
 </li>
-        <li><a href="server.app.main.html#server.app.main.models.TurnInfo.to_dict">(server.app.main.models.TurnInfo method)</a>
+        <li><a href="server.app.game.html#server.app.game.models.TurnInfo.to_dict">(server.app.game.models.TurnInfo method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -697,8 +892,16 @@
       </ul></li>
       <li><a href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.TreasureTypes">TreasureTypes (class in GameEngine.globalEnv.enums)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.models.TurnInfo">TurnInfo (class in server.app.main.models)</a>
+      <li><a href="server.app.game.html#server.app.game.models.TurnInfo.turn_response">turn_response (server.app.game.models.TurnInfo attribute)</a>
 </li>
+      <li><a href="server.app.game.html#server.app.game.models.TurnInfo">TurnInfo (class in server.app.game.models)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.turns">turns (server.app.game.models.GameRoom attribute)</a>
+
+      <ul>
+        <li><a href="server.app.game.html#server.app.game.models.TurnInfo.turns">(server.app.game.models.TurnInfo attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -707,9 +910,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.response.RespHandler.update_turn_info">update_turn_info() (GameEngine.field.response.RespHandler method)</a>
 </li>
+      <li><a href="server.app.main.html#server.app.main.models.User">User (class in server.app.main.models)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.html#server.app.main.models.User">User (class in server.app.main.models)</a>
+      <li><a href="server.app.main.html#server.app.main.models.User.user_name">user_name (server.app.main.models.User attribute)</a>
+</li>
+      <li><a href="server.app.main.html#server.app.main.forms.RegistrationForm.username">username (server.app.main.forms.RegistrationForm attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -717,13 +924,13 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.html#server.app.main.forms.LoginRoomForm.validate_name">validate_name() (server.app.main.forms.LoginRoomForm method)</a>
+      <li><a href="server.app.game.html#server.app.game.forms.LoginRoomForm.validate_name">validate_name() (server.app.game.forms.LoginRoomForm method)</a>
 </li>
-      <li><a href="server.app.main.html#server.app.main.forms.LoginRoomForm.validate_pwd">validate_pwd() (server.app.main.forms.LoginRoomForm method)</a>
+      <li><a href="server.app.game.html#server.app.game.forms.LoginRoomForm.validate_pwd">validate_pwd() (server.app.game.forms.LoginRoomForm method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="server.app.main.html#server.app.main.forms.RulesForm.validate_room_name">validate_room_name() (server.app.main.forms.RulesForm method)</a>
+      <li><a href="server.app.game.html#server.app.game.forms.RulesForm.validate_room_name">validate_room_name() (server.app.game.forms.RulesForm method)</a>
 </li>
       <li><a href="server.app.main.html#server.app.main.forms.RegistrationForm.validate_username">validate_username() (server.app.main.forms.RegistrationForm method)</a>
 </li>
@@ -739,13 +946,19 @@
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.wall.WallEntrance">WallEntrance (class in GameEngine.field.wall)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.wall.WallExit">WallExit (class in GameEngine.field.wall)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="GameEngine.field.html#GameEngine.field.wall.WallOuter">WallOuter (class in GameEngine.field.wall)</a>
 </li>
       <li><a href="GameEngine.field.html#GameEngine.field.wall.WallRubber">WallRubber (class in GameEngine.field.wall)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.winner">winner (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.app.game.html#server.app.game.models.GameRoom.winner_id">winner_id (server.app.game.models.GameRoom attribute)</a>
+</li>
+      <li><a href="server.html#server.config.TestConfig.WTF_CSRF_ENABLED">WTF_CSRF_ENABLED (server.config.TestConfig attribute)</a>
 </li>
   </ul></td>
 </tr></table>

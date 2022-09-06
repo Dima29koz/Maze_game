@@ -4,6 +4,6 @@ Initialization of BluePrints
 
 from flask import Blueprint
 
-main = Blueprint('main', __name__)
+game = Blueprint('game', __name__)
 
-from . import routes
+from . import routes, events

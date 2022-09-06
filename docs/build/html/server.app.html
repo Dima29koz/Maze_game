@@ -17,7 +17,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="server.app.main package" href="server.app.main.html" />
+    <link rel="next" title="server.app.api package" href="server.app.api.html" />
     <link rel="prev" title="server package" href="server.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -30,7 +30,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="server.app.main.html" title="server.app.main package"
+          <a href="server.app.api.html" title="server.app.api package"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="server.html" title="server package"
@@ -48,23 +48,48 @@
             
   <section id="server-app-package">
 <h1>server.app package<a class="headerlink" href="#server-app-package" title="Permalink to this headline">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="server.app.api.html">server.app.api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.app.api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.api.html#module-server.app.api.routes">server.app.api.routes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.api.html#module-server.app.api">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.app.game.html">server.app.game package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="server.app.game.events.html">server.app.game.events package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="server.app.game.events.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.app.game.events.html#module-server.app.game.events.game">server.app.game.events.game module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.app.game.events.html#module-server.app.game.events.game_room">server.app.game.events.game_room module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.app.game.events.html#module-server.app.game.events">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game.forms">server.app.game.forms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game.models">server.app.game.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game.routes">server.app.game.routes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="server.app.main.html">server.app.main package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.events.html">server.app.main.events package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main.forms">server.app.main.forms module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main.models">server.app.main.models module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main.routes">server.app.main.routes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="server.app.api.html">server.app.api package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.api.html#module-server.app.api.routes">server.app.api.routes module</a></li>
-</ul>
-</li>
 </ul>
 </div>
-<span class="target" id="module-server.app"></span><dl class="py function">
+</section>
+<section id="module-server.app">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-server.app" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
 <dt class="sig sig-object py" id="server.app.create_app">
 <span class="sig-prename descclassname"><span class="pre">server.app.</span></span><span class="sig-name descname"><span class="pre">create_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">flask.app.Flask</span></span></span><a class="headerlink" href="#server.app.create_app" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates app and register Blueprints</p>
@@ -79,6 +104,7 @@
 </dd></dl>
 
 </section>
+</section>
 
 
             <div class="clearer"></div>
@@ -88,14 +114,25 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">server.app package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#module-server.app">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="server.html"
                           title="previous chapter">server package</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="server.app.main.html"
-                          title="next chapter">server.app.main package</a></p>
+    <p class="topless"><a href="server.app.api.html"
+                          title="next chapter">server.app.api package</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -128,7 +165,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="server.app.main.html" title="server.app.main package"
+          <a href="server.app.api.html" title="server.app.api package"
              >next</a> |</li>
         <li class="right" >
           <a href="server.html" title="server package"

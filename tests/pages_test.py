@@ -1,9 +1,10 @@
 import unittest
 from flask import request, session
 
+import server.app.main.models
 from server.app import create_app, db, sio
 from server.config import TestConfig
-from server.app.main import models
+from server.app.game import models
 
 
 class TestCase(unittest.TestCase):
@@ -49,7 +50,7 @@ class TestUserAccount(TestCase):
 
     def test_registration(self):
         rv = self.registrate('Tester', '1', '1')
-        self.assertIsNotNone(models.get_user_by_name('Tester'))
+        self.assertIsNotNone(server.app.main.models.get_user_by_name('Tester'))
 
     def test_registration_failure_pwd(self):
         rv = self.registrate('Tester', '1', '2')
@@ -90,7 +91,7 @@ class TestGameRoomJoinCreate(TestCase):
             rv = self.create_room('test_room', '1', 2, 1)
             self.assertIsNotNone(models.get_not_ended_room_by_name('test_room'))
             self.assertEqual(models.get_not_ended_room_by_name('test_room').creator.user_name, 'Tester')
-            self.assertIn(models.get_user_by_name('Tester'), models.get_not_ended_room_by_name('test_room').players)
+            self.assertIn(server.app.main.models.get_user_by_name('Tester'), models.get_not_ended_room_by_name('test_room').players)
             self.assertEqual('/game_room', rv.request.path)
             self.assertIn('room', rv.request.args)
             self.assertEqual('test_room', rv.request.args.get('room'))
@@ -132,7 +133,7 @@ class TestGameRoomJoinCreate(TestCase):
             rv = self.join_room('test_room', '1')
             self.assertEqual('/game_room', rv.request.path)
             self.assertIn('<h1>Комната: <span id="get-room-name">test_room</span></h1>', rv.get_data(as_text=True))
-            self.assertIn(models.get_user_by_name('Tester2'), models.get_not_ended_room_by_name('test_room').players)
+            self.assertIn(server.app.main.models.get_user_by_name('Tester2'), models.get_not_ended_room_by_name('test_room').players)
 
     def test_room_join_failure_name_pwd(self):
         with self.client:

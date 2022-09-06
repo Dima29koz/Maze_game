@@ -17,8 +17,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="server.app.main.events package" href="server.app.main.events.html" />
-    <link rel="prev" title="server.app package" href="server.app.html" /> 
+    <link rel="next" title="GameEngine package" href="GameEngine.html" />
+    <link rel="prev" title="server.app.game.events package" href="server.app.game.events.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -30,10 +30,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="server.app.main.events.html" title="server.app.main.events package"
+          <a href="GameEngine.html" title="GameEngine package"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="server.app.html" title="server.app package"
+          <a href="server.app.game.events.html" title="server.app.game.events package"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Maze Game  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="server.html" >server package</a> &#187;</li>
@@ -49,16 +49,9 @@
             
   <section id="server-app-main-package">
 <h1>server.app.main package<a class="headerlink" href="#server-app-main-package" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="server.app.main.events.html">server.app.main.events package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.events.html#module-server.app.main.events.game">server.app.main.events.game module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.events.html#module-server.app.main.events.game_room">server.app.main.events.game_room module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.events.html#module-server.app.main.events">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
 <section id="module-server.app.main.forms">
 <span id="server-app-main-forms-module"></span><h2>server.app.main.forms module<a class="headerlink" href="#module-server.app.main.forms" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
@@ -76,49 +69,25 @@
 </ul>
 </dd>
 </dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.LoginForm.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Никнейм:</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.LoginForm.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.forms.LoginRoomForm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">LoginRoomForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.LoginRoomForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
-<p>LoginRoom form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – room name</p></li>
-<li><p><strong>pwd</strong> – room password</p></li>
-<li><p><strong>submit</strong> – submit field</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.forms.LoginRoomForm.validate_name">
-<span class="sig-name descname"><span class="pre">validate_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">wtforms.fields.simple.StringField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.LoginRoomForm.validate_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>room_name validator</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>name</strong> (<em>StringField</em>) – room name</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValidationError</strong> – if room_name is incorrect</p>
-</dd>
-</dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.LoginForm.pwd">
+<span class="sig-name descname"><span class="pre">pwd</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Пароль:</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.LoginForm.pwd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.forms.LoginRoomForm.validate_pwd">
-<span class="sig-name descname"><span class="pre">validate_pwd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pwd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">wtforms.fields.simple.PasswordField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.LoginRoomForm.validate_pwd" title="Permalink to this definition">¶</a></dt>
-<dd><p>room password validator</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>pwd</strong> (<em>PasswordField</em>) – room password</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValidationError</strong> – if room_name or password is incorrect</p>
-</dd>
-</dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.LoginForm.remember">
+<span class="sig-name descname"><span class="pre">remember</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(BooleanField,</span> <span class="pre">('</span> <span class="pre">Запомнить</span> <span class="pre">',),</span> <span class="pre">{'default':</span> <span class="pre">False})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.LoginForm.remember" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.LoginForm.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Войти',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.LoginForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -137,6 +106,26 @@
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.pwd">
+<span class="sig-name descname"><span class="pre">pwd</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Пароль:</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.pwd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.pwd2">
+<span class="sig-name descname"><span class="pre">pwd2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Повторите</span> <span class="pre">пароль:</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.EqualTo</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.pwd2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Регистрация',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.username">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Никнейм:</span> <span class="pre">',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.validate_username">
 <span class="sig-name descname"><span class="pre">validate_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">wtforms.fields.simple.StringField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.RegistrationForm.validate_username" title="Permalink to this definition">¶</a></dt>
@@ -153,212 +142,9 @@
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.forms.RulesForm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">RulesForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.RulesForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
-<p>Rules form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>room_name</strong> – room name</p></li>
-<li><p><strong>pwd</strong> – room password</p></li>
-<li><p><strong>players_amount</strong> – amount of players in a room</p></li>
-<li><p><strong>bots_amount</strong> – amount of players in a room</p></li>
-<li><p><strong>is_rect</strong> – field has rect form if True</p></li>
-<li><p><strong>is_separated_armory</strong> – different cells for Weapon and Explosive armory</p></li>
-<li><p><strong>is_same_wall_outer_concrete</strong> – if true you won’t know difference between WallConcrete and WallOuter</p></li>
-<li><p><strong>submit</strong> – submit field</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.forms.RulesForm.validate_room_name">
-<span class="sig-name descname"><span class="pre">validate_room_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">wtforms.fields.simple.StringField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.RulesForm.validate_room_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>room_name validator</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>room_name</strong> (<em>StringField</em>) – room name</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValidationError</strong> – if room_name is already taken</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 <section id="module-server.app.main.models">
 <span id="server-app-main-models-module"></span><h2>server.app.main.models module<a class="headerlink" href="#module-server.app.main.models" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">GameRoom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules_form</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Model</span></code></p>
-<p>This is a Game Room model. Its contains information about game</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – name of a room</p></li>
-<li><p><strong>pwd</strong> – password of a room</p></li>
-<li><p><strong>rules</strong> – rules for a room</p></li>
-<li><p><strong>date</strong> – date of room creation</p></li>
-<li><p><strong>creator_id</strong> – id of room creator</p></li>
-<li><p><strong>game</strong> – game object</p></li>
-<li><p><strong>is_running</strong> – running state</p></li>
-<li><p><strong>is_ended</strong> – ended state</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.add" title="Permalink to this definition">¶</a></dt>
-<dd><p>add room to DB</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.add_game">
-<span class="sig-name descname"><span class="pre">add_game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.add_game" title="Permalink to this definition">¶</a></dt>
-<dd><p>creates Game() and add it to DB</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.add_player">
-<span class="sig-name descname"><span class="pre">add_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">server.app.main.models.User</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.add_player" title="Permalink to this definition">¶</a></dt>
-<dd><p>add player to room</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>False if there is no empty slots in a room, else True</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.check_password">
-<span class="sig-name descname"><span class="pre">check_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.check_password" title="Permalink to this definition">¶</a></dt>
-<dd><p>Verified room password</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>password</strong> (<em>str</em>) – room password</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>result of verification</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.get_info">
-<span class="sig-name descname"><span class="pre">get_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#server.app.main.models.GameRoom.get_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns room data (room settings, players info)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>room data dict</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.get_turns">
-<span class="sig-name descname"><span class="pre">get_turns</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#server.app.main.models.GameRoom.get_turns" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns list of game turns</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.on_get_field">
-<span class="sig-name descname"><span class="pre">on_get_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#server.app.main.models.GameRoom.on_get_field" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns field data</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.on_start">
-<span class="sig-name descname"><span class="pre">on_start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.on_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update room state to <cite>running</cite>, make initial turn for each player</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.on_turn">
-<span class="sig-name descname"><span class="pre">on_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.on_turn" title="Permalink to this definition">¶</a></dt>
-<dd><p>calculates turn feedback;
-append turn info to DB</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>next player name, turn_data, win_data[Optional]</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(<a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player">Player</a>, dict, dict | None)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.remove_player">
-<span class="sig-name descname"><span class="pre">remove_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">server.app.main.models.User</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.remove_player" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove player from room</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True if removed and room still exists, else False</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>updates game object state in DB</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.GameRoom.set_creator">
-<span class="sig-name descname"><span class="pre">set_creator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">server.app.main.models.User</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.GameRoom.set_creator" title="Permalink to this definition">¶</a></dt>
-<dd><p>set room creator</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.models.TurnInfo">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">TurnInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.TurnInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Model</span></code></p>
-<p>This is a TurnInfo model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>player_name</strong> – current player name</p></li>
-<li><p><strong>game_room_id</strong> – current room id</p></li>
-<li><p><strong>action</strong> – current player action</p></li>
-<li><p><strong>direction</strong> – current player direction</p></li>
-<li><p><strong>turn_response</strong> – turns feedback</p></li>
-<li><p><strong>date</strong> – date of turn</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.TurnInfo.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.TurnInfo.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>save turn to DB</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.models.TurnInfo.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#server.app.main.models.TurnInfo.to_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns turn info converted to dict</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="server.app.main.models.User">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User" title="Permalink to this definition">¶</a></dt>
@@ -398,18 +184,31 @@ append turn info to DB</p>
 </dl>
 </dd></dl>
 
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.models.User.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#server.app.main.models.User.date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.models.get_not_ended_room_by_name">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_not_ended_room_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_not_ended_room_by_name" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns not ended game room by name if room exists</p>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.models.User.games">
+<span class="sig-name descname"><span class="pre">games</span></span><a class="headerlink" href="#server.app.main.models.User.games" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.models.get_room_by_id">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_room_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">room_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.GameRoom" title="server.app.main.models.GameRoom"><span class="pre">server.app.main.models.GameRoom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_room_by_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns game room by id if room exists</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.models.User.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#server.app.main.models.User.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.models.User.pwd">
+<span class="sig-name descname"><span class="pre">pwd</span></span><a class="headerlink" href="#server.app.main.models.User.pwd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="server.app.main.models.User.user_name">
+<span class="sig-name descname"><span class="pre">user_name</span></span><a class="headerlink" href="#server.app.main.models.User.user_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -424,33 +223,9 @@ append turn info to DB</p>
 <dd><p>returns user by user_name if user exists</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.models.get_user_won_games_amount">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_user_won_games_amount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#server.app.main.models.get_user_won_games_amount" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns amount of user won games</p>
-</dd></dl>
-
 </section>
 <section id="module-server.app.main.routes">
 <span id="server-app-main-routes-module"></span><h2>server.app.main.routes module<a class="headerlink" href="#module-server.app.main.routes" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.admin_map">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">admin_map</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.admin_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>game_map</cite></p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.game">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">game</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.game" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>game</cite> page</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.game_room">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">game_room</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.game_room" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>game_room</cite> page</p>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="server.app.main.routes.handle_404">
 <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">handle_404</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.handle_404" title="Permalink to this definition">¶</a></dt>
@@ -460,7 +235,7 @@ append turn info to DB</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="server.app.main.routes.index">
 <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>main</cite> page</p>
+<dd><p>view of <cite>game</cite> page</p>
 </dd></dl>
 
 <dl class="py function">
@@ -500,25 +275,6 @@ creates User after validation</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.room_create">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">room_create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.room_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>create</cite> page
-available methods: POST, GET
-create a GameRoom after validation
-redirects to game_room</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.room_join">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">room_join</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.room_join" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>join</cite> page
-available methods: POST, GET
-added player to room
-redirect user into game_room if game is not started
-redirect user into game if is already started</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="server.app.main.routes.rules">
 <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">rules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.rules" title="Permalink to this definition">¶</a></dt>
 <dd><p>view of <cite>rules</cite> page</p>
@@ -542,6 +298,7 @@ redirect user into game if is already started</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">server.app.main package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-server.app.main.forms">server.app.main.forms module</a></li>
 <li><a class="reference internal" href="#module-server.app.main.models">server.app.main.models module</a></li>
 <li><a class="reference internal" href="#module-server.app.main.routes">server.app.main.routes module</a></li>
@@ -553,13 +310,13 @@ redirect user into game if is already started</p>
   </div>
   <div>
     <h4>Previous topic</h4>
-    <p class="topless"><a href="server.app.html"
-                          title="previous chapter">server.app package</a></p>
+    <p class="topless"><a href="server.app.game.events.html"
+                          title="previous chapter">server.app.game.events package</a></p>
   </div>
   <div>
     <h4>Next topic</h4>
-    <p class="topless"><a href="server.app.main.events.html"
-                          title="next chapter">server.app.main.events package</a></p>
+    <p class="topless"><a href="GameEngine.html"
+                          title="next chapter">GameEngine package</a></p>
   </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
@@ -592,10 +349,10 @@ redirect user into game if is already started</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="server.app.main.events.html" title="server.app.main.events package"
+          <a href="GameEngine.html" title="GameEngine package"
              >next</a> |</li>
         <li class="right" >
-          <a href="server.app.html" title="server.app package"
+          <a href="server.app.game.events.html" title="server.app.game.events package"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Maze Game  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="server.html" >server package</a> &#187;</li>

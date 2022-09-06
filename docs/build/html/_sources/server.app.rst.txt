@@ -1,12 +1,18 @@
 server.app package
 ==================
 
+Subpackages
+-----------
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
-   server.app.main
    server.app.api
+   server.app.game
+   server.app.main
 
+Module contents
+---------------
 
 .. automodule:: server.app
    :members:
