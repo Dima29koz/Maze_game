@@ -24,10 +24,10 @@
                         {% endfor %}
                     </ul>
                     {{ field.label(class="err", value=field.errors[0]) }}
-                 {% else %}
+                {% else %}
                     {{ field(class="form-control") }}
                     {{ field.label() }}
-                 {% endif %}
+                {% endif %}
             </div>
         {% endfor %}
 

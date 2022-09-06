@@ -18,14 +18,16 @@ class User(db.Model, UserMixin):
     :type date: DateTime
     """
 
-    def __init__(self, user_name: str, pwd: str):
+    def __init__(self, user_name: str, user_email: str, pwd: str):
         self.user_name = user_name
+        self.user_email = user_email
         self.pwd = generate_password_hash(pwd)
         self.add()
 
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(50), unique=True)
+    user_email = db.Column(db.String(50))
     pwd = db.Column(db.String(256), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -51,6 +53,18 @@ class User(db.Model, UserMixin):
         except Exception as e:
             print(e)
             db.session.rollback()
+
+    def set_email(self, new_email: str):
+        self.user_email = new_email
+        db.session.commit()
+
+    def set_name(self, new_name: str):
+        self.user_name = new_name
+        db.session.commit()
+
+    def set_pwd(self, new_pwd: str):
+        self.pwd = generate_password_hash(new_pwd)
+        db.session.commit()
 
 
 def get_user_by_id(user_id: int) -> User | None:

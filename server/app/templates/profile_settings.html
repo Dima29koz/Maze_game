@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Настройки профиля
+{% endblock %}
+
+{% block script %}
+{% endblock %}
+
+{% block main %}
+<div class="container my-3">
+    <h2>Настройки профиля</h2>
+    <div class="card card-body">
+        <div class="d-flex flex-row justify-content-between pb-2">
+            <div class="p-2 px-0">Электронная почта</div>
+            <div class="p-2">{{ cur_email }}</div>
+            <div>
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#EmailCollapse" role="button" aria-expanded="false" aria-controls="EmailCollapse">
+                    Изменить
+                </a>
+            </div>
+        </div>
+        <div class="collapse" id="EmailCollapse">
+            <form action="{{ url_for('main.profile_settings_email') }}" method="post" class="form-contact">
+                {{ email_form.hidden_tag() }}
+                <div class="row g-3 align-items-left">
+                    <div class="col-3">{{ email_form.new_email.label(class="col-form-label") }}</div>
+                    <div class="col-5">
+                        <div class="d-flex flex-row">
+                           {% if email_form.new_email.errors %}
+
+                            {{ email_form.new_email(class="form-control") }}
+                            <ul class="errors p-0 m-0">
+                                {% for error in email_form.new_email.errors %}
+                                    <li class="error">
+                                        <span class="err">
+                                            {{ error }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                                {{ email_form.new_email(class="form-control") }}
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <div class="col">{{ email_form.submit(class="btn btn-primary") }}</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <div class="d-flex flex-row justify-content-between pb-2">
+            <div class="p-2 px-0">Никнейм</div>
+            <div class="p-2">{{ cur_name }}</div>
+            <div>
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#NameCollapse" role="button" aria-expanded="false" aria-controls="EmailCollapse">
+                    Изменить
+                </a>
+            </div>
+        </div>
+        <div class="collapse" id="NameCollapse">
+            <form action="{{ url_for('main.profile_settings_name') }}" method="post" class="form-contact">
+                {{ name_form.hidden_tag() }}
+                <div class="row g-3 align-items-left">
+                    <div class="col-3">{{ name_form.new_name.label(class="col-form-label") }}</div>
+                    <div class="col-5">
+                        <div class="d-flex flex-row">
+                           {% if name_form.new_name.errors %}
+
+                            {{ name_form.new_name(class="form-control") }}
+                            <ul class="errors p-0 m-0">
+                                {% for error in name_form.new_name.errors %}
+                                    <li class="error">
+                                        <span class="err">
+                                            {{ error }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                                {{ name_form.new_name(class="form-control") }}
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <div class="col">{{ name_form.submit(class="btn btn-primary") }}</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card card-body">
+        <div class="d-flex flex-row justify-content-between pb-2">
+            <div class="p-2 px-0">Пароль</div>
+            <div class="p-2">{{ cur_pwd }}</div>
+            <div>
+                <a class="btn btn-primary" data-bs-toggle="collapse" href="#PwdCollapse" role="button" aria-expanded="false" aria-controls="EmailCollapse">
+                    Изменить
+                </a>
+            </div>
+        </div>
+        <div class="collapse" id="PwdCollapse">
+            <form action="{{ url_for('main.profile_settings_pwd') }}" method="post" class="form-contact">
+                {{ pwd_form.hidden_tag() }}
+                <div class="row g-3 align-items-left">
+                    <div class="col-3">{{ pwd_form.new_pwd.label(class="col-form-label") }}</div>
+                    <div class="col-5">
+                        {{ pwd_form.new_pwd(class="form-control") }}
+                    </div>
+                    {% if pwd_form.new_pwd.errors %}
+                    <div class="col">
+                        <div class="d-flex flex-row">
+                            <ul class="errors p-0 m-0">
+                                {% for error in pwd_form.new_pwd.errors %}
+                                    <li class="error">
+                                        <span class="err">
+                                            {{ error }}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="row g-3 align-items-left">
+                    <div class="col-3">{{ pwd_form.new_pwd2.label(class="col-form-label") }}</div>
+                    <div class="col-5">
+                        <div class="d-flex flex-row">
+                            {{ pwd_form.new_pwd2(class="form-control") }}
+                        </div>
+                    </div>
+                    <div class="col">{{ pwd_form.submit(class="btn btn-primary") }}</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
