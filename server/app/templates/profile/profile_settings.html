@@ -5,14 +5,52 @@
 {% endblock %}
 
 {% block script %}
+    <script src="{{ url_for('static', filename='scripts/profile_settings.js') }}"></script>
 {% endblock %}
 
 {% block main %}
+
+{% if success %}
+<div class="offcanvas offcanvas-top show alert alert-success" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel">
+    <div class="offcanvas-header text-center">
+        <h5 class="offcanvas-title" id="offcanvasLabel">
+            {% if msg == 'email' %}
+                почта успешно изменена!
+            {% endif %}
+            {% if msg == 'name' %}
+                ник успешно изменен!
+            {% endif %}
+            {% if msg == 'pwd' %}
+                пароль успешно изменен!
+            {% endif %}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% if msg == 'email' %}
+            <p>Для подтверждения почты перейдите по ссылке из письма.</p>
+            <p>В случае если письмо не пришло, проверьте в папке "спам"</p>
+        {% endif %}
+  </div>
+</div>
+{% endif %}
+
 <div class="container my-3">
     <h2>Настройки профиля</h2>
+    <!--    Email   -->
     <div class="card card-body">
         <div class="d-flex flex-row justify-content-between pb-2">
-            <div class="p-2 px-0">Электронная почта</div>
+            <div class="d-flex align-items-left">
+                <div class="p-2 px-0">Электронная почта</div>
+                <div>
+                    {% if current_user.is_email_verified %}
+                        ✅
+                    {% else %}
+                        ❌
+                    {% endif %}
+                </div>
+            </div>
+
             <div class="p-2">{{ cur_email }}</div>
             <div>
                 <a class="btn btn-primary" data-bs-toggle="collapse" href="#EmailCollapse" role="button" aria-expanded="false" aria-controls="EmailCollapse">
@@ -45,12 +83,13 @@
                         </div>
 
                     </div>
-                    <div class="col">{{ email_form.submit(class="btn btn-primary") }}</div>
+                    <div class="col">{{ email_form.submit(class="btn btn-primary", onclick='') }}</div>
                 </div>
             </form>
         </div>
     </div>
 
+    <!--    Nickname   -->
     <div class="card card-body">
         <div class="d-flex flex-row justify-content-between pb-2">
             <div class="p-2 px-0">Никнейм</div>
@@ -92,6 +131,7 @@
         </div>
     </div>
 
+    <!--    Password   -->
     <div class="card card-body">
         <div class="d-flex flex-row justify-content-between pb-2">
             <div class="p-2 px-0">Пароль</div>

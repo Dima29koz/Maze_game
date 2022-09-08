@@ -81,9 +81,14 @@ class ChangeNameForm(FlaskForm):
 
 
 class ChangePwdForm(FlaskForm):
-    new_pwd = PasswordField('Пароль:', validators=[
+    new_pwd = PasswordField('Новый пароль:', validators=[
         DataRequired(),
         EqualTo('new_pwd2', message='Пароли не совпадают'),
         Length(min=4, max=20, message='Пароль должен иметь длину от 4 до 20 символов')])
     new_pwd2 = PasswordField('Повторите пароль:', validators=[DataRequired()])
     submit = SubmitField("Сохранить пароль", id='ChangePwd')
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    username = StringField('Никнейм:', validators=[DataRequired()])
+    submit = SubmitField('Запросить сброс пароля')

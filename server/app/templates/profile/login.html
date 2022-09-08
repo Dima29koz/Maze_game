@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Страница входа
+{% endblock %}
+
+{% block main %}
+<div class="form-signin text-center">
+    <form method="post" class="form-contact">
+        {{ form.hidden_tag() }}
+        <h1 class="h3 mb-3 fw-normal">Войти:</h1>
+        {% for cat, msg in get_flashed_messages(True) %}
+            <div class="alert flash-{{cat}}">{{msg}}</div>
+        {% endfor %}
+        {% for field in form if field.name not in ['csrf_token', 'remember', 'submit'] %}
+            <div class="form-floating">
+                {% if field.errors %}
+                    {{ field(class="form-control") }}
+                    <ul class="errors">
+                        {% for error in field.errors %}
+                            <li class="error">
+                                <span class="err">
+                                    {{ error }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    {{ field.label(class="err", value=field.errors[0]) }}
+                 {% else %}
+                    {{ field(class="form-control") }}
+                    {{ field.label() }}
+                 {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="checkbox mb-3">{{ form.remember() }} {{ form.remember.label() }}</div>
+        <div>{{ form.submit(class="w-100 btn btn-lg btn-primary") }}</div>
+        <div class="d-flex justify-content-between">
+            <a href="{{url_for('main.registration')}}">Регистрация</a>
+            <a href="{{url_for('main.reset_password_request')}}">Забыли пароль?</a>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}

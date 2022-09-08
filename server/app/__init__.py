@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
@@ -8,6 +9,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 sio = SocketIO()
 migrate = Migrate()
+mail = Mail()
 
 
 def create_app(config) -> Flask:
@@ -23,6 +25,7 @@ def create_app(config) -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
+    mail.init_app(app)
 
     with app.test_request_context():
         db.create_all()

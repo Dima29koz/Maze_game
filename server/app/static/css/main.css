@@ -27,6 +27,12 @@
     height: fit-content;
 }
 
+.flash-info {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+}
+
 .error {
     margin-bottom: 0px;
 }

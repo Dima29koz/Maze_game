@@ -14,6 +14,12 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     MANAGE_SESSION = True
+    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')  # введите свой адрес электронной почты здесь
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')  # и здесь
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')  # введите пароль
 
 
 class DevelopmentConfig(BaseConfig):

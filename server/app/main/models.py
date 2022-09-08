@@ -1,5 +1,8 @@
 from datetime import datetime
+from time import time
 
+import jwt
+from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -28,6 +31,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     user_name = db.Column(db.String(50), unique=True)
     user_email = db.Column(db.String(50))
+    is_email_verified = db.Column(db.Boolean, default=False)
     pwd = db.Column(db.String(256), nullable=False)
     date = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -56,6 +60,7 @@ class User(db.Model, UserMixin):
 
     def set_email(self, new_email: str):
         self.user_email = new_email
+        self.is_email_verified = False
         db.session.commit()
 
     def set_name(self, new_name: str):
@@ -65,6 +70,23 @@ class User(db.Model, UserMixin):
     def set_pwd(self, new_pwd: str):
         self.pwd = generate_password_hash(new_pwd)
         db.session.commit()
+
+    def verify_email(self):
+        self.is_email_verified = True
+        db.session.commit()
+
+    def get_token(self, token_type: str, expires_in=600):
+        return jwt.encode(
+            {token_type: self.id, 'exp': time() + expires_in},
+            current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_token(token: str, token_type: str):
+        try:
+            user_id = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])[token_type]
+        except Exception as _:
+            return
+        return get_user_by_id(user_id)
 
 
 def get_user_by_id(user_id: int) -> User | None:
