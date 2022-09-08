@@ -7,6 +7,7 @@ from GameEngine.field_generator.river_generator import RiverGenerator
 from GameEngine.field.cell import (
     Cell, CellRiver, CellExit, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CellClinic)
 from GameEngine.field.wall import *
+from GameEngine.globalEnv.types import Position
 
 
 class FieldGenerator:
@@ -41,7 +42,7 @@ class FieldGenerator:
         return self.exit_cells
 
     def _get_neighbour_cell(self, cell: Cell, direction: Directions):
-        x, y = direction.calc(cell.x, cell.y)
+        x, y = cell.position.get_adjacent(direction).get()
         try:
             return self.field[y][x]
         except IndexError:
@@ -75,7 +76,7 @@ class FieldGenerator:
             self.pattern[1][2].is_not_none = False
 
     def _generate_base_field(self):
-        self.field = [[Cell(col, row) if self.pattern[row][col].is_not_none else None
+        self.field = [[Cell(Position(col, row)) if self.pattern[row][col].is_not_none else None
                        for col in range(self.cols)] for row in range(self.rows)]
 
         ground_cells = []
@@ -97,19 +98,19 @@ class FieldGenerator:
         """
         if is_separated_armory:
             cell = choice(self.ground_cells)
-            self.field[cell.y][cell.x] = CellArmoryWeapon(cell.x, cell.y)
+            self.field[cell.position.y][cell.position.x] = CellArmoryWeapon(cell.position)
             self.ground_cells.remove(cell)
             cell = choice(self.ground_cells)
-            self.field[cell.y][cell.x] = CellArmoryExplosive(cell.x, cell.y)
+            self.field[cell.position.y][cell.position.x] = CellArmoryExplosive(cell.position)
             self.ground_cells.remove(cell)
         else:
             cell = choice(self.ground_cells)
-            self.field[cell.y][cell.x] = CellArmory(cell.x, cell.y)
+            self.field[cell.position.y][cell.position.x] = CellArmory(cell.position)
             self.ground_cells.remove(cell)
 
     def _generate_clinic(self):
         cell = choice(self.ground_cells)
-        self.field[cell.y][cell.x] = CellClinic(cell.x, cell.y)
+        self.field[cell.position.y][cell.position.x] = CellClinic(cell.position)
         self.ground_cells.remove(cell)
 
     def _generate_connections(self):
@@ -118,7 +119,7 @@ class FieldGenerator:
                 if self.field[row][col] is not None:
                     neighbours = {}
                     for direction in Directions:
-                        x, y = direction.calc(col, row)
+                        x, y = Position(col, row).get_adjacent(direction).get()
                         if x in range(self.cols) and y in range(self.rows) and isinstance(self.field[y][x], Cell):
                             neighbours.update({direction: self.field[y][x]})
                         else:
@@ -179,9 +180,9 @@ class FieldGenerator:
                     dirs.append(direction)
             direction = choice(dirs)
             cell.add_wall(direction, WallExit())
-            exit_cell = CellExit(*direction.calc(cell.x, cell.y), -direction)
+            exit_cell = CellExit(cell.position.get_adjacent(direction), -direction)
             exit_cells.append(exit_cell)
-            self.field[exit_cell.y][exit_cell.x] = exit_cell
+            self.field[exit_cell.position.y][exit_cell.position.x] = exit_cell
         return exit_cells
 
     def _spawn_treasures(self, treasures_rules: list[int]):

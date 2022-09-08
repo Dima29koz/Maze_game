@@ -39,7 +39,7 @@ class Player:
     def __init__(self, cell: Cell, name: str, is_bot: bool = False, turn: int = 0):
         self.name = name
         self.cell = cell
-        self.spawn_point = {'x': cell.x, 'y': cell.y}
+        self.spawn_point = {'x': cell.position.x, 'y': cell.position.y}
         self.health_max = rules.get('player_stat').get('max_health')
         self.health = self.health_max
         self.bombs_max = rules.get('player_stat').get('max_bombs')

@@ -26,8 +26,8 @@ class TestCase(unittest.TestCase):
 
     @classmethod
     def setUpData(cls):
-        u1 = server.app.main.models.User('Tester1', '1')
-        u2 = server.app.main.models.User('Tester2', '1')
+        u1 = server.app.main.models.User('Tester1', 't1@t.t', '1')
+        u2 = server.app.main.models.User('Tester2', 't1@t.t', '1')
         rules_form = RulesForm()
         rules_form.room_name.data = 'test_room'
         rules_form.pwd.data = '1'

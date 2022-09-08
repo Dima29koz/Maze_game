@@ -102,14 +102,17 @@ class Field:
         return [[cell.to_dict() if cell else {} for cell in row] for row in self.field]
 
     def get_field_pattern_list(self):
-        return [[{'x': cell.x, 'y': cell.y} if cell else None for cell in row[1:-1]] for row in self.field[1:-1]]
+        return [
+            [{'x': cell.position.x, 'y': cell.position.y} if cell else None for cell in row[1:-1]]
+            for row in self.field[1:-1]
+        ]
 
     def get_treasures_list(self):
-        return [{'x': treasure.cell.x, 'y': treasure.cell.y, 'type': treasure.t_type.name}
+        return [{'x': treasure.cell.position.x, 'y': treasure.cell.position.y, 'type': treasure.t_type.name}
                 for treasure in self.treasures]
 
     def get_players_list(self):
-        return [{'x': player.cell.x, 'y': player.cell.y, 'name': player.name}
+        return [{'x': player.cell.position.x, 'y': player.cell.position.y, 'name': player.name}
                 for player in self.players if player.is_alive]
 
     def get_spawn_points(self):
@@ -137,7 +140,7 @@ class Field:
         return response
 
     def _get_neighbour_cell(self, cell: Cell, direction: Directions):
-        x, y = direction.calc(cell.x, cell.y)
+        x, y = cell.position.get_adjacent(direction).get()
         try:
             return self.field[y][x]
         except IndexError:

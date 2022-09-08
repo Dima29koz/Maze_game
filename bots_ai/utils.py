@@ -33,8 +33,7 @@ def is_node_is_valid(node: FieldState):
             if type(cell_obj) is cell.CellRiverMouth:
                 may_have_input = False
                 for direction in Directions:
-                    x, y = direction.calc(cell_obj.x, cell_obj.y)
-                    neighbour = node.field.get_field()[y][x]
+                    neighbour = node.field.get_cell(cell_obj.position.get_adjacent(direction))
                     if neighbour:
                         if type(neighbour) is cell.CellRiver and neighbour.direction is -direction:
                             may_have_input = True

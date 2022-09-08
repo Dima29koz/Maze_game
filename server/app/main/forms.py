@@ -59,7 +59,9 @@ class LoginForm(FlaskForm):
 
 
 class ChangeEmailForm(FlaskForm):
-    new_email = EmailField('Новый адрес:', validators=[DataRequired(), Email(message='Введен некорректный email адрес')])
+    new_email = EmailField('Новый адрес:', validators=[
+        DataRequired(),
+        Email(message='Введен некорректный email адрес')])
     submit = SubmitField("Сохранить адрес", id='ChangeEmail')
 
 

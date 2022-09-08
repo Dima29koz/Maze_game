@@ -64,8 +64,8 @@ class InitGenerator:
         none_cols = [0, self._cols - 1]
         none_rows = [0, self._rows - 1]
 
-        field = [[UnknownCell(col, row)
-                  if row not in none_rows and col not in none_cols else NoneCell(col, row)
+        field = [[UnknownCell(Position(col, row))
+                  if row not in none_rows and col not in none_cols else NoneCell(Position(col, row))
                   for col in range(self._cols)] for row in range(self._rows)]
         self._create_border_walls(field)
         return field
@@ -76,7 +76,7 @@ class InitGenerator:
             for cell_obj in row:
                 if type(cell_obj) is NoneCell:
                     for direction in Directions:
-                        x, y = direction.calc(cell_obj.x, cell_obj.y)
+                        x, y = cell_obj.position.get_adjacent(direction).get()
                         try:
                             neighbour = field[y][x]
                         except IndexError:

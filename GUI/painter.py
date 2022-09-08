@@ -41,8 +41,8 @@ class Painter:
                     self.draw_cell(cell, dx, dy, ts)
                     self.draw_walls(cell, dx, dy, ts)
 
-    def draw_cell(self, cell, dx, dy, ts):
-        x, y = cell.x * ts + dx, cell.y * ts + dy
+    def draw_cell(self, cell: c.Cell | c.CellRiver, dx, dy, ts):
+        x, y = cell.position.x * ts + dx, cell.position.y * ts + dy
         pygame.draw.rect(self.sc, pygame.Color(get_cell_color(cell)),
                          (x + 2, y + 2, ts - 2, ts - 2))
         if type(cell) in [c.CellRiver, c.CellRiverMouth, c.CellRiverBridge]:
@@ -83,7 +83,7 @@ class Painter:
         self.sc.blit(text, place)
 
     def draw_walls(self, cell: c.Cell, dx, dy, ts):
-        x, y = cell.x * ts + dx, cell.y * ts + dy
+        x, y = cell.position.x * ts + dx, cell.position.y * ts + dy
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.top]),
                          (x, y), (x + ts - 2, y), 2)
 
@@ -98,7 +98,7 @@ class Painter:
 
     def draw_treasures(self, treasures, dx, dy, ts):
         for treasure in treasures:
-            x, y = treasure.cell.x * ts + dx, treasure.cell.y * ts + dy
+            x, y = treasure.cell.position.x * ts + dx, treasure.cell.position.y * ts + dy
             self.draw_treasure(treasure, x, y, ts)
 
     def draw_treasure(self, treasure, x, y, ts):
@@ -125,8 +125,8 @@ class Painter:
                 self.draw_bot_ai_player(*player, dx, dy, ts)
 
     def draw_player(self, player, dx, dy, ts):
-        x = player.cell.x * ts + ts // 2 + dx
-        y = player.cell.y * ts + ts // 2 + dy
+        x = player.cell.position.x * ts + ts // 2 + dx
+        y = player.cell.position.y * ts + ts // 2 + dy
         name = player.name
         if player.is_active:
             pygame.draw.circle(self.sc, (255, 255, 255),
@@ -135,7 +135,7 @@ class Painter:
                            (x, y), ts // 4)
 
         if player.treasure:
-            x, y = player.cell.x * ts, player.cell.y * ts
+            x, y = player.cell.position.x * ts, player.cell.position.y * ts
             self.draw_treasure(player.treasure, x, y, ts)
 
     def draw_bot_ai_player(self, player_name, pl_pos, dx, dy, ts):

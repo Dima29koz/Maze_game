@@ -1,5 +1,6 @@
 from GameEngine.field import wall, cell
 from GameEngine.globalEnv.enums import Directions
+from GameEngine.globalEnv.types import Position
 
 
 class UnknownWall(wall.WallEmpty):
@@ -13,8 +14,8 @@ class UnbreakableWall(wall.WallOuter):
 
 
 class UnknownCell(cell.Cell):
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
         self.walls: dict[Directions, UnknownWall] = {
             Directions.top: UnknownWall(),
             Directions.right: UnknownWall(),
@@ -26,8 +27,8 @@ class UnknownCell(cell.Cell):
 
 
 class NoneCell(cell.Cell):
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
         self.walls: dict[Directions, UnknownWall] = {
             Directions.top: UnknownWall(),
             Directions.right: UnknownWall(),

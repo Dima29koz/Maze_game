@@ -9,17 +9,14 @@ class Cell:
     """
     Base Cell object
 
-    :param x: x coordinate of cell
-    :type x: int
-    :param y: y coordinate of cell
-    :type y: int
+    :param position: position of cell
+    :type position: Position
     :ivar walls: walls of cell
     :type walls: dict[Directions, WallEmpty]
 
     """
-    def __init__(self, x: int, y: int):
-        self.x, self.y = x, y
-        self.position = Position(x, y)
+    def __init__(self, position: Position):
+        self.position = position
         self.walls: dict[Directions, WallEmpty] = {
             Directions.top: WallEmpty(),
             Directions.right: WallEmpty(),
@@ -50,8 +47,8 @@ class Cell:
         """converts cell to dict"""
         return {
             'type': self.__class__.__name__,
-            'x': self.x,
-            'y': self.y,
+            'x': self.position.x,
+            'y': self.position.y,
             'walls': {direction.name: wall.__class__.__name__ for direction, wall in self.walls.items()}
         }
 
@@ -59,14 +56,7 @@ class Cell:
         """
         :return: direction between adjacent cells
         """
-        if self.x > other.x:
-            return Directions.left
-        if self.x < other.x:
-            return Directions.right
-        if self.y > other.y:
-            return Directions.top
-        if self.y < other.y:
-            return Directions.bottom
+        return self.position - other.position
 
     def __repr__(self):
         return 'c'
@@ -74,8 +64,8 @@ class Cell:
 
 class CellRiver(Cell):
     """River cell object"""
-    def __init__(self, x: int, y: int, direction: Directions = None):
-        super().__init__(x, y)
+    def __init__(self, position: Position, direction: Directions = None):
+        super().__init__(position)
         self.river = []
         self.direction = direction
 
@@ -133,8 +123,8 @@ class CellRiver(Cell):
 
 
 class CellRiverBridge(CellRiver):
-    def __init__(self, x: int, y: int, direction: Directions = None):
-        super().__init__(x, y, direction)
+    def __init__(self, position: Position, direction: Directions = None):
+        super().__init__(position, direction)
 
     def active(self, previous_cell):
         return self
@@ -142,8 +132,8 @@ class CellRiverBridge(CellRiver):
 
 class CellRiverMouth(CellRiver):
     """River Mouth cell object"""
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
 
     def idle(self, previous_cell):
         return self
@@ -160,8 +150,8 @@ class CellRiverMouth(CellRiver):
 
 class CellExit(Cell):
     """Exit cell object"""
-    def __init__(self, x: int, y: int, direction: Directions):
-        super().__init__(x, y)
+    def __init__(self, position: Position, direction: Directions):
+        super().__init__(position)
         self.walls = {
             Directions.top: WallOuter(),
             Directions.right: WallOuter(),
@@ -179,8 +169,8 @@ class CellExit(Cell):
 
 class CellClinic(Cell):
     """Clinic cell object"""
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
 
     def idle(self, previous_cell):
         return self
@@ -194,8 +184,8 @@ class CellClinic(Cell):
 
 class CellArmory(Cell):
     """Armory cell object"""
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
 
     def idle(self, previous_cell):
         return self
@@ -209,8 +199,8 @@ class CellArmory(Cell):
 
 class CellArmoryWeapon(CellArmory):
     """Armory Weapon cell object"""
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
 
     def idle(self, previous_cell):
         return self
@@ -224,8 +214,8 @@ class CellArmoryWeapon(CellArmory):
 
 class CellArmoryExplosive(CellArmory):
     """Armory Explosive cell object"""
-    def __init__(self, x: int, y: int):
-        super().__init__(x, y)
+    def __init__(self, position: Position):
+        super().__init__(position)
 
     def idle(self, previous_cell):
         return self

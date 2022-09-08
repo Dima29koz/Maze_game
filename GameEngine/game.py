@@ -59,4 +59,4 @@ class Game:
         """returns coordinates of player if player is spawned"""
         for player in self.field.players:
             if player.name == player_name:
-                return {'x': player.cell.x, 'y': player.cell.y}
+                return {'x': player.cell.position.x, 'y': player.cell.position.y}

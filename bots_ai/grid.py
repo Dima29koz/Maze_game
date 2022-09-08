@@ -34,7 +34,7 @@ class Grid:
         return self._field[position.y][position.x]
 
     def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
-        x, y = direction.calc(position.x, position.y)
+        x, y = position.get_adjacent(direction).get()
         try:
             return self._field[y][x]
         except IndexError:
@@ -71,7 +71,7 @@ class Grid:
         :param direction: direction of entrance wall
         :param position: position of exit cell
         """
-        cell_exit = cell.CellExit(position.x, position.y, direction)
+        cell_exit = cell.CellExit(position, direction)
         for dir_ in Directions:
             if dir_ is direction:
                 continue

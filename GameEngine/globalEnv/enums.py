@@ -25,18 +25,6 @@ class Directions(Enum):
         if self is Directions.right:
             return Directions.left
 
-    def calc(self, x: int, y: int) -> tuple[int, int]:
-        """return changed coordinates by direction"""
-        if self is Directions.top:
-            y -= 1
-        elif self is Directions.bottom:
-            y += 1
-        elif self is Directions.left:
-            x -= 1
-        elif self is Directions.right:
-            x += 1
-        return x, y
-
 
 class Actions(Enum):
     """

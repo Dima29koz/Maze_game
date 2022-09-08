@@ -110,7 +110,7 @@ class FieldState:
         if new_type is NoneCell:
             if type(target_cell) is NoneCell or type(target_cell) is cell.CellExit:
                 return
-            self.field.set_cell(NoneCell(position.x, position.y), position)
+            self.field.set_cell(NoneCell(position), position)
             return
 
         if new_type is cell.CellExit:
@@ -130,7 +130,7 @@ class FieldState:
 
         walls = self.field.get_cell(position).walls
         self.field.set_cell(
-            new_type(position.x, position.y) if not direction else cell.CellRiver(position.x, position.y, direction),
+            new_type(position) if not direction else cell.CellRiver(position, direction),
             position)
         self.field.set_walls(position, copy(walls))
 
