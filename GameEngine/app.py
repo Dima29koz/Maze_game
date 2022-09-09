@@ -6,7 +6,7 @@ import requests
 from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions, Directions
-from GameEngine.globalEnv.types import Position
+from GameEngine.globalEnv.types import Position, LevelPosition
 
 from GameEngine.rules import rules as ru
 from bots_ai.core import BotAI
@@ -84,7 +84,7 @@ class LocalGame:
         players_: dict[str, Position] = {
             player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in self.players}
         self.bot = BotAI(self.rules, players_)
-        self.bot.real_field = self.game.field.field  # todo only for testing
+        self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
     def run(self):
         field = self.game.field
@@ -125,5 +125,5 @@ def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
 if __name__ == "__main__":
     r_id = 43
     s_url = '192.168.1.118:5000'
-    main(room_id=r_id, server_url=s_url, with_bot=True)
-    # main()
+    # main(room_id=r_id, server_url=s_url, with_bot=True)
+    main()

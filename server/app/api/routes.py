@@ -45,7 +45,11 @@ def get_game_field(room_id):
     """returns json with game_field data. use it only for testing"""
     room = get_room_by_id(room_id)
     if room:
-        return jsonify(room.on_get_field())
+        try:
+            return jsonify(room.on_get_field())
+        except Exception as e:
+            print(e)
+            return {'field': 'Error - old engine version'}
     return {'field': 'Error - id'}
 
 

@@ -1,12 +1,13 @@
-from typing import Type
+from typing import Type, Union
 
 from GameEngine.globalEnv.enums import Directions
-from GameEngine.globalEnv.types import Position
+from GameEngine.globalEnv.types import Position, LevelPosition
 from GameEngine.field.wall import WallEmpty, WallOuter, WallEntrance
 
 
-class Cell:
+class NoneCell:
     """
+
     Base Cell object
 
     :param position: position of cell
@@ -27,21 +28,21 @@ class Cell:
         """add wall by direction"""
         self.walls[direction] = wall
 
-    def idle(self, previous_cell):
-        """idle handler"""
-        return self
-
-    def active(self, previous_cell):
-        """active handler"""
-        return self.idle(previous_cell)
-
-    def treasure_movement(self):
-        """treasure movement handler"""
-        return self
-
     def check_wall(self, direction: Directions) -> tuple[bool, bool, Type[WallEmpty]]:
         """return wall attributes"""
         return self.walls[direction].handler()
+
+    def idle(self, previous_cell) -> 'CELL':
+        """idle handler"""
+        raise NotImplementedError
+
+    def active(self, previous_cell) -> 'CELL':
+        """active handler"""
+        raise NotImplementedError
+
+    def treasure_movement(self) -> 'CELL':
+        """treasure movement handler"""
+        raise NotImplementedError
 
     def to_dict(self) -> dict:
         """converts cell to dict"""
@@ -49,14 +50,35 @@ class Cell:
             'type': self.__class__.__name__,
             'x': self.position.x,
             'y': self.position.y,
+            'level_pos': self.position.level_position.to_dict(),
             'walls': {direction.name: wall.__class__.__name__ for direction, wall in self.walls.items()}
         }
 
-    def __sub__(self, other) -> Directions:
+    def __sub__(self, other: 'CELL') -> Directions | None:
         """
         :return: direction between adjacent cells
         """
+        if not self.position.level_position == other.position.level_position:
+            return None
         return self.position - other.position
+
+    def __repr__(self):
+        return 'NoneCell'
+
+
+class Cell(NoneCell):
+    """Ground Cell object"""
+    def __init__(self, position: Position):
+        super().__init__(position)
+
+    def idle(self, previous_cell):
+        return self
+
+    def active(self, previous_cell):
+        return self.idle(previous_cell)
+
+    def treasure_movement(self):
+        return self
 
     def __repr__(self):
         return 'c'
@@ -225,3 +247,11 @@ class CellArmoryExplosive(CellArmory):
 
     def __repr__(self):
         return 'E'
+
+
+CELL = Union[
+    NoneCell, Cell,
+    CellRiver, CellRiverMouth, CellRiverBridge,
+    CellExit, CellClinic, CellArmory,
+    CellArmoryExplosive, CellArmoryWeapon,
+]

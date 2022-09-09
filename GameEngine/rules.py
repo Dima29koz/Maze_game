@@ -4,11 +4,14 @@ rules = {
     'generator_rules': {
         'seed': 0,
         'rows': 5, 'cols': 5,
+        'dimensions_amount': 1,
+        'levels_amount': 1,
         'exits_amount': 2,
         'is_not_rect': False,
         'is_separated_armory': False,
         'river_rules': {
             'has_river': True,
+            'has_fort': False,
             'min_coverage': 30,
             'max_coverage': 70,
             'min_len': 2,

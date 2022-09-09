@@ -4,7 +4,7 @@ from pygame.locals import *
 from GUI.painter import Painter
 from GameEngine.field.field import Field
 from GameEngine.globalEnv.enums import Directions, Actions
-from GameEngine.globalEnv.types import Position
+from GameEngine.globalEnv.types import Position, LevelPosition
 from GUI.utils import get_key_act
 from GUI.button import Button
 from GUI.bot_ai_spectator import BotAISpectator
@@ -51,7 +51,10 @@ class SpectatorGUI:
         self.clock.tick(self.fps)
         self.sc.fill(pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
-        self.painter.draw(grid=self.field.field, players=self.field.players, treasures=self.field.treasures)
+        self.painter.draw(
+            grid=self.field.game_map.get_level(LevelPosition(0, 0, 0)).field,
+            players=self.field.players,
+            treasures=self.field.treasures)
         if self.bot_spectator:
             max_y = self.res[1] // 3
             fields, fields_amount = self.bot_spectator.get_real_spawn_leaves(active_player)
@@ -75,7 +78,7 @@ class SpectatorGUI:
         self.sc.blit(text, place)
 
     def draw_leaves(self, fields: list[tuple[list[list], dict[str, Position | None]]], start_y):
-        dx = len(self.field.field[0]) * self.tile_size + DIST
+        dx = len(self.field.game_map.get_level(LevelPosition(0, 0, 0)).field[0]) * self.tile_size + DIST
         pygame.draw.line(self.sc, (255, 0, 0),
                          (dx, start_y), (self.res[0], start_y), 2)
         cols = len(fields[0][0][0])

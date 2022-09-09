@@ -2,13 +2,15 @@ from functools import partial
 from operator import attrgetter
 from random import choice, sample
 
-from GameEngine.field_generator.field_generator import FieldGenerator
+from GameEngine.field.game_map import GameMap
+from GameEngine.field_generator.map_generator import MapGenerator
 from GameEngine.field import response as r, cell as c, wall as w
 from GameEngine.entities.player import Player
 from GameEngine.entities.treasure import Treasure
 from GameEngine.globalEnv.enums import Actions, Directions
 from GameEngine.field.cell import Cell
 from GameEngine.bot_names import bots as data_bots
+from GameEngine.globalEnv.types import Position, LevelPosition
 
 
 class Field:
@@ -21,8 +23,8 @@ class Field:
     :type rules: dict
     :ivar gameplay_rules: gameplay rules
     :type gameplay_rules: dict
-    :ivar field: game field
-    :type field: list[list[Cell | None]]
+    :ivar game_map: game map
+    :type game_map: GameMap
     :ivar exit_cells: list of exit cell objects
     :type exit_cells: list[c.CellExit]
     :ivar treasures: treasures dropped on filed
@@ -32,8 +34,8 @@ class Field:
     """
     def __init__(self, rules: dict):
         self.gameplay_rules = rules['gameplay_rules']
-        generator = FieldGenerator(rules['generator_rules'])
-        self.field = generator.get_field()
+        generator = MapGenerator(rules['generator_rules'])
+        self.game_map: GameMap = generator.get_map()
         self.exit_cells: list[c.CellExit] = generator.get_exit_cells()
         self.treasures: list[Treasure] = generator.get_treasures()
         self.players: list[Player] = []
@@ -50,7 +52,7 @@ class Field:
         for i in range(bots_amount):
             spawn_cell = None
             while spawn_cell is None:
-                spawn_cell = choice(choice(self.field))
+                spawn_cell = choice(choice(self.game_map.get_level(LevelPosition(0, 0, 0)).field))
             bots.append(Player(spawn_cell, bot_names[i], True))
         return bots
 
@@ -61,7 +63,8 @@ class Field:
         :returns: True if player can be spawned, else False
         :rtype: bool
         """
-        player = Player(self.field[spawn_point.get('y')][spawn_point.get('x')], name, turn=turn)
+        spawn_cell = self.game_map.get_level(LevelPosition(0, 0, 0)).field[spawn_point.get('y')][spawn_point.get('x')]
+        player = Player(spawn_cell, name, turn=turn)
         if player not in self.players:
             self.players.append(player)
             return True
@@ -99,13 +102,10 @@ class Field:
         return [player.to_dict() for player in self.players]
 
     def get_field_list(self):
-        return [[cell.to_dict() if cell else {} for cell in row] for row in self.field]
+        return self.game_map.get_level(LevelPosition(0, 0, 0)).get_field_list()
 
     def get_field_pattern_list(self):
-        return [
-            [{'x': cell.position.x, 'y': cell.position.y} if cell else None for cell in row[1:-1]]
-            for row in self.field[1:-1]
-        ]
+        return self.game_map.get_level(LevelPosition(0, 0, 0)).get_field_pattern_list()
 
     def get_treasures_list(self):
         return [{'x': treasure.cell.position.x, 'y': treasure.cell.position.y, 'type': treasure.t_type.name}
@@ -139,12 +139,8 @@ class Field:
         response.update_turn_info(player.name, action.name, direction.name if direction else '')
         return response
 
-    def _get_neighbour_cell(self, cell: Cell, direction: Directions):
-        x, y = cell.position.get_adjacent(direction).get()
-        try:
-            return self.field[y][x]
-        except IndexError:
-            return None
+    def _get_neighbour_cell(self, position: Position, direction: Directions):
+        return self.game_map.get_level(position.level_position).get_neighbour_cell(position, direction)
 
     def break_wall(self, cell: Cell, direction: Directions):
         """
@@ -155,7 +151,7 @@ class Field:
         wall = cell.walls[direction]
         if wall.breakable:
             cell.add_wall(direction, w.WallEmpty())
-            neighbour = self._get_neighbour_cell(cell, direction)
+            neighbour = self._get_neighbour_cell(cell.position, direction)
             if neighbour and neighbour.walls[-direction].breakable:
                 neighbour.walls[-direction] = w.WallEmpty()
         return wall
@@ -188,7 +184,7 @@ class Field:
             damaged_players = self._check_players(current_cell)
             if current_cell.walls[shot_direction].weapon_collision:
                 break
-            current_cell = self._get_neighbour_cell(current_cell, shot_direction)
+            current_cell = self._get_neighbour_cell(current_cell.position, shot_direction)
 
         lost_treasure_players, dead_players = self._player_take_dmg_handler(damaged_players)
         self._pass_handler(active_player)
@@ -224,7 +220,7 @@ class Field:
     def _movement_handler(self, active_player: Player, movement_direction: Directions):
         current_cell = active_player.cell
         pl_collision, pl_state, wall_type = current_cell.check_wall(movement_direction)
-        cell = self._get_neighbour_cell(current_cell, movement_direction) if not pl_collision else current_cell
+        cell = self._get_neighbour_cell(current_cell.position, movement_direction) if not pl_collision else current_cell
         new_pl_cell = cell.active(current_cell) if pl_state else cell.idle(current_cell)
         active_player.move(new_pl_cell)
         self._cell_mechanics_activator(active_player, new_pl_cell)

@@ -6,6 +6,7 @@ from GameEngine.globalEnv.enums import Directions, TreasureTypes
 from GameEngine.globalEnv.types import Position
 from bots_ai.field_obj import NoneCell
 
+
 riv_dirs = {
     Directions.top: '/\\',
     Directions.bottom: '\\/',
@@ -21,7 +22,7 @@ class Painter:
         self.start_x = 0
         self.start_y = 0
 
-    def draw(self, grid=None, players=None, treasures=None,
+    def draw(self, grid: list[list[c.CELL]] = None, players=None, treasures=None,
              start_x: int = None, start_y: int = None, tile_size: int = None,
              gr=True, pl=True, tr=True):
         dx = start_x if start_x else self.start_x
@@ -34,14 +35,14 @@ class Painter:
         if treasures and tr:
             self.draw_treasures(treasures, dx, dy, ts)
 
-    def draw_field(self, grid, dx, dy, ts):
+    def draw_field(self, grid: list[list[c.CELL]], dx, dy, ts):
         for row in grid:
             for cell in row:
-                if cell and type(cell) is not NoneCell:
+                if cell and type(cell) is not NoneCell and type(cell) is not c.NoneCell:
                     self.draw_cell(cell, dx, dy, ts)
                     self.draw_walls(cell, dx, dy, ts)
 
-    def draw_cell(self, cell: c.Cell | c.CellRiver, dx, dy, ts):
+    def draw_cell(self, cell: c.CELL, dx, dy, ts):
         x, y = cell.position.x * ts + dx, cell.position.y * ts + dy
         pygame.draw.rect(self.sc, pygame.Color(get_cell_color(cell)),
                          (x + 2, y + 2, ts - 2, ts - 2))

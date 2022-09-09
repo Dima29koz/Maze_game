@@ -1,13 +1,41 @@
 from GameEngine.globalEnv.enums import Directions
 
 
+class LevelPosition:
+    def __init__(self, level: int, sub_level: int, dimension: int = 0):
+        """
+
+        :param level: game level number
+        :param sub_level: game sub level number
+        :param dimension: dimension of a level
+        """
+        self.level = level
+        self.sub_level = sub_level
+        self.dimension = dimension
+
+    def to_dict(self):
+        return {
+            'level': self.level,
+            'sub_level': self.sub_level,
+            'dimension': self.dimension,
+        }
+
+    def __eq__(self, other: 'LevelPosition'):
+        return self.level == other.level and self.sub_level == other.sub_level and self.dimension == other.dimension
+
+
 class Position:
     """
     describes the position of an object
+
+    :ivar x: x position
+    :ivar y: y position
+    :ivar level_position: position of level
     """
-    def __init__(self, x: int, y: int):
+    def __init__(self, x: int, y: int, level_position: LevelPosition = None):
         self.x = x
         self.y = y
+        self.level_position = level_position
 
     def __eq__(self, other: 'Position'):
         return self.x == other.x and self.y == other.y
@@ -37,7 +65,7 @@ class Position:
                 x -= 1
             case Directions.right:
                 x += 1
-        return Position(x, y)
+        return Position(x, y, self.level_position)
 
     def get(self):
         return self.x, self.y
