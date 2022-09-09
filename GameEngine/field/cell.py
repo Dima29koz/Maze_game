@@ -46,11 +46,8 @@ class NoneCell:
 
     def to_dict(self) -> dict:
         """converts cell to dict"""
-        return {
+        return self.position.to_dict() | {
             'type': self.__class__.__name__,
-            'x': self.position.x,
-            'y': self.position.y,
-            'level_pos': self.position.level_position.to_dict(),
             'walls': {direction.name: wall.__class__.__name__ for direction, wall in self.walls.items()}
         }
 

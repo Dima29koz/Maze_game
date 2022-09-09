@@ -26,6 +26,7 @@ class Directions(Enum):
             return Directions.left
 
 
+# noinspection PyArgumentList
 class Actions(Enum):
     """
     describes actions
@@ -45,6 +46,7 @@ class Actions(Enum):
     info = auto()
 
 
+# noinspection PyArgumentList
 class TreasureTypes(Enum):
     """
     describes treasure types

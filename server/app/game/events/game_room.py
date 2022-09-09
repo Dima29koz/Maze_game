@@ -6,7 +6,8 @@ from server.app.game.models import get_room_by_id
 
 class GameRoomNamespace(Namespace):
     """Handle events on game_room page"""
-    def on_join(self, data: dict):
+    @staticmethod
+    def on_join(data: dict):
         """
         added user to room;
         emits `join`, `get_spawn`
@@ -15,10 +16,11 @@ class GameRoomNamespace(Namespace):
         join_room(room_id)
         room = get_room_by_id(room_id)
         emit('join', room.get_info(), room=room_id)
-        emit('get_spawn', {'field': room.game.field.get_field_pattern_list(),
+        emit('get_spawn', {'field': room.game.get_field_pattern_list(),
                            'spawn_info': room.game.get_spawn_point(current_user.user_name)})
 
-    def on_set_spawn(self, data: dict):
+    @staticmethod
+    def on_set_spawn(data: dict):
         """
         added spawned player to game;
         emits `set_spawn`
@@ -30,7 +32,8 @@ class GameRoomNamespace(Namespace):
             room.save()
             emit('join', room.get_info(), room=room_id)
 
-    def on_leave(self, data: dict):
+    @staticmethod
+    def on_leave(data: dict):
         """User leaves a room"""
         room_id = data.get('room_id')
         leave_room(room_id)
@@ -38,7 +41,8 @@ class GameRoomNamespace(Namespace):
         if room.remove_player(current_user):
             emit('join', room.get_info(), room=room_id)
 
-    def on_disconnect(self):
+    @staticmethod
+    def on_disconnect():
         """User disconnect from a room"""
         # room_id = session.pop('room_id', '')
         # leave_room(room_id)
@@ -46,7 +50,8 @@ class GameRoomNamespace(Namespace):
         # room: GameRoom = GameRoom.query.filter_by(name=room_name).first()
         # emit('join', room.on_join(), room=room_name)
 
-    def on_start(self, data: dict):
+    @staticmethod
+    def on_start(data: dict):
         """
         starting Game
         emits `start`

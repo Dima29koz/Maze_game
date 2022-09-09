@@ -75,10 +75,6 @@ class Field:
         self.players.sort(key=attrgetter('is_bot', 'turn'))
         self.players[0].is_active = True
 
-    def get_alive_pl_amount(self) -> int:
-        """returns amount of alive players"""
-        return len([player for player in self.players if player.is_alive])
-
     def get_active_player(self) -> Player:
         """returns active Player object"""
         return self.players[self._active_player_idx]
@@ -98,13 +94,7 @@ class Field:
         [self.treasures.remove(treasure) for treasure in treasures]
         return treasures
 
-    def get_field_list(self):
-        return self.game_map.get_level(LevelPosition(0, 0, 0)).get_field_list()
-
-    def get_field_pattern_list(self):
-        return self.game_map.get_level(LevelPosition(0, 0, 0)).get_field_pattern_list()
-
-    def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
+    def action_handler(self, action: Actions, direction: Directions = None) -> r.RespHandler:
         """handle player action"""
         action_to_handler = {
             Actions.swap_treasure: self._treasure_swap_handler,

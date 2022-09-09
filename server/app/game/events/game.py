@@ -8,7 +8,8 @@ from server.app.game.models import get_room_by_id
 class GameNamespace(Namespace):
     """Handle events on game page"""
 
-    def on_join(self, data: dict):
+    @staticmethod
+    def on_join(data: dict):
         """
         added user to socketIO room;
         emits `join`
@@ -19,7 +20,8 @@ class GameNamespace(Namespace):
         room = get_room_by_id(room_id)
         emit('join', {'current_user': current_user.user_name, 'rules': room.rules})
 
-    def on_action(self, data: dict):
+    @staticmethod
+    def on_action(data: dict):
         """
         handle player`s turn;
         emits `turn_info`, `win_msg`
@@ -54,7 +56,8 @@ class GameNamespace(Namespace):
             if win_data:
                 emit('win_msg', win_data, room=room_id)
 
-    def on_get_allowed_abilities(self, data: dict):
+    @staticmethod
+    def on_get_allowed_abilities(data: dict):
         """
         emits `set_allowed_abilities` with data[is_active, allowed_abilities]
         """
@@ -68,7 +71,8 @@ class GameNamespace(Namespace):
                  'allowed_abilities': room.game.get_allowed_abilities_str(active_player),
              })
 
-    def on_disconnect(self):
+    @staticmethod
+    def on_disconnect():
         """User disconnect from a game"""
         # room_id = session.pop('room_id')
         # leave_room(room_id)

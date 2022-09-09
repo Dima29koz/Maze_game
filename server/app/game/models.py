@@ -217,9 +217,9 @@ class GameRoom(db.Model):
     def on_get_field(self) -> dict:
         """returns field data"""
         return {
-            'field': self.game.field.get_field_list(),
+            'field': self.game.get_field_list(),
             'treasures': self.game.get_treasures_list(),
-            'players': self.game.get_players_list(),
+            'players': self.game.get_players_positions(),
             'rules': self.rules,
             'spawn_points': self.game.get_spawn_points()
         }

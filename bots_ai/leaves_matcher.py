@@ -113,7 +113,8 @@ class LeavesMatcher:
                     return False
         return True
 
-    def _is_cells_matchable(self, node: FieldState, other_node: FieldState,
+    @staticmethod
+    def _is_cells_matchable(node: FieldState, other_node: FieldState,
                             x: int, y: int, unique_objs: dict[Type[CELL], int]):
         self_cell = node.field.get_cell(Position(x, y))
         other_cell = other_node.field.get_cell(Position(x, y))

@@ -2,6 +2,7 @@ from GameEngine.field.field import Field
 from GameEngine.entities.player import Player
 from GameEngine.field.response import RespHandler
 from GameEngine.globalEnv.enums import Actions, Directions, TreasureTypes
+from GameEngine.globalEnv.types import LevelPosition
 
 
 class Game:
@@ -44,18 +45,22 @@ class Game:
 
     def is_win_condition(self, rules: dict) -> bool:
         """checks win condition"""
-        if self.field.get_alive_pl_amount() == 1 and rules['gameplay_rules']['fast_win']:
+        if self.get_alive_pl_amount() == 1 and rules['gameplay_rules']['fast_win']:
             return True
 
         for treasure in self.field.get_treasures_on_exit():
             if treasure.t_type is TreasureTypes.very:
                 return True
 
+    def get_alive_pl_amount(self) -> int:
+        """returns amount of alive players"""
+        return len([player for player in self.field.players if player.is_alive])
+
     def get_players_data(self) -> list[dict]:
         """returns data for players in game"""
         return [player.to_dict() for player in self.field.players]
 
-    def get_players_list(self):
+    def get_players_positions(self) -> list[dict] | list:
         return [player.cell.position.to_dict() | {'name': player.name}
                 for player in self.field.players if player.is_alive]
 
@@ -65,11 +70,17 @@ class Game:
             if player.name == player_name:
                 return player.spawn_point.to_dict()
 
-    def get_spawn_points(self) -> list[dict]:
+    def get_spawn_points(self) -> list[dict] | list:
         try:
             return [{'point': player.spawn_point.to_dict(), 'name': player.name} for player in self.field.players]
         except AttributeError:
             return []
 
-    def get_treasures_list(self):
+    def get_treasures_list(self) -> list[dict]:
         return [treasure.to_dict() for treasure in self.field.treasures]
+
+    def get_field_list(self) -> list[list[dict]]:
+        return self.field.game_map.get_level(LevelPosition(0, 0, 0)).get_field_list()
+
+    def get_field_pattern_list(self) -> list[list[dict | None]]:
+        return self.field.game_map.get_level(LevelPosition(0, 0, 0)).get_field_pattern_list()
