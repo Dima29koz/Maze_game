@@ -13,3 +13,6 @@ class GameMap:
             if level.level_position == level_position:
                 return level
         return
+
+    def get_cell(self, position: Position):
+        return self.get_level(position.level_position).get_cell(position)

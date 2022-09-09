@@ -99,7 +99,7 @@ class Painter:
 
     def draw_treasures(self, treasures, dx, dy, ts):
         for treasure in treasures:
-            x, y = treasure.cell.position.x * ts + dx, treasure.cell.position.y * ts + dy
+            x, y = treasure.position.x * ts + dx, treasure.position.y * ts + dy
             self.draw_treasure(treasure, x, y, ts)
 
     def draw_treasure(self, treasure, x, y, ts):

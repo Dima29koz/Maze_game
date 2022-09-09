@@ -218,10 +218,10 @@ class GameRoom(db.Model):
         """returns field data"""
         return {
             'field': self.game.field.get_field_list(),
-            'treasures': self.game.field.get_treasures_list(),
-            'players': self.game.field.get_players_list(),
+            'treasures': self.game.get_treasures_list(),
+            'players': self.game.get_players_list(),
             'rules': self.rules,
-            'spawn_points': self.game.field.get_spawn_points()
+            'spawn_points': self.game.get_spawn_points()
         }
 
     def _on_win(self, winner: Player) -> dict:

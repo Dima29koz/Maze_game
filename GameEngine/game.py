@@ -53,10 +53,23 @@ class Game:
 
     def get_players_data(self) -> list[dict]:
         """returns data for players in game"""
-        return self.field.get_players_stat()
+        return [player.to_dict() for player in self.field.players]
+
+    def get_players_list(self):
+        return [player.cell.position.to_dict() | {'name': player.name}
+                for player in self.field.players if player.is_alive]
 
     def get_spawn_point(self, player_name: str) -> dict | None:
         """returns coordinates of player if player is spawned"""
         for player in self.field.players:
             if player.name == player_name:
-                return {'x': player.cell.position.x, 'y': player.cell.position.y}
+                return player.spawn_point.to_dict()
+
+    def get_spawn_points(self) -> list[dict]:
+        try:
+            return [{'point': player.spawn_point.to_dict(), 'name': player.name} for player in self.field.players]
+        except AttributeError:
+            return []
+
+    def get_treasures_list(self):
+        return [treasure.to_dict() for treasure in self.field.treasures]

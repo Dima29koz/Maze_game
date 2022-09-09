@@ -98,28 +98,11 @@ class Field:
         [self.treasures.remove(treasure) for treasure in treasures]
         return treasures
 
-    def get_players_stat(self) -> list[dict]:
-        return [player.to_dict() for player in self.players]
-
     def get_field_list(self):
         return self.game_map.get_level(LevelPosition(0, 0, 0)).get_field_list()
 
     def get_field_pattern_list(self):
         return self.game_map.get_level(LevelPosition(0, 0, 0)).get_field_pattern_list()
-
-    def get_treasures_list(self):
-        return [{'x': treasure.cell.position.x, 'y': treasure.cell.position.y, 'type': treasure.t_type.name}
-                for treasure in self.treasures]
-
-    def get_players_list(self):
-        return [{'x': player.cell.position.x, 'y': player.cell.position.y, 'name': player.name}
-                for player in self.players if player.is_alive]
-
-    def get_spawn_points(self):
-        try:
-            return [{'point': player.spawn_point, 'name': player.name} for player in self.players]
-        except AttributeError:
-            return []
 
     def action_handler(self, action: Actions, direction: Directions | None = None) -> r.RespHandler:
         """handle player action"""
@@ -161,7 +144,7 @@ class Field:
                 if player.cell == current_cell and not player.is_active and player.is_alive]
 
     def _treasures_on_cell(self, cell: Cell) -> list[Treasure]:
-        return [treasure for treasure in self.treasures if cell == treasure.cell]
+        return [treasure for treasure in self.treasures if cell.position == treasure.position]
 
     def _treasure_swap_handler(self, player: Player, direction: Directions = None):
         treasures = self._treasures_on_cell(player.cell)
@@ -173,7 +156,7 @@ class Field:
 
         player.treasure = treasures.pop(0)
         self.treasures.remove(player.treasure)
-        player.treasure.cell = None
+        player.treasure.pick_up()
         return r.RespHandlerSwapTreasure(has_treasure)
 
     def _shooting_handler(self, active_player: Player, shot_direction: Directions):
@@ -254,7 +237,11 @@ class Field:
 
     def _host_turn(self):
         for treasure in self.treasures:
-            treasure.idle()
+            self._treasure_idle_handler(treasure)
+
+    def _treasure_idle_handler(self, treasure: Treasure):
+        if treasure.position:
+            treasure.position = self.game_map.get_cell(treasure.position).treasure_movement().position
 
     def _update_treasures_exit(self, player):
         treasure = player.drop_treasure()

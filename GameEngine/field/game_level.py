@@ -18,6 +18,9 @@ class GameLevel:
     def set_cell(self, position: Position, new_cell: CELL):
         self.field[position.y][position.x] = new_cell
 
+    def get_cell(self, position: Position):
+        return self.field[position.y][position.x]
+
     def get_field_list(self):
         return [[cell.to_dict() if type(cell) is not NoneCell else {} for cell in row] for row in self.field]
 

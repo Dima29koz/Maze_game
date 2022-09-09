@@ -38,7 +38,8 @@ class Position:
         self.level_position = level_position
 
     def __eq__(self, other: 'Position'):
-        return self.x == other.x and self.y == other.y
+        """True if coords and level_pos are same"""
+        return self.x == other.x and self.y == other.y and self.level_position == other.level_position
 
     def __sub__(self, other) -> Directions:
         """
@@ -69,3 +70,10 @@ class Position:
 
     def get(self):
         return self.x, self.y
+
+    def to_dict(self):
+        return {
+            'x': self.x,
+            'y': self.y,
+            'level_position': self.level_position.to_dict()
+        }

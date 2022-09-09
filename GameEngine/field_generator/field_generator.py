@@ -164,14 +164,14 @@ class FieldGenerator:
 
         for _ in range(treasures_rules[0]):
             cell = treasure_cells.pop()
-            treasures.append(Treasure(TreasureTypes.very, cell))
+            treasures.append(Treasure(TreasureTypes.very, cell.position))
 
         for _ in range(treasures_rules[1]):
             cell = treasure_cells.pop()
-            treasures.append(Treasure(TreasureTypes.spurious, cell))
+            treasures.append(Treasure(TreasureTypes.spurious, cell.position))
 
         for _ in range(treasures_rules[2]):
             cell = treasure_cells.pop()
-            treasures.append(Treasure(TreasureTypes.mined, cell))
+            treasures.append(Treasure(TreasureTypes.mined, cell.position))
 
         return treasures

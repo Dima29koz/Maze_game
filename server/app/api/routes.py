@@ -26,7 +26,7 @@ def get_room_data(room_id):
     room = get_room_by_id(room_id)
     return jsonify(
         turns=room.get_turns(),
-        spawn_points=room.game.field.get_spawn_points(),
+        spawn_points=room.game.get_spawn_points(),
         rules=room.rules,
     )
 

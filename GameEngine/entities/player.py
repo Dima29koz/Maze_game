@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from GameEngine.entities.treasure import Treasure
 from GameEngine.field.cell import Cell
 from GameEngine.globalEnv.enums import Actions, TreasureTypes
@@ -39,7 +41,7 @@ class Player:
     def __init__(self, cell: Cell, name: str, is_bot: bool = False, turn: int = 0):
         self.name = name
         self.cell = cell
-        self.spawn_point = {'x': cell.position.x, 'y': cell.position.y}
+        self.spawn_point = deepcopy(self.cell.position)
         self.health_max = rules.get('player_stat').get('max_health')
         self.health = self.health_max
         self.bombs_max = rules.get('player_stat').get('max_bombs')
@@ -117,7 +119,7 @@ class Player:
         if self.treasure:
             treasure = self.treasure
             self.treasure = None
-            treasure.cell = self.cell
+            treasure.drop(self.cell.position)
             return treasure
 
     def to_dict(self) -> dict:

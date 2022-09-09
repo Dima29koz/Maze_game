@@ -1,4 +1,5 @@
 """runs game local for testing GameEngine"""
+import random
 from typing import Generator
 
 import requests
@@ -39,8 +40,9 @@ class LocalGame:
         # self.rules['generator_rules']['rows'] = 7
         # self.rules['generator_rules']['cols'] = 7
         self.rules['generator_rules']['is_separated_armory'] = True
-        # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 6
+        self.rules['generator_rules']['seed'] = random.random()
+        # self.rules['generator_rules']['seed'] = 6
+        # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = False
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
         # self.rules['generator_rules']['river_rules']['min_coverage'] = 90
