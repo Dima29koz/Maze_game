@@ -27,3 +27,6 @@ class BotAISpectator:
         leaves = self.bot.players.get(other_player).get_compatible_leaves(player_name)
         leaves = [leaf.get_current_data() for leaf in leaves]
         return leaves[:limit], len(leaves)
+
+    def get_avg_field(self, player_name: str):
+        return self.bot.players.get(player_name).get_average_field()
