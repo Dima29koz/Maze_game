@@ -5,15 +5,10 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
 from bots_ai.exceptions import MergingError, OnlyAllowedDir
-from bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall, UnknownWall, NoneCell
+from bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall, UnknownWall
 
-R_CELL = Union[
-    cell.Cell, cell.CellRiver, cell.CellRiverMouth,
-    cell.CellExit, cell.CellClinic, cell.CellArmory,
-    cell.CellArmoryExplosive, cell.CellArmoryWeapon,
-]
 
-CELL = Union[R_CELL, UnknownCell, NoneCell]
+CELL = Union[cell.CELL, UnknownCell]
 
 R_WALL = Union[
     wall.WallEmpty, wall.WallExit, wall.WallOuter,
@@ -59,7 +54,7 @@ class Grid:
                  neighbour_wall_type: Type[WALL] = None):
         self.update_wall(position, direction, wall_type)
         neighbour = self.get_neighbour_cell(position, direction)
-        if type(neighbour) is not NoneCell:
+        if type(neighbour) is not cell.NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
             self.update_wall(neighbour.position, -direction, neighbour_wall_type)
@@ -82,7 +77,7 @@ class Grid:
             if dir_ is direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, dir_)
-            if neighbour_cell and type(neighbour_cell) is not NoneCell:
+            if neighbour_cell and type(neighbour_cell) is not cell.NoneCell:
                 if type(neighbour_cell) is cell.CellExit:
                     continue
                 self.update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
@@ -132,7 +127,7 @@ class Grid:
         if type(river_cell.walls[direction]) not in [wall.WallEmpty, UnknownWall]:
             return False
         neighbour_cell = self.get_neighbour_cell(river_cell.position, direction)
-        if type(neighbour_cell) is NoneCell:
+        if type(neighbour_cell) is cell.NoneCell:
             return False
 
         # река не может течь в сушу
@@ -213,17 +208,17 @@ class Grid:
 
     def merge_with(self,
                    other_field: 'Grid',
-                   remaining_obj_amount: dict[Type[R_CELL], int]):
+                   remaining_obj_amount: dict[Type[cell.CELL], int]):
         is_changed = False
         for y, row in enumerate(self._field):
             for x, self_cell in enumerate(row):
                 other_cell = other_field._field[y][x]
-                if type(self_cell) is NoneCell and type(other_cell) is NoneCell:
+                if type(self_cell) is cell.NoneCell and type(other_cell) is cell.NoneCell:
                     continue
-                if type(self_cell) is NoneCell and type(other_cell) is cell.CellExit:
+                if type(self_cell) is cell.NoneCell and type(other_cell) is cell.CellExit:
                     is_changed = True
                     self.merge_cells(other_cell, x, y, no_walls=True)
-                if type(self_cell) is cell.CellExit and type(other_cell) is NoneCell:
+                if type(self_cell) is cell.CellExit and type(other_cell) is cell.NoneCell:
                     continue
                 if type(self_cell) is UnknownCell and type(other_cell) is not UnknownCell:
                     if type(other_cell) is cell.CellRiver:

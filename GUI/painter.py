@@ -3,7 +3,6 @@ import pygame
 from GUI.utils import get_cell_color, get_wall_color, get_player_color
 from GameEngine.field import cell as c
 from GameEngine.globalEnv.enums import Directions, TreasureTypes
-from bots_ai.field_handler.field_obj import NoneCell
 
 
 riv_dirs = {
@@ -37,7 +36,7 @@ class Painter:
     def draw_field(self, grid: list[list[c.CELL]], dx, dy, ts):
         for row in grid:
             for cell in row:
-                if cell and type(cell) is not NoneCell and type(cell) is not c.NoneCell:
+                if cell and type(cell) is not c.NoneCell:
                     self.draw_cell(cell, dx, dy, ts)
                     self.draw_walls(cell, dx, dy, ts)
 

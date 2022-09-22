@@ -1,8 +1,8 @@
 import networkx as nx
 
+from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_handler.field_obj import NoneCell
 from bots_ai.field_handler.grid import Grid, CELL
 
 
@@ -41,8 +41,8 @@ class GraphBuilder:
             print(edge, graph.get_edge_data(edge[0], edge[1]))
             # print(edge, graph.edges[edge[0], edge[1]])
 
-    def get_connected_cells(self, cell: CELL) -> list[tuple[CELL, Directions]]:
-        if type(cell) is NoneCell:
+    def get_connected_cells(self, tile: CELL) -> list[tuple[CELL, Directions]]:
+        if type(tile) is cell.NoneCell:
             return []
 
 

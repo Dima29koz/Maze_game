@@ -4,11 +4,11 @@ from typing import Type
 from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_handler.graph_builder import GraphBuilder
 
+from bots_ai.field_handler.graph_builder import GraphBuilder
 from bots_ai.exceptions import UnreachableState
-from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, NoneCell
-from bots_ai.field_handler.grid import Grid, R_CELL, CELL, WALL
+from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall
+from bots_ai.field_handler.grid import Grid, CELL, WALL
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
@@ -18,7 +18,7 @@ class FieldState:
     """
 
     def __init__(self, field: Grid,
-                 remaining_obj_amount: dict[Type[R_CELL], int],
+                 remaining_obj_amount: dict[Type[cell.CELL], int],
                  enemy_compatibility: dict[str, bool],
                  players_positions: dict[str, Position | None],
                  preprocessed_rules: RulesPreprocessor,
@@ -104,17 +104,17 @@ class FieldState:
 
     def _update_cell_type(self, new_type: Type[CELL], position: Position, direction: Directions = None):
         target_cell = self.field.get_cell(position)
-        if type(target_cell) is not NoneCell and new_type not in [cell.CellRiverMouth, cell.CellRiver]:
+        if type(target_cell) is not cell.NoneCell and new_type not in [cell.CellRiverMouth, cell.CellRiver]:
             if self.field.has_known_input_river(target_cell.position, direction, ignore_dir=True):
                 raise UnreachableState()
-        if type(target_cell) is not NoneCell and new_type is not cell.CellRiver:
+        if type(target_cell) is not cell.NoneCell and new_type is not cell.CellRiver:
             if self.field.is_cause_of_isolated_mouth(target_cell.position):
                 raise UnreachableState()
 
-        if new_type is NoneCell:
-            if type(target_cell) is NoneCell or type(target_cell) is cell.CellExit:
+        if new_type is cell.NoneCell:
+            if type(target_cell) is cell.NoneCell or type(target_cell) is cell.CellExit:
                 return
-            self.field.set_cell(NoneCell(position), position)
+            self.field.set_cell(cell.NoneCell(position), position)
             return
 
         if new_type is cell.CellExit:
@@ -155,7 +155,7 @@ class FieldState:
                 state.set_parent(self)
                 self.next_states.append(state)
 
-    def _add_modified_leaf(self, position: Position, new_type: Type[R_CELL], direction: Directions = None):
+    def _add_modified_leaf(self, position: Position, new_type: Type[cell.CELL], direction: Directions = None):
         self.next_states.append(self._get_modified_copy(position, new_type, direction))
 
     def _get_modified_copy(self, position: Position, new_type: Type[CELL], direction: Directions = None):
@@ -195,7 +195,7 @@ class FieldState:
         self._pass_processor(response)
 
     def _pass_processor(self, response: dict):
-        type_cell_turn_end: Type[R_CELL] = response.get('type_cell_at_end_of_turn')
+        type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
         cell_treasures_amount: int = response.get('cell_treasures_amount')
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
@@ -219,8 +219,8 @@ class FieldState:
 
     def _movement_processor(self, turn_direction: Directions, response: dict):
         is_diff_cells: bool = response.get('diff_cells')
-        type_cell_turn_end: Type[R_CELL] = response.get('type_cell_at_end_of_turn')
-        type_cell_after_wall_check: Type[R_CELL] = response.get('type_cell_after_wall_check')
+        type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
+        type_cell_after_wall_check: Type[cell.CELL] = response.get('type_cell_after_wall_check')
         is_wall_passed: bool = response.get('wall_passed')
         wall_type: Type[WALL] | None = response.get('wall_type')
         # todo учесть что это не обязательно настоящий тип стены
@@ -234,7 +234,7 @@ class FieldState:
                 raise UnreachableState()
             if type(start_cell) is cell.CellRiver and start_cell.direction is turn_direction:
                 raise UnreachableState()
-            if type(new_cell) is NoneCell:
+            if type(new_cell) is cell.NoneCell:
                 wall_type = wall.WallOuter
             self.field.add_wall(start_cell.position, turn_direction, wall_type)
 
@@ -249,7 +249,7 @@ class FieldState:
             new_cell = self.field.get_cell(new_cell.position)
 
         #  попытка сходить за пределы карты - значит всю ветку можно удалить
-        if type(new_cell) is NoneCell:
+        if type(new_cell) is cell.NoneCell:
             raise UnreachableState()
 
         #  попытка изменить значение уже известной клетки
@@ -273,7 +273,7 @@ class FieldState:
         self.set_next_states(final_states)
 
     def _info_processor(self, response: dict):
-        type_cell_turn_end: Type[R_CELL] = response.get('type_cell_at_end_of_turn')
+        type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
         cell_treasures_amount: int = response.get('cell_treasures_amount')
 
         if type_cell_turn_end is not cell.CellRiver:

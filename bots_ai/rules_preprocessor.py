@@ -1,7 +1,7 @@
 from typing import Type
 
 from GameEngine.field import cell
-from bots_ai.field_handler.field_obj import UnknownCell, NoneCell
+from bots_ai.field_handler.field_obj import UnknownCell
 from bots_ai.field_handler.grid import CELL
 
 
@@ -13,8 +13,8 @@ class RulesPreprocessor:
 
     def _get_exit_location(self):
         if self._rules.get('generator_rules').get('is_not_rect'):
-            return [NoneCell, UnknownCell]
-        return [NoneCell]
+            return [cell.NoneCell, UnknownCell]
+        return [cell.NoneCell]
 
     def _get_compatible_cells(self) -> dict[Type[CELL], list[Type[CELL]]]:
         compatible_cells = {
@@ -25,17 +25,17 @@ class RulesPreprocessor:
             cell.CellArmory: [UnknownCell, cell.CellArmory],
             cell.CellArmoryWeapon: [UnknownCell, cell.CellArmoryWeapon],
             cell.CellArmoryExplosive: [UnknownCell, cell.CellArmoryExplosive],
-            cell.CellExit: [cell.CellExit, NoneCell],
+            cell.CellExit: [cell.CellExit, cell.NoneCell],
             UnknownCell: [
                 UnknownCell, cell.Cell, cell.CellRiver,
                 cell.CellRiverMouth, cell.CellClinic, cell.CellArmory,
                 cell.CellArmoryWeapon, cell.CellArmoryExplosive],
-            NoneCell: [NoneCell, cell.CellExit],
+            cell.NoneCell: [cell.NoneCell, cell.CellExit],
         }
         if self._rules.get('generator_rules').get('is_not_rect'):
             compatible_cells[cell.CellExit].append(UnknownCell)
             compatible_cells[UnknownCell].append(cell.CellExit)
-            compatible_cells[UnknownCell].append(NoneCell)
-            compatible_cells[NoneCell].append(UnknownCell)
+            compatible_cells[UnknownCell].append(cell.NoneCell)
+            compatible_cells[cell.NoneCell].append(UnknownCell)
 
         return compatible_cells

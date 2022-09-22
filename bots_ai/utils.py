@@ -1,6 +1,6 @@
 from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Directions
-from bots_ai.field_handler.field_obj import UnknownCell, NoneCell
+from bots_ai.field_handler.field_obj import UnknownCell
 from bots_ai.field_handler.field_state import FieldState
 
 
@@ -10,9 +10,9 @@ def is_node_is_real(
     for y, row in enumerate(real_field):
         for x, real_cell in enumerate(row):
             target_cell = n_field[y][x]
-            if real_cell is None and type(target_cell) is NoneCell:
+            if real_cell is None and type(target_cell) is cell.NoneCell:
                 continue
-            if type(target_cell) is NoneCell and type(real_cell) is cell.CellExit:
+            if type(target_cell) is cell.NoneCell and type(real_cell) is cell.CellExit:
                 continue
             if type(target_cell) is UnknownCell:
                 continue
