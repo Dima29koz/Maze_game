@@ -69,8 +69,8 @@ class SpectatorGUI:
                     self.draw_leaves(fields, start_y=max_y * i)
                 self.draw_text('other player comp. leaves', f'{fields_amount} / {amount}', i)
 
-            field = self.bot_spectator.get_avg_field(active_player)
-            self.painter.draw(field, start_y=600)
+            # field = self.bot_spectator.get_avg_field(active_player)  # todo bug with exit cell
+            # self.painter.draw(field, start_y=600)
         pygame.display.flip()
 
     def draw_text(self, text, amount, y):

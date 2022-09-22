@@ -1,8 +1,8 @@
 from typing import Type
 
-from GameEngine.field import cell, wall
-from bots_ai.field_obj import UnknownCell, UnbreakableWall, UnknownWall, NoneCell
-from bots_ai.grid import CELL
+from GameEngine.field import cell
+from bots_ai.field_handler.field_obj import UnknownCell, NoneCell
+from bots_ai.field_handler.grid import CELL
 
 
 class RulesPreprocessor:

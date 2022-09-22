@@ -1,7 +1,7 @@
 from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Directions
-from bots_ai.field_obj import UnknownCell, NoneCell
-from bots_ai.field_state import FieldState
+from bots_ai.field_handler.field_obj import UnknownCell, NoneCell
+from bots_ai.field_handler.field_state import FieldState
 
 
 def is_node_is_real(

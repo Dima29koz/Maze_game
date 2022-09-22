@@ -3,8 +3,7 @@ import pygame
 from GUI.utils import get_cell_color, get_wall_color, get_player_color
 from GameEngine.field import cell as c
 from GameEngine.globalEnv.enums import Directions, TreasureTypes
-from GameEngine.globalEnv.types import Position
-from bots_ai.field_obj import NoneCell
+from bots_ai.field_handler.field_obj import NoneCell
 
 
 riv_dirs = {

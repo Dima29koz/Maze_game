@@ -2,9 +2,9 @@ from typing import Type
 
 from GameEngine.field import cell
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_obj import UnknownCell, NoneCell
-from bots_ai.field_state import FieldState, CELL, WALL
-from bots_ai.player_state import PlayerState
+from bots_ai.field_handler.field_obj import UnknownCell, NoneCell
+from bots_ai.field_handler.field_state import FieldState, CELL
+from bots_ai.field_handler.player_state import PlayerState
 from bots_ai.exceptions import MatchingError, MergingError
 
 MAX_MATCHABLE_NODES = 8

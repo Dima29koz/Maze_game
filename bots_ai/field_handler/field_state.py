@@ -4,10 +4,11 @@ from typing import Type
 from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
+from bots_ai.field_handler.graph_builder import GraphBuilder
 
 from bots_ai.exceptions import UnreachableState
-from bots_ai.field_obj import UnknownCell, UnknownWall, UnbreakableWall, NoneCell
-from bots_ai.grid import Grid, R_CELL, R_WALL, CELL, WALL
+from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, NoneCell
+from bots_ai.field_handler.grid import Grid, R_CELL, CELL, WALL
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
@@ -94,6 +95,9 @@ class FieldState:
             self.remove()
             return False
         return True
+
+    def get_graph(self):
+        return GraphBuilder(self.field)
 
     def _move_player(self, position: Position):
         self.players_positions[self.current_player] = position

@@ -5,7 +5,7 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
 from bots_ai.exceptions import MergingError, OnlyAllowedDir
-from bots_ai.field_obj import UnknownCell, UnbreakableWall, UnknownWall, NoneCell
+from bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall, UnknownWall, NoneCell
 
 R_CELL = Union[
     cell.Cell, cell.CellRiver, cell.CellRiverMouth,
@@ -29,6 +29,12 @@ class Grid:
 
     def get_field(self) -> list[list[CELL]]:
         return self._field
+
+    def get_cells(self):
+        cells = []
+        for row in self._field:
+            cells += row
+        return cells
 
     def get_cell(self, position: Position) -> CELL:
         return self._field[position.y][position.x]

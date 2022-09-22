@@ -1,15 +1,14 @@
-from GameEngine.field.cell import CellRiver, NoneCell
+from GameEngine.field.cell import CELL, CellRiver, NoneCell
 from GameEngine.globalEnv.enums import Actions, Directions
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_state import FieldState
-from bots_ai.initial_generator import InitGenerator
+from bots_ai.field_handler.field_state import FieldState
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
 class PlayerState:
-    def __init__(self, init_generator: InitGenerator, name: str):
-        self.root = init_generator.get_start_state(name)
-        self.preprocessed_rules: RulesPreprocessor = init_generator.rules_preprocessor
+    def __init__(self, start_state: FieldState, preprocessed_rules: RulesPreprocessor, name: str):
+        self.root = start_state
+        self.preprocessed_rules = preprocessed_rules
         self.name = name
 
     def process_turn(self, player_name: str, action: Actions, direction: Directions | None, response: dict):
@@ -94,7 +93,7 @@ class PlayerState:
         return self.make_avg_field(avg_field)
 
     @staticmethod
-    def make_avg_field(avg_field: dict) -> list[list]:
+    def make_avg_field(avg_field: dict) -> list[list[CELL]]:
         field = []
         for row_idx in avg_field:
             field.append([])

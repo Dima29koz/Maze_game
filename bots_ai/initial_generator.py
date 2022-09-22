@@ -1,11 +1,12 @@
 from typing import Type
 
-from GameEngine.field import cell
+from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_obj import UnknownCell, NoneCell, UnbreakableWall
-from bots_ai.field_state import FieldState
-from bots_ai.grid import Grid
+from GameEngine.rules import rules as base_rules
+from bots_ai.field_handler.field_obj import UnknownCell, NoneCell, UnbreakableWall
+from bots_ai.field_handler.field_state import FieldState
+from bots_ai.field_handler.grid import Grid
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
@@ -83,3 +84,33 @@ class InitGenerator:
                             neighbour = None
                         if neighbour and type(neighbour) is not NoneCell:
                             neighbour.add_wall(-direction, UnbreakableWall())
+
+
+def make_example_grid():
+    init_gen = InitGenerator(base_rules, {'p1': Position(1, 1)})
+    grid = init_gen.get_start_state('p1').field
+
+    grid.create_exit(Directions.bottom, Position(2, 0))
+
+    pos = Position(2, 1)
+    walls = grid.get_cell(pos).walls
+    grid.set_cell(cell.CellRiver(pos, Directions.right), pos)
+    grid.set_walls(pos, walls)
+    grid.add_wall(pos, Directions.right, wall.WallEmpty)
+
+    pos = Position(3, 1)
+    walls = grid.get_cell(pos).walls
+    grid.set_cell(cell.CellRiver(pos, Directions.bottom), pos)
+    grid.set_walls(pos, walls)
+    grid.add_wall(pos, Directions.bottom, wall.WallEmpty)
+
+    pos = Position(3, 2)
+    walls = grid.get_cell(pos).walls
+    grid.set_cell(cell.CellRiverMouth(pos), pos)
+    grid.set_walls(pos, walls)
+
+    pos = Position(3, 3)
+    walls = grid.get_cell(pos).walls
+    grid.set_cell(cell.Cell(pos), pos)
+    grid.set_walls(pos, walls)
+    return grid
