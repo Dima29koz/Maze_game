@@ -78,7 +78,7 @@ class LeavesMatcher:
         if not matchable_nodes:
             return []
         if len(matchable_nodes) > MAX_MATCHABLE_NODES:
-            print('len of matched nodes is:', len(matchable_nodes))
+            # print('len of matched nodes is:', len(matchable_nodes))
             return [node]
 
         merged_nodes: list[FieldState] = []

@@ -60,7 +60,7 @@ class NoneCell:
         return self.position - other.position
 
     def __repr__(self):
-        return 'NoneCell'
+        return '='
 
 
 class Cell(NoneCell):

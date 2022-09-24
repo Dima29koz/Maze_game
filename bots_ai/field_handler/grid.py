@@ -206,6 +206,15 @@ class Grid:
                 start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
+    def is_washed(self, current_cell: cell.CellRiver, prev_cell: CELL, turn_direction: Directions):
+        if current_cell is prev_cell:
+            return True
+        if current_cell.direction is -turn_direction:
+            return False
+        if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
+            return False
+        return True
+
     def merge_with(self,
                    other_field: 'Grid',
                    remaining_obj_amount: dict[Type[cell.CELL], int]):

@@ -1,7 +1,6 @@
 """runs game local for testing GameEngine"""
-import random
 from typing import Generator
-
+import threading
 import requests
 
 from GUI.spectator import SpectatorGUI
@@ -11,11 +10,13 @@ from GameEngine.globalEnv.types import Position, LevelPosition
 
 from GameEngine.rules import rules as ru
 from bots_ai.core import BotAI
+from bots_ai.field_handler.grid import Grid
 
+from bots_ai.field_handler.test_graph import test_graph
 
 class LocalGame:
     def __init__(self, room_id: int = None, server_url: str = '', with_bot=False):
-        self.bot = None
+        self.bot: BotAI | None = None
         self.is_replay = False
         self.players = []
         self.turns: list | Generator = []
@@ -88,24 +89,27 @@ class LocalGame:
         self.bot = BotAI(self.rules, players_)
         self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
-    def run(self):
+    def run(self, auto=False):
         field = self.game.field
         gui = SpectatorGUI(field, self.bot)
 
         state = Actions.move
         is_running = True
-
+        dis = Actions.move, Directions.top
         for _ in self.players:
             act = (Actions.info, None) if not self.is_replay else next(self.turns)
-            is_running = self.process_turn(*act)
+            is_running, dis = self.process_turn(*act)
 
         while is_running:
             act_pl_abilities = field.get_player_allowed_abilities(self.game.get_current_player())
             gui.draw(act_pl_abilities, self.game.get_current_player().name)
             act, state = gui.get_action(act_pl_abilities, state)
             if act:
-                act = act if not self.is_replay else next(self.turns)
-                is_running = self.process_turn(*act)
+                if auto:
+                    act = dis
+                else:
+                    act = act if not self.is_replay else next(self.turns)
+                is_running, dis = self.process_turn(*act)
         gui.close()
 
     def process_turn(self, action, direction):
@@ -115,13 +119,34 @@ class LocalGame:
             self.bot.process_turn_resp(response.get_raw_info())
             self.bot.turn_prepare(self.game.get_current_player().name)
         if self.game.is_win_condition(self.rules):
-            return False
-        return True
+            return False, ()
+        dis = self.bot.make_decision(self.game.get_current_player().name)
+        # print('avg', dis)
+        return True, dis
+
+
+def draw_graph(grid: Grid):
+    gb = test_graph(grid)
+    while True:
+        try:
+            p1 = Position(*[int(i) for i in input('p1: (x, y):').split(',')])
+            p2 = Position(*[int(i) for i in input('p2: (x, y):').split(',')])
+            gb.get_path(grid.get_cell(p1), grid.get_cell(p2))
+        except Exception:
+            print('stopped')
+            break
 
 
 def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
     game = LocalGame(room_id, server_url, with_bot)
-    game.run()
+    start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
+    tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
+    # tr2 = threading.Thread(target=draw_graph, args=(start_map,))
+    tr1.start()
+    # tr2.start()
+
+    tr1.join()
+    # tr2.join()
 
 
 if __name__ == "__main__":

@@ -1,49 +1,78 @@
 import networkx as nx
 
 from GameEngine.field import cell
-from GameEngine.globalEnv.enums import Directions
+from GameEngine.globalEnv.enums import Directions, Actions
 from GameEngine.globalEnv.types import Position
 from bots_ai.field_handler.grid import Grid, CELL
 
 
 class GraphBuilder:
-    def __init__(self, game_map: Grid):
-        self.graph = self.build_from_map(game_map)
+    def __init__(self, game_map: Grid, current_player_cell: CELL):
+        self.game_map = game_map
+        self.current_player_cell = current_player_cell
+        self.graph = nx.MultiDiGraph()
+        self.build_from_map()
+        self.paths = self.calc_paths(self.current_player_cell)
+        self.paths_len = self.calc_paths_len(self.current_player_cell)
 
-    def build_from_map(self, game_map: Grid):
-        graph = nx.MultiDiGraph()
-        graph.add_nodes_from(game_map.get_cells())
-        # for node in graph.nodes:
-        #     connected_cells = self.get_connected_cells(node)
-        #     for connected_cell, direction in connected_cells:
-        #         graph.add_edge(node, connected_cell, direction=direction)
+    def build_from_map(self):
+        self.graph.add_nodes_from(self.game_map.get_cells())
+        for node in self.graph.nodes:
+            self._add_related_cells(node)
+        return self.graph
 
-        graph.add_edge(game_map.get_cell(Position(2, 0)), game_map.get_cell(Position(3, 2)), direction='bot')
-        graph.add_edge(game_map.get_cell(Position(3, 2)), game_map.get_cell(Position(3, 3)), direction='bot')
-        # graph.add_edge(game_map.get_cell(Position(2, 0)), game_map.get_cell(Position(2, 0)), direction='top')
-        # graph.add_edge(game_map.get_cell(Position(2, 0)), game_map.get_cell(Position(2, 0)), direction='right')
-        # graph.add_edge(game_map.get_cell(Position(2, 0)), game_map.get_cell(Position(2, 0)), direction='left')
-        #
-        # graph.add_edge(game_map.get_cell(Position(2, 1)), game_map.get_cell(Position(3, 1)), direction='left')
-        # graph.add_edge(game_map.get_cell(Position(3, 1)), game_map.get_cell(Position(2, 0)), direction='left')
-
-        return graph
-
-    def get_path(self, graph, source, target):
-        path = nx.shortest_path(graph, source, target)
-        # path = nx.shortest_path(graph, game_map.get_cell(Position(3, 3)), game_map.get_cell(Position(2, 0)))
+    def get_path(self, source: CELL, target: CELL):
+        path = nx.shortest_path(self.graph, source, target, weight='weight')
         print('path to node\n', path)
-        path_graph = nx.path_graph(path)
 
         print('detailed path to target node')
-        # Read attributes from each edge
-        for edge in path_graph.edges():
-            print(edge, graph.get_edge_data(edge[0], edge[1]))
-            # print(edge, graph.edges[edge[0], edge[1]])
+        for i, node in enumerate(path[:-1]):
+            print(node, self.graph.get_edge_data(node, path[i + 1]))
 
-    def get_connected_cells(self, tile: CELL) -> list[tuple[CELL, Directions]]:
+    def calc_paths(self, source: CELL) -> dict[CELL, list[CELL]]:
+        return nx.shortest_path(self.graph, source, weight='weight')
+
+    def calc_paths_len(self, source: CELL) -> dict[CELL, int]:
+        return nx.shortest_path_length(self.graph, source, weight='weight')
+
+    def get_first_act(self, target: CELL) -> tuple[Actions, Directions | None]:
+        edge_data = self.graph.get_edge_data(self.current_player_cell, self.paths[target][1])
+        # print(target.position.get(), edge_data)
+        args: dict = list(edge_data.values())[0]
+        return args.get('action'), args.get('direction')
+
+    def _add_related_cells(self, tile: CELL):
         if type(tile) is cell.NoneCell:
-            return []
+            return
+        for direction in Directions:
+            self._calc_relation(tile, direction, wall_collision=True)
+            self._calc_relation(tile, direction, wall_collision=False)
+
+    def _calc_relation(self, tile, direction, wall_collision):
+        if not wall_collision and not tile.walls[direction].player_collision:
+            return
+
+        if wall_collision and tile.walls[direction].player_collision:
+            new_cell = tile
+        else:
+            new_cell = self.game_map.get_neighbour_cell(tile.position, direction)
+
+        if not new_cell or type(new_cell) is cell.NoneCell:
+            return
+
+        if type(new_cell) is cell.CellRiver:
+            if self.game_map.is_washed(new_cell, tile, direction):
+                for _ in range(2):
+                    new_cell = self.game_map.get_neighbour_cell(new_cell.position, new_cell.direction)
+                    if type(new_cell) is not cell.CellRiver:
+                        break
+
+        if wall_collision:
+            self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.move, weight=1)
+        else:
+            self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.throw_bomb,
+                                weight=1 + (1 if type(tile) is not cell.CellRiver else 2))
+
 
 
 

@@ -116,7 +116,7 @@ class FieldGenerator:
         for river in self.rivers:
             for i in range(len(river) - 1):
                 direction = river[i] - river[i + 1]
-
+                river[i].direction = direction
                 river[i].add_wall(direction, WallEmpty())
                 neighbour = self.levels[0].get_neighbour_cell(river[i].position, direction)
                 if neighbour:

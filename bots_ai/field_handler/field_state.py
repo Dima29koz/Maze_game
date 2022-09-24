@@ -96,8 +96,8 @@ class FieldState:
             return False
         return True
 
-    def get_graph(self):
-        return GraphBuilder(self.field)
+    def get_graph(self, current_pl_cell: CELL):
+        return GraphBuilder(self.field, current_pl_cell)
 
     def _move_player(self, position: Position):
         self.players_positions[self.current_player] = position
