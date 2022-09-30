@@ -1,5 +1,5 @@
 from bots_ai.field_handler.graph_builder import GraphBuilder
-from bots_ai.field_handler.grid import CELL, cell, UnknownCell
+from bots_ai.field_handler.grid import CELL, cell, UnknownCell, PossibleExit
 
 
 class TargetCalculator:
@@ -10,6 +10,7 @@ class TargetCalculator:
         res = []
         cell_wight = {
             UnknownCell: 10,
+            PossibleExit: 8,
         }
         for target, path_len in self.graph.paths_len.items():
             try:

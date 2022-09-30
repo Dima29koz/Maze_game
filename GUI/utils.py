@@ -4,7 +4,7 @@ from pygame.locals import *
 from GameEngine.field import cell as c
 from GameEngine.field import wall as w
 from GameEngine.globalEnv.enums import Actions, Directions
-from bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall
+from bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall, PossibleExit
 
 
 def convert_keys(key) -> tuple[Actions | None, Directions | None]:
@@ -52,7 +52,7 @@ def get_key_act(key, allowed_actions, current_state):
 
 
 def get_cell_color(cell):
-    if type(cell) is c.CellExit:
+    if type(cell) in [c.CellExit, PossibleExit]:
         return 55, 120, 20
     if type(cell) in [c.CellRiver, c.CellRiverMouth]:
         return 62, 105, (len(cell.river) * 30) % 255

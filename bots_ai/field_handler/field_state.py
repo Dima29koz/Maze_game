@@ -7,7 +7,7 @@ from GameEngine.globalEnv.types import Position
 
 from bots_ai.field_handler.graph_builder import GraphBuilder
 from bots_ai.exceptions import UnreachableState
-from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall
+from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
 from bots_ai.field_handler.grid import Grid, CELL, WALL
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
@@ -230,16 +230,10 @@ class FieldState:
         start_cell = self.get_player_cell()
         new_cell = self.field.get_neighbour_cell(start_cell.position, turn_direction)
         if not is_wall_passed:
-            if type(new_cell) is cell.CellRiver and new_cell.direction is -turn_direction:
-                raise UnreachableState()
-            if type(start_cell) is cell.CellRiver and start_cell.direction is turn_direction:
-                raise UnreachableState()
-            if type(new_cell) is cell.NoneCell:
-                wall_type = wall.WallOuter
-            self.field.add_wall(start_cell.position, turn_direction, wall_type)
-
+            self._wall_bounce_handler(new_cell, start_cell, turn_direction, wall_type)
             new_cell = start_cell
             turn_direction = -turn_direction
+
         elif type_cell_turn_end is not cell.CellExit and type(start_cell) is not cell.CellExit:
             self.field.add_wall(start_cell.position, turn_direction, wall.WallEmpty)
 
@@ -282,6 +276,20 @@ class FieldState:
             player_cell = self.get_player_cell()
             possible_directions = self.field.get_possible_river_directions(player_cell)
             [self._add_modified_leaf(player_cell.position, type_cell_turn_end, dir_) for dir_ in possible_directions]
+
+    def _wall_bounce_handler(self, new_cell: CELL | None, start_cell: CELL, turn_direction: Directions, wall_type: Type[WALL]):
+        if not new_cell:
+            return
+        if type(start_cell) is cell.CellExit:
+            return
+        if type(new_cell) is cell.CellRiver and new_cell.direction is -turn_direction:
+            raise UnreachableState()
+        if type(start_cell) is cell.CellRiver and start_cell.direction is turn_direction:
+            raise UnreachableState()
+        if type(new_cell) in [cell.NoneCell, PossibleExit]:
+            wall_type = wall.WallOuter
+            self._update_cell_type(cell.NoneCell, new_cell.position)
+        self.field.add_wall(start_cell.position, turn_direction, wall_type)
 
     def _calc_possible_river_trajectories(
             self, current_cell: UnknownCell | cell.CellRiver,

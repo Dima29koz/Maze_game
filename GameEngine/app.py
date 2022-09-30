@@ -1,4 +1,5 @@
 """runs game local for testing GameEngine"""
+import random
 from typing import Generator
 import threading
 import requests
@@ -13,6 +14,7 @@ from bots_ai.core import BotAI
 from bots_ai.field_handler.grid import Grid
 
 from bots_ai.field_handler.test_graph import test_graph
+
 
 class LocalGame:
     def __init__(self, room_id: int = None, server_url: str = '', with_bot=False):
@@ -48,13 +50,13 @@ class LocalGame:
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
         # self.rules['generator_rules']['river_rules']['min_coverage'] = 90
         # self.rules['generator_rules']['river_rules']['max_coverage'] = 100
-        spawn: dict[str, int] = {'x': 3, 'y': 2}
+        spawn: dict[str, int] = {'x': 1, 'y': 1}
         spawn2: dict[str, int] = {'x': 2, 'y': 3}
         spawn3: dict[str, int] = {'x': 4, 'y': 2}
 
         self.players = [
             (spawn, 'Skipper'),
-            # (spawn2, 'Tester'),
+            (spawn2, 'Tester'),
             # (spawn3, 'player'),
         ]
         self.turns = []
@@ -121,6 +123,7 @@ class LocalGame:
         if self.game.is_win_condition(self.rules):
             return False, ()
         dis = self.bot.make_decision(self.game.get_current_player().name)
+        # dis = None
         # print('avg', dis)
         return True, dis
 

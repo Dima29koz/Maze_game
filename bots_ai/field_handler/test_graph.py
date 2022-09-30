@@ -18,11 +18,11 @@ def test_graph(grid):
     for row in grid.get_field():
         print(row)
     print('\n')
-    gb = GraphBuilder(grid)
+    gb = GraphBuilder(grid, None)
     gr = gb.graph
     print('nodes\n', gr.nodes)
     # print('edges\n', gr.edges(data=True))
-    # draw(gr)
+    draw(gr)
     return gb
 
 

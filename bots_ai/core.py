@@ -40,7 +40,7 @@ class BotAI:
             self.players.get(player).process_turn(player_name, action, direction, response)
 
             if not self.has_real_field(player_name):
-                print('proc err!!!')
+                print(f'{player_name} proc err!!!')
 
         # at the turn end:
         # удалить все свои листы, которые противоречат листам противников,

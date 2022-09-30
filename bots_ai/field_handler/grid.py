@@ -5,10 +5,10 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
 from bots_ai.exceptions import MergingError, OnlyAllowedDir
-from bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall, UnknownWall
+from bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall, UnknownWall, PossibleExit
 
 
-CELL = Union[cell.CELL, UnknownCell]
+CELL = Union[cell.CELL, UnknownCell, PossibleExit]
 
 R_WALL = Union[
     wall.WallEmpty, wall.WallExit, wall.WallOuter,
@@ -37,6 +37,8 @@ class Grid:
     def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
         x, y = position.get_adjacent(direction).get()
         try:
+            if x < 0 or y < 0:
+                raise IndexError
             return self._field[y][x]
         except IndexError:
             return None
@@ -54,7 +56,7 @@ class Grid:
                  neighbour_wall_type: Type[WALL] = None):
         self.update_wall(position, direction, wall_type)
         neighbour = self.get_neighbour_cell(position, direction)
-        if type(neighbour) is not cell.NoneCell:
+        if neighbour and type(neighbour) is not cell.NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
             self.update_wall(neighbour.position, -direction, neighbour_wall_type)
@@ -224,10 +226,10 @@ class Grid:
                 other_cell = other_field._field[y][x]
                 if type(self_cell) is cell.NoneCell and type(other_cell) is cell.NoneCell:
                     continue
-                if type(self_cell) is cell.NoneCell and type(other_cell) is cell.CellExit:
+                if type(self_cell) is PossibleExit and type(other_cell) in [cell.CellExit, cell.NoneCell]:
                     is_changed = True
                     self.merge_cells(other_cell, x, y, no_walls=True)
-                if type(self_cell) is cell.CellExit and type(other_cell) is cell.NoneCell:
+                if type(self_cell) is cell.CellExit and type(other_cell) is PossibleExit:
                     continue
                 if type(self_cell) is UnknownCell and type(other_cell) is not UnknownCell:
                     if type(other_cell) is cell.CellRiver:

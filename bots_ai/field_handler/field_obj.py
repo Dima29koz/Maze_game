@@ -24,3 +24,11 @@ class UnknownCell(cell.Cell):
 
     def __repr__(self):
         return '?'
+
+
+class PossibleExit(cell.CellExit):
+    def __init__(self, position: Position, direction: Directions):
+        super().__init__(position, direction)
+
+    def __repr__(self):
+        return '?E'

@@ -45,19 +45,33 @@ class GraphBuilder:
         if type(tile) is cell.NoneCell:
             return
         for direction in Directions:
-            self._calc_relation(tile, direction, wall_collision=True)
-            self._calc_relation(tile, direction, wall_collision=False)
+            self._calc_relation_wall_collision(tile, direction)
+            self._calc_relation_no_wall_collision(tile, direction)
 
-    def _calc_relation(self, tile, direction, wall_collision):
-        if not wall_collision and not tile.walls[direction].player_collision:
-            return
-
-        if wall_collision and tile.walls[direction].player_collision:
+    def _calc_relation_wall_collision(self, tile: CELL, direction: Directions):
+        if tile.walls[direction].player_collision:
             new_cell = tile
         else:
             new_cell = self.game_map.get_neighbour_cell(tile.position, direction)
 
-        if not new_cell or type(new_cell) is cell.NoneCell:
+        if type(new_cell) is cell.CellRiver:
+            if self.game_map.is_washed(new_cell, tile, direction):
+                for _ in range(2):
+                    new_cell = self.game_map.get_neighbour_cell(new_cell.position, new_cell.direction)
+                    if type(new_cell) is not cell.CellRiver:
+                        break
+
+        self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.move, weight=1)
+
+    def _calc_relation_no_wall_collision(self, tile, direction):
+        if not tile.walls[direction].player_collision:
+            return
+        if not tile.walls[direction].breakable:
+            return
+
+        new_cell = self.game_map.get_neighbour_cell(tile.position, direction)
+
+        if not new_cell:
             return
 
         if type(new_cell) is cell.CellRiver:
@@ -67,13 +81,5 @@ class GraphBuilder:
                     if type(new_cell) is not cell.CellRiver:
                         break
 
-        if wall_collision:
-            self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.move, weight=1)
-        else:
-            self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.throw_bomb,
-                                weight=1 + (1 if type(tile) is not cell.CellRiver else 2))
-
-
-
-
-
+        self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.throw_bomb,
+                            weight=1 + (1 if type(tile) is not cell.CellRiver else 2))

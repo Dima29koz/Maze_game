@@ -2,7 +2,7 @@ from typing import Type
 
 from GameEngine.field import cell
 from GameEngine.globalEnv.types import Position
-from bots_ai.field_handler.field_obj import UnknownCell
+from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
 from bots_ai.field_handler.field_state import FieldState, CELL
 from bots_ai.field_handler.player_state import PlayerState
 from bots_ai.exceptions import MatchingError, MergingError
@@ -119,9 +119,11 @@ class LeavesMatcher:
         self_cell = node.field.get_cell(Position(x, y))
         other_cell = other_node.field.get_cell(Position(x, y))
 
-        if type(self_cell) is cell.NoneCell and type(other_cell) in [cell.CellExit, cell.NoneCell]:
+        if type(self_cell) is cell.NoneCell and type(other_cell) in [cell.NoneCell, PossibleExit]:
             return True
-        if type(self_cell) is cell.CellExit and type(other_cell) is cell.NoneCell:
+        if type(self_cell) is cell.CellExit and type(other_cell) in [cell.CellExit, PossibleExit]:
+            return True
+        if type(self_cell) is PossibleExit and type(other_cell) in [cell.CellExit, cell.NoneCell, PossibleExit]:
             return True
         if type(self_cell) is UnknownCell:
             if type(other_cell) is UnknownCell:

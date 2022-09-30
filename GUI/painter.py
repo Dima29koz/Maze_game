@@ -3,7 +3,7 @@ import pygame
 from GUI.utils import get_cell_color, get_wall_color, get_player_color
 from GameEngine.field import cell as c
 from GameEngine.globalEnv.enums import Directions, TreasureTypes
-
+from bots_ai.field_handler.field_obj import PossibleExit
 
 riv_dirs = {
     Directions.top: '/\\',
@@ -48,6 +48,8 @@ class Painter:
             self.draw_river_dir(cell, x, y, ts)
         if type(cell) == c.CellClinic:
             self.draw_clinic(x, y, ts)
+        if type(cell) == PossibleExit:
+            self.draw_possible_exit(x, y, ts)
         if isinstance(cell, c.CellArmory):
             self.draw_armory(cell, x, y, ts)
 
@@ -67,6 +69,12 @@ class Painter:
     def draw_clinic(self, x, y, ts):
         f1 = pygame.font.Font(None, ts)
         text = f1.render('H', True, (155, 15, 15))
+        place = text.get_rect(center=(x + ts // 2, y + ts // 2))
+        self.sc.blit(text, place)
+
+    def draw_possible_exit(self, x, y, ts):
+        f1 = pygame.font.Font(None, ts)
+        text = f1.render('?E', True, (255, 255, 255))
         place = text.get_rect(center=(x + ts // 2, y + ts // 2))
         self.sc.blit(text, place)
 

@@ -4,7 +4,7 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions
 from GameEngine.globalEnv.types import Position
 from GameEngine.rules import rules as base_rules
-from bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall
+from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit, UnbreakableWall
 from bots_ai.field_handler.field_state import FieldState
 from bots_ai.field_handler.grid import Grid
 from bots_ai.rules_preprocessor import RulesPreprocessor
@@ -24,9 +24,9 @@ class InitGenerator:
 
     def get_start_state(self, player_name: str):
         other_players = [pl_name for pl_name in self._players.keys()]
-        field = self._generate_start_field()
+        base_grid = self._generate_base_grid()
         root_state = FieldState(
-            Grid(field), self.get_unique_obj_amount(),
+            base_grid, self.get_unique_obj_amount(),
             {player_name: True for player_name in other_players},
             {player_name: None for player_name in self._players},
             self.rules_preprocessor
@@ -61,15 +61,30 @@ class InitGenerator:
         yr = range(1, self._size_y + 1)
         return [Position(x, y) for y in yr for x in xr]
 
-    def _generate_start_field(self) -> list[list[UnknownCell | cell.NoneCell]]:
+    def _generate_base_grid(self) -> Grid:
         none_cols = [0, self._cols - 1]
         none_rows = [0, self._rows - 1]
 
-        field = [[UnknownCell(Position(col, row))
-                  if row not in none_rows and col not in none_cols else cell.NoneCell(Position(col, row))
+        field = [[UnknownCell(Position(col, row)) if row not in none_rows and col not in none_cols
+                  else cell.NoneCell(Position(col, row))
                   for col in range(self._cols)] for row in range(self._rows)]
-        self._create_border_walls(field)
-        return field
+        # self._create_border_walls(field)
+        self._create_possible_exits(field)
+        return Grid(field)
+
+    @staticmethod
+    def _create_possible_exits(field: list[list[UnknownCell | cell.NoneCell]]):
+        for row in field:
+            for cell_obj in row:
+                if type(cell_obj) is cell.NoneCell:
+                    for direction in Directions:
+                        x, y = cell_obj.position.get_adjacent(direction).get()
+                        try:
+                            neighbour = field[y][x]
+                        except IndexError:
+                            neighbour = None
+                        if neighbour and type(neighbour) not in [cell.NoneCell, PossibleExit]:
+                            field[cell_obj.position.y][cell_obj.position.x] = PossibleExit(cell_obj.position, direction)
 
     @staticmethod
     def _create_border_walls(field: list[list[UnknownCell | cell.NoneCell]]):
