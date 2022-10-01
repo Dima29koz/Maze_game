@@ -85,6 +85,7 @@ class InitGenerator:
                             neighbour = None
                         if neighbour and type(neighbour) not in [cell.NoneCell, PossibleExit]:
                             field[cell_obj.position.y][cell_obj.position.x] = PossibleExit(cell_obj.position, direction)
+                            neighbour.add_wall(-direction, wall.WallExit())
 
     @staticmethod
     def _create_border_walls(field: list[list[UnknownCell | cell.NoneCell]]):
