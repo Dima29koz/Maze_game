@@ -1,4 +1,7 @@
-from GameEngine.field.cell import CELL, CellRiver, NoneCell
+from typing import Type
+
+from GameEngine.field import cell
+from GameEngine.field.cell import CellRiver, NoneCell
 from GameEngine.globalEnv.enums import Actions, Directions
 from GameEngine.globalEnv.types import Position
 from bots_ai.field_handler.field_state import FieldState
@@ -10,15 +13,52 @@ class PlayerState:
         self.root = start_state
         self.preprocessed_rules = preprocessed_rules
         self.name = name
+        self.stats = self.preprocessed_rules.get_player_stats()
 
     def process_turn(self, player_name: str, action: Actions, direction: Directions | None, response: dict):
         # before turn processing:
         # делать ход во всех своих листах, которые противники считают возможными,
         # то есть хотя бы 1 противник думает что данный лист возможен
         # и во всех листах с настоящим спавном
+
+        self._handle_stats_changes(player_name, action, response)
         for node in self.get_leaf_nodes()[::-1]:
             if node.check_compatibility():
                 node.process_action(player_name, action, direction, response)
+
+    def _handle_stats_changes(self, player_name: str, action: Actions, response: dict):
+        if player_name == self.name:
+            type_cell_turn_end: Type[cell.CELL] | None = response.get('type_cell_at_end_of_turn')
+
+            match action:
+                case Actions.shoot_bow:
+                    self.stats.on_shooting()
+                case Actions.throw_bomb:
+                    self.stats.on_bombing()
+                case Actions.swap_treasure:
+                    self.stats.on_swap_treasure()
+                case _:
+                    pass
+
+            match type_cell_turn_end:
+                case cell.CellClinic:
+                    self.stats.restore_heal()
+                case cell.CellArmory:
+                    self.stats.restore_weapon()
+                case cell.CellArmoryExplosive:
+                    self.stats.restore_bombs()
+                case cell.CellArmoryWeapon:
+                    self.stats.restore_arrows()
+                case _:
+                    pass
+
+        if response.get('hit'):
+            dmg_pls: list[str] = response.get('dmg_pls')
+            dead_pls: list[str] = response.get('dead_pls')
+            drop_pls: list[str] = response.get('drop_pls')
+            if self.name in dmg_pls:
+                self.stats.on_take_dmg()
+
 
     def get_leaf_nodes(self):
         """
@@ -76,30 +116,30 @@ class PlayerState:
             for y, row in enumerate(field):
                 if y not in avg_field:
                     avg_field |= {y: {}}
-                for x, cell in enumerate(row):
+                for x, cell_obj in enumerate(row):
                     if x not in avg_field.get(y):
                         avg_field[y] |= {x: {}}
                     t_cell = type(cell)
 
                     if t_cell not in avg_field.get(y).get(x):
                         avg_field[y][x] |= {t_cell: {'amount': 0}}
-                    if t_cell is CellRiver and cell.direction not in avg_field.get(y).get(x).get(t_cell):
-                        avg_field[y][x][t_cell] |= {cell.direction: {'amount': 0}}
+                    if t_cell is CellRiver and cell_obj.direction not in avg_field.get(y).get(x).get(t_cell):
+                        avg_field[y][x][t_cell] |= {cell_obj.direction: {'amount': 0}}
 
                     avg_field[y][x][t_cell]['amount'] += 1
                     if t_cell is CellRiver:
-                        avg_field[y][x][t_cell][cell.direction]['amount'] += 1
+                        avg_field[y][x][t_cell][cell_obj.direction]['amount'] += 1
 
         return self.make_avg_field(avg_field)
 
     @staticmethod
-    def make_avg_field(avg_field: dict) -> list[list[CELL]]:
+    def make_avg_field(avg_field: dict) -> list[list[cell.CELL]]:
         field = []
         for row_idx in avg_field:
             field.append([])
             for col_idx in avg_field[row_idx]:
-                cell = avg_field[row_idx][col_idx]
-                cell_type, direction = get_max_amount_cell(cell)
+                cell_obj = avg_field[row_idx][col_idx]
+                cell_type, direction = get_max_amount_cell(cell_obj)
                 field[row_idx].append(cell_type(Position(col_idx, row_idx)))
         return field
 

@@ -44,15 +44,15 @@ class LocalGame:
         # self.rules['generator_rules']['cols'] = 7
         self.rules['generator_rules']['is_separated_armory'] = True
         # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 5
+        self.rules['generator_rules']['seed'] = 1
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = False
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
         # self.rules['generator_rules']['river_rules']['min_coverage'] = 90
         # self.rules['generator_rules']['river_rules']['max_coverage'] = 100
-        spawn: dict[str, int] = {'x': 1, 'y': 1}
-        spawn2: dict[str, int] = {'x': 2, 'y': 3}
-        spawn3: dict[str, int] = {'x': 4, 'y': 2}
+        spawn: dict[str, int] = {'x': 5, 'y': 1}
+        spawn2: dict[str, int] = {'x': 2, 'y': 1}
+        spawn3: dict[str, int] = {'x': 2, 'y': 1}
 
         self.players = [
             (spawn, 'Skipper'),
@@ -118,6 +118,7 @@ class LocalGame:
         response = self.game.field.action_handler(action, direction)
         print(response.get_turn_info(), response.get_info())
         if self.bot:
+            print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
             self.bot.turn_prepare(self.game.get_current_player().name)
         if self.game.is_win_condition(self.rules):
@@ -143,7 +144,7 @@ def draw_graph(grid: Grid):
 def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
     game = LocalGame(room_id, server_url, with_bot)
     start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
-    tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
+    tr1 = threading.Thread(target=game.run, kwargs={'auto': False})
     # tr2 = threading.Thread(target=draw_graph, args=(start_map,))
     tr1.start()
     # tr2.start()

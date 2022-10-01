@@ -3,6 +3,7 @@ from typing import Type
 from GameEngine.field import cell
 from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
 from bots_ai.field_handler.grid import CELL
+from bots_ai.field_handler.player_stats import PlayerStats
 
 
 class RulesPreprocessor:
@@ -11,13 +12,16 @@ class RulesPreprocessor:
         self.exit_location = self._get_exit_location()
         self.compatible_cells = self._get_compatible_cells()
 
-    def _get_exit_location(self):
+    def get_player_stats(self):
+        return PlayerStats(self._rules)
+
+    def _get_exit_location(self) -> list[Type[CELL]]:
         if self._rules.get('generator_rules').get('is_not_rect'):
             return [cell.NoneCell, UnknownCell, PossibleExit]
         return [cell.NoneCell, PossibleExit]
 
     def _get_compatible_cells(self) -> dict[Type[CELL], list[Type[CELL]]]:
-        compatible_cells = {
+        compatible_cells: dict[Type[CELL], list[Type[CELL]]] = {
             cell.Cell: [UnknownCell, cell.Cell],
             cell.CellRiver: [UnknownCell, cell.CellRiver],
             cell.CellRiverMouth: [UnknownCell, cell.CellRiverMouth],

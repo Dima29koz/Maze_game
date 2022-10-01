@@ -36,8 +36,8 @@ class BotAI:
         direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
-        for player in self.players:
-            self.players.get(player).process_turn(player_name, action, direction, response)
+        for name, player_state in self.players.items():
+            player_state.process_turn(player_name, action, direction, response)
 
             if not self.has_real_field(player_name):
                 print(f'{player_name} proc err!!!')
