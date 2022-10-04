@@ -12,3 +12,7 @@ class MatchingError(Exception):
 
 class MergingError(Exception):
     pass
+
+
+class IncompatibleState(Exception):
+    pass

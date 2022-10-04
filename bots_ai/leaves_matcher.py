@@ -6,6 +6,7 @@ from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
 from bots_ai.field_handler.field_state import FieldState, CELL
 from bots_ai.field_handler.player_state import PlayerState
 from bots_ai.exceptions import MatchingError, MergingError
+from bots_ai.field_handler.tree_node import Node
 
 MAX_MATCHABLE_NODES = 8
 
@@ -24,12 +25,12 @@ class LeavesMatcher:
         if not other_players:
             return
 
-        other_players_nodes: list[tuple[str, list[FieldState]]] = [
+        other_players_nodes: list[tuple[str, list[Node]]] = [
             (player, self._get_player_compatible_leaves(player, active_player)) for player in other_players]
 
         for node in active_player_nodes[::-1]:
             try:
-                final_nodes: list[FieldState] = []
+                final_nodes: list[Node] = []
                 self._match_node(node, other_players_nodes.copy(), active_player, final_nodes)
                 if not final_nodes:
                     node.remove()
@@ -38,16 +39,16 @@ class LeavesMatcher:
             except MatchingError:
                 node.remove()
 
-    def _get_player_real_spawn_leaves(self, player_name: str) -> list[FieldState]:
+    def _get_player_real_spawn_leaves(self, player_name: str) -> list[Node]:
         return self._players.get(player_name).get_real_spawn_leaves()
 
-    def _get_player_compatible_leaves(self, player_name: str, target_player: str) -> list[FieldState]:
+    def _get_player_compatible_leaves(self, player_name: str, target_player: str) -> list[Node]:
         leaves = self._players.get(player_name).get_compatible_leaves(target_player)
-        [leaf.update_compatibility(target_player, False) for leaf in leaves]
+        [leaf.field_state.update_compatibility(target_player, False) for leaf in leaves]
         return leaves
 
-    def _match_node(self, node: FieldState,
-                    other_players: list[tuple[str, list[FieldState]]],
+    def _match_node(self, node: Node,
+                    other_players: list[tuple[str, list[Node]]],
                     active_player: str,
                     final_nodes):
         player_name, pl_nodes = other_players.pop()
@@ -59,8 +60,8 @@ class LeavesMatcher:
         for merged_node in merged_nodes:
             self._match_node(merged_node, other_players.copy(), active_player, final_nodes)
 
-    def merge_node_with_player(self, node: FieldState, other_pl_nodes: list[FieldState],
-                               active_pl_name: str, other_pl_name: str) -> list[FieldState]:
+    def merge_node_with_player(self, node: Node, other_pl_nodes: list[Node],
+                               active_pl_name: str, other_pl_name: str) -> list[Node]:
         """
 
         :param node: node to be merged
@@ -71,7 +72,7 @@ class LeavesMatcher:
         :raises MatchingError: if node is not matchable with other player nodes
         """
 
-        if node.players_positions.get(other_pl_name):
+        if node.field_state.players_positions.get(other_pl_name):
             return [node]
         # node еще не содержит инфы о player
         matchable_nodes = self._match_with_player(node, other_pl_nodes, active_pl_name)
@@ -81,31 +82,31 @@ class LeavesMatcher:
             # print('len of matched nodes is:', len(matchable_nodes))
             return [node]
 
-        merged_nodes: list[FieldState] = []
+        merged_states: list[FieldState] = []
         for matchable_node in matchable_nodes:
             try:
-                merged_node = node.merge_with(matchable_node, other_pl_name)
-                if merged_node:
-                    merged_nodes.append(merged_node)
+                merged_state = node.field_state.merge_with(matchable_node.field_state, other_pl_name)
+                if merged_state:
+                    merged_states.append(merged_state)
             except MergingError:
                 # matchable_node.update_compatibility(active_pl_name, False)
                 # todo bug here можно представить в виде списка листов с которыми матчится
                 pass
-        if not merged_nodes:
+        if not merged_states:
             return []
-        return merged_nodes
+        return [Node(state) for state in merged_states]
 
-    def _match_with_player(self, node: FieldState,
-                           other_nodes: list[FieldState], active_player: str):
+    def _match_with_player(self, node: Node,
+                           other_nodes: list[Node], active_player: str):
         matchable_nodes = []
         for pl_node in other_nodes[::-1]:
             if self._is_nodes_matchable(node, pl_node):
                 matchable_nodes.append(pl_node)
-                pl_node.update_compatibility(active_player, True)
+                pl_node.field_state.update_compatibility(active_player, True)
         return matchable_nodes
 
-    def _is_nodes_matchable(self, node: FieldState, other_node: FieldState):
-        field = node.field.get_field()
+    def _is_nodes_matchable(self, node: Node, other_node: Node):
+        field = node.field_state.field.get_field()
         unique_objs = self._unique_objs_amount.copy()
         for y in range(len(field)):
             for x in range(len(field[0])):
@@ -114,10 +115,10 @@ class LeavesMatcher:
         return True
 
     @staticmethod
-    def _is_cells_matchable(node: FieldState, other_node: FieldState,
+    def _is_cells_matchable(node: Node, other_node: Node,
                             x: int, y: int, unique_objs: dict[Type[CELL], int]):
-        self_cell = node.field.get_cell(Position(x, y))
-        other_cell = other_node.field.get_cell(Position(x, y))
+        self_cell = node.field_state.field.get_cell(Position(x, y))
+        other_cell = other_node.field_state.field.get_cell(Position(x, y))
 
         if type(self_cell) is cell.NoneCell and type(other_cell) in [cell.NoneCell, PossibleExit]:
             return True
@@ -134,7 +135,7 @@ class LeavesMatcher:
                 else:
                     return False
             if type(other_cell) is cell.CellRiver:
-                if not node.field.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
+                if not node.field_state.field.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
                     return False
             return True
 
@@ -145,7 +146,7 @@ class LeavesMatcher:
                 else:
                     return False
             if type(self_cell) is cell.CellRiver:
-                if not other_node.field.is_river_direction_available(other_cell, self_cell.direction, no_raise=True):
+                if not other_node.field_state.field.is_river_direction_available(other_cell, self_cell.direction, no_raise=True):
                     return False
             return True
 

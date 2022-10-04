@@ -15,7 +15,7 @@ class DecisionMaker:
         player_leaves = current_player.get_real_spawn_leaves()
         first_actions: dict[tuple[Actions, Directions | None], int] = {}
         for leaf in player_leaves:
-            graph = leaf.get_graph(leaf.field.get_cell(leaf.get_player_pos(player_name)))
+            graph = leaf.field_state.get_graph(player_name)
             target_calc = TargetCalculator(graph)
             target_cell = target_calc.get_target()
             act = graph.get_first_act(target_cell)

@@ -7,6 +7,7 @@ from GameEngine.rules import rules as base_rules
 from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit, UnbreakableWall
 from bots_ai.field_handler.field_state import FieldState
 from bots_ai.field_handler.grid import Grid
+from bots_ai.field_handler.tree_node import Node
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
@@ -22,19 +23,20 @@ class InitGenerator:
         self._spawn_points = self._gen_spawn_points()
         self.rules_preprocessor = RulesPreprocessor(game_rules)
 
-    def get_start_state(self, player_name: str):
+    def get_start_state(self, player_name: str) -> Node:
         other_players = [pl_name for pl_name in self._players.keys()]
         base_grid = self._generate_base_grid()
-        root_state = FieldState(
+        base_state = FieldState(
             base_grid, self.get_unique_obj_amount(),
             {player_name: True for player_name in other_players},
             {player_name: None for player_name in self._players},
             self.rules_preprocessor
         )
+        root_state = Node(base_state)
         for position in self._spawn_points:
             next_state = root_state.copy(player_name, position)
             if position == self._players.get(player_name):
-                next_state.is_real_spawn = True
+                next_state.field_state.is_real_spawn = True
             root_state.next_states.append(next_state)
         return root_state
 
@@ -104,7 +106,7 @@ class InitGenerator:
 
 def make_example_grid():
     init_gen = InitGenerator(base_rules, {'p1': Position(1, 1)})
-    grid = init_gen.get_start_state('p1').field
+    grid = init_gen.get_start_state('p1').field_state.field
 
     grid.create_exit(Directions.bottom, Position(2, 0))
 

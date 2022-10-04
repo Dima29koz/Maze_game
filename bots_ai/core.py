@@ -47,26 +47,15 @@ class BotAI:
         # но кажется что это не нужно
 
     def has_real_field(self, player_name: str):
-        if not len(self.players.get(player_name).root.next_states):
+        if not self.players.get(player_name).get_spawn_amount():
             return False
         flag = False
         for node in self.players.get(player_name).get_leaf_nodes():
-            cropped_field = [row[1:-1] for row in node.field.get_field()[1:-1]]
+            cropped_field = [row[1:-1] for row in node.field_state.field.get_field()[1:-1]]
             if is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
                 node.is_real = True  # todo
                 flag = True
         return flag
-
-    def get_spawn_amount(self, player_name: str):
-        return len(self.players.get(player_name).root.next_states)
-
-    def has_bad_nodes(self, player_name: str):
-        for node in self.players.get(player_name).get_leaf_nodes():
-            if not is_node_is_valid(node):
-                for row in node.field:
-                    print(row)
-                return True
-        return False
 
 
 if __name__ == "__main__":

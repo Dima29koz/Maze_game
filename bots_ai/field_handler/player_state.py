@@ -1,16 +1,15 @@
 from typing import Type
 
 from GameEngine.field import cell
-from GameEngine.field.cell import CellRiver, NoneCell
 from GameEngine.globalEnv.enums import Actions, Directions
-from GameEngine.globalEnv.types import Position
-from bots_ai.field_handler.field_state import FieldState
+from bots_ai.exceptions import UnreachableState, IncompatibleState
+from bots_ai.field_handler.tree_node import Node
 from bots_ai.rules_preprocessor import RulesPreprocessor
 
 
 class PlayerState:
-    def __init__(self, start_state: FieldState, preprocessed_rules: RulesPreprocessor, name: str):
-        self.root = start_state
+    def __init__(self, tree_root: Node, preprocessed_rules: RulesPreprocessor, name: str):
+        self._root = tree_root
         self.preprocessed_rules = preprocessed_rules
         self.name = name
         self.stats = self.preprocessed_rules.get_player_stats()
@@ -23,8 +22,12 @@ class PlayerState:
 
         self._handle_stats_changes(player_name, action, response)
         for node in self.get_leaf_nodes()[::-1]:
-            if node.check_compatibility():
-                node.process_action(player_name, action, direction, response)
+            try:
+                if node.field_state.check_compatibility():
+                    next_states = node.field_state.process_action(player_name, action, direction, response)
+                    node.set_next_states([Node(state) for state in next_states])
+            except (UnreachableState, IncompatibleState):
+                node.remove()
 
     def _handle_stats_changes(self, player_name: str, action: Actions, response: dict):
         if player_name == self.name:
@@ -59,46 +62,49 @@ class PlayerState:
             if self.name in dmg_pls:
                 self.stats.on_take_dmg()
 
+    def get_spawn_amount(self):
+        return len(self._root.next_states)
+
     def get_leaf_nodes(self):
         """
         :return: list of all leaves of a tree
         """
-        leaves: list[FieldState] = []
-        self._collect_leaf_nodes(self.root, leaves)
+        leaves: list[Node] = []
+        self._collect_leaf_nodes(self._root, leaves)
         return leaves
 
     def get_real_spawn_leaves(self):
         """
         :return: list of only real-spawn leaves of a tree
         """
-        leaves: list[FieldState] = []
-        self._collect_real_spawn_nodes(self.root, leaves)
+        leaves: list[Node] = []
+        self._collect_real_spawn_nodes(self._root, leaves)
         return leaves
 
     def get_compatible_leaves(self, target_player: str):
         """
         :return: list of all leaves of a tree which compatible with target player
         """
-        leaves: list[FieldState] = []
-        self._collect_compatible_nodes(self.root, leaves, target_player)
+        leaves: list[Node] = []
+        self._collect_compatible_nodes(self._root, leaves, target_player)
         return leaves
 
-    def _collect_leaf_nodes(self, node: FieldState, leaves: list):
-        if not node.next_states:
-            leaves.append(node)
-        for state in node.next_states:
-            self._collect_leaf_nodes(state, leaves)
+    def _collect_leaf_nodes(self, root: Node, leaves: list[Node]):
+        if not root.next_states:
+            leaves.append(root)
+        for node in root.next_states:
+            self._collect_leaf_nodes(node, leaves)
 
-    def _collect_real_spawn_nodes(self, node: FieldState, leaves: list):
-        if not node.next_states:
-            leaves.append(node)
-        for state in node.next_states:
-            if state.is_real_spawn:
-                self._collect_real_spawn_nodes(state, leaves)
+    def _collect_real_spawn_nodes(self, root: Node, leaves: list[Node]):
+        if not root.next_states:
+            leaves.append(root)
+        for node in root.next_states:
+            if node.field_state.is_real_spawn:
+                self._collect_real_spawn_nodes(node, leaves)
 
-    def _collect_compatible_nodes(self, node: FieldState, leaves: list, target_player: str):
-        if not node.next_states:
-            leaves.append(node)
-        for state in node.next_states:
-            if state.enemy_compatibility[target_player]:
-                self._collect_compatible_nodes(state, leaves, target_player)
+    def _collect_compatible_nodes(self, root: Node, leaves: list[Node], target_player: str):
+        if not root.next_states:
+            leaves.append(root)
+        for node in root.next_states:
+            if node.field_state.enemy_compatibility[target_player]:
+                self._collect_compatible_nodes(node, leaves, target_player)

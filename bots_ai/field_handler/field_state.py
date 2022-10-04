@@ -6,7 +6,7 @@ from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
 
 from bots_ai.field_handler.graph_builder import GraphBuilder
-from bots_ai.exceptions import UnreachableState
+from bots_ai.exceptions import UnreachableState, IncompatibleState
 from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
 from bots_ai.field_handler.grid import Grid, CELL, WALL
 from bots_ai.rules_preprocessor import RulesPreprocessor
@@ -23,12 +23,10 @@ class FieldState:
                  players_positions: dict[str, Position | None],
                  preprocessed_rules: RulesPreprocessor,
                  is_real_spawn: bool = False,
-                 parent: 'FieldState' = None, current_player: str = ''):
+                 current_player: str = ''):
         self.field = field
         self.players_positions = players_positions
         self.remaining_obj_amount = remaining_obj_amount
-        self.next_states: list[FieldState] = []
-        self.parent: FieldState | None = parent
         self.is_real_spawn = is_real_spawn
         self.enemy_compatibility = enemy_compatibility
         self.preprocessed_rules = preprocessed_rules
@@ -48,31 +46,29 @@ class FieldState:
             player_name = self.current_player
         return self.players_positions.get(player_name)
 
-    def remove(self):
-        self.parent._remove_leaf(self)
-
-    def process_action(self, current_player: str, action: Actions, direction: Directions | None, response: dict):
+    def process_action(self, current_player: str,
+                       action: Actions,
+                       direction: Directions | None,
+                       response: dict) -> list['FieldState']:
         if not self.players_positions.get(current_player):
-            return
+            return []
         self.current_player = current_player
-        try:
-            match action:
-                case Actions.swap_treasure:
-                    self._treasure_swap_processor(response)
-                case Actions.shoot_bow:
-                    self._shooting_processor(direction, response)
-                case Actions.throw_bomb:
-                    self._bomb_throw_processor(direction, response)
-                case Actions.skip:
-                    self._pass_processor(response)
-                case Actions.move:
-                    self._movement_processor(direction, response)
-                case Actions.info:
-                    self._info_processor(response)
-        except UnreachableState:
-            self.remove()
 
-    def copy(self, player_name: str = None, position: Position = None):
+        match action:
+            case Actions.swap_treasure:
+                return self._treasure_swap_processor(response)
+            case Actions.shoot_bow:
+                return self._shooting_processor(direction, response)
+            case Actions.throw_bomb:
+                return self._bomb_throw_processor(direction, response)
+            case Actions.skip:
+                return self._pass_processor(response)
+            case Actions.move:
+                return self._movement_processor(direction, response)
+            case Actions.info:
+                return self._info_processor(response)
+
+    def copy(self, player_name: str = None, position: Position = None) -> 'FieldState':
         return FieldState(
             self.field.copy(),
             self.remaining_obj_amount.copy(),
@@ -80,9 +76,9 @@ class FieldState:
             self.players_positions.copy() if not position else self.update_player_position(player_name, position),
             self.preprocessed_rules,
             self.is_real_spawn,
-            self, self.current_player)
+            self.current_player)
 
-    def update_player_position(self, player_name: str, position: Position):
+    def update_player_position(self, player_name: str, position: Position) -> dict[str, Position | None]:
         pl_positions = self.players_positions.copy()
         pl_positions[player_name] = position
         return pl_positions
@@ -90,13 +86,13 @@ class FieldState:
     def update_compatibility(self, player_name: str, value: bool):
         self.enemy_compatibility[player_name] = value
 
-    def check_compatibility(self):
+    def check_compatibility(self) -> bool:
         if True not in self.enemy_compatibility.values() and not self.is_real_spawn:
-            self.remove()
-            return False
+            raise IncompatibleState()
         return True
 
-    def get_graph(self, current_pl_cell: CELL):
+    def get_graph(self, player_name: str):
+        current_pl_cell = self.field.get_cell(self.get_player_pos(player_name))
         return GraphBuilder(self.field, current_pl_cell)
 
     def _move_player(self, position: Position):
@@ -141,42 +137,26 @@ class FieldState:
         if direction:
             self.field.add_wall(position, direction, wall.WallEmpty)
 
-    def _remove_leaf(self, leaf: 'FieldState'):
-        self.next_states.remove(leaf)
-        if not self.next_states and self.parent:
-            self.parent._remove_leaf(self)
-
-    def set_parent(self, parent: 'FieldState'):
-        self.parent = parent
-
-    def set_next_states(self, next_states: list['FieldState']):
-        for state in next_states:
-            if state is not self:
-                state.set_parent(self)
-                self.next_states.append(state)
-
-    def _add_modified_leaf(self, position: Position, new_type: Type[cell.CELL], direction: Directions = None):
-        self.next_states.append(self._get_modified_copy(position, new_type, direction))
-
-    def _get_modified_copy(self, position: Position, new_type: Type[CELL], direction: Directions = None):
+    def _get_modified_copy(self, position: Position, new_type: Type[CELL], direction: Directions = None) -> 'FieldState':
         new_state = self.copy()
         new_state._update_cell_type(new_type, position, direction)
         if new_state.players_positions.get(self.current_player) != position:
             new_state._move_player(position)
         return new_state
 
-    def _treasure_info_processor(self, response: dict):
+    def _treasure_info_processor(self, response: dict, next_states: list['FieldState']):
         cell_treasures_amount: int = response.get('cell_treasures_amount')
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
-        target_states = [self] if not self.next_states else self.next_states
+        target_states = [self] if not next_states else next_states
         for state in target_states:
             pass
+        return next_states
 
-    def _treasure_swap_processor(self, response: dict):
+    def _treasure_swap_processor(self, response: dict) -> list['FieldState']:
         had_treasure: bool = response.get('had_treasure')  # был ли в руках клад до смены
-        pass  # todo
+        return []  # todo
 
-    def _shooting_processor(self, direction: Directions, response: dict):
+    def _shooting_processor(self, direction: Directions, response: dict) -> list['FieldState']:
         is_hit: bool = response.get('hit')
         dmg_pls: list[str] = response.get('dmg_pls')
         dead_pls: list[str] = response.get('dead_pls')
@@ -184,9 +164,9 @@ class FieldState:
 
         #  todo add logic here
 
-        self._pass_processor(response)
+        return self._pass_processor(response)
 
-    def _bomb_throw_processor(self, direction: Directions, response: dict) -> None:
+    def _bomb_throw_processor(self, direction: Directions, response: dict) -> list['FieldState']:
         is_destroyed: bool = response.get('destroyed')
 
         current_cell = self.get_player_cell()
@@ -200,10 +180,12 @@ class FieldState:
             if type(current_cell.walls[direction]) is UnknownWall:
                 self.field.add_wall(current_cell.position, direction, UnbreakableWall)
 
-        self._pass_processor(response)
+        return self._pass_processor(response)
 
-    def _pass_processor(self, response: dict):
+    def _pass_processor(self, response: dict) -> list['FieldState']:
         type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
+
+        next_states = []
 
         current_cell = self.get_player_cell()
         if type(current_cell) is cell.CellRiver:
@@ -213,24 +195,25 @@ class FieldState:
             if type(end_cell) is type_cell_turn_end:
                 self._move_player(end_cell.position)
             elif type_cell_turn_end is cell.CellRiver:
-                final_states = self._calc_possible_river_trajectories(
+                next_states = self._calc_possible_river_trajectories(
                     end_cell, type_cell_turn_end, type_cell_turn_end, False, current_cell.direction)
-                self.set_next_states(final_states)
             elif type_cell_turn_end is cell.CellRiverMouth:
                 self._update_cell_type(type_cell_turn_end, end_cell.position)
                 self._move_player(end_cell.position)
             else:
                 raise UnreachableState()
 
-        self._treasure_info_processor(response)
+        return self._treasure_info_processor(response, next_states)
 
-    def _movement_processor(self, turn_direction: Directions, response: dict):
+    def _movement_processor(self, turn_direction: Directions, response: dict) -> list['FieldState']:
         is_diff_cells: bool = response.get('diff_cells')
         type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
         type_cell_after_wall_check: Type[cell.CELL] = response.get('type_cell_after_wall_check')
         is_wall_passed: bool = response.get('wall_passed')
         wall_type: Type[WALL] | None = response.get('wall_type')
         # todo учесть что это не обязательно настоящий тип стены
+
+        next_states = []
 
         #  потрогать стену в направлении хода
         new_cell, turn_direction = self._wall_check_handler(
@@ -252,23 +235,23 @@ class FieldState:
 
         # ... , река-река / река-устье / река, ...
         else:
-            final_states = self._calc_possible_river_trajectories(
+            next_states = self._calc_possible_river_trajectories(
                 new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, turn_direction)
-            self.set_next_states(final_states)
 
-        self._treasure_info_processor(response)
+        return self._treasure_info_processor(response, next_states)
 
-    def _info_processor(self, response: dict):
+    def _info_processor(self, response: dict) -> list['FieldState']:
         type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
-
+        next_states = []
         if type_cell_turn_end is not cell.CellRiver:
             self._update_cell_type(type_cell_turn_end, self.players_positions.get(self.current_player))
         else:
             player_cell = self.get_player_cell()
             possible_directions = self.field.get_possible_river_directions(player_cell)
-            [self._add_modified_leaf(player_cell.position, type_cell_turn_end, dir_) for dir_ in possible_directions]
+            for dir_ in possible_directions:
+                next_states.append(self._get_modified_copy(player_cell.position, type_cell_turn_end, dir_))
 
-        self._treasure_info_processor(response)
+        return self._treasure_info_processor(response, next_states)
 
     def _wall_check_handler(self, turn_direction: Directions, type_cell_turn_end: Type[cell.CELL],
                             is_wall_passed: bool, wall_type: Type[WALL] | None):
