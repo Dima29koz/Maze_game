@@ -30,7 +30,8 @@ class InitGenerator:
             base_grid,
             self.get_unique_obj_amount(),
             {player_name: None for player_name in self._players},
-            self.rules_preprocessor
+            self.rules_preprocessor,
+            treasures_positions=[],
         )
         root_state = Node(base_state, {player_name: True for player_name in other_players})
         for position in self._spawn_points:

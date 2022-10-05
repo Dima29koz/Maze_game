@@ -1,16 +1,11 @@
 import pygame
 
-from GUI.utils import get_cell_color, get_wall_color, get_player_color
+from GUI.utils import get_cell_color, get_wall_color, get_player_color, get_treasure_color, get_river_dir
+from GameEngine.entities.treasure import Treasure
 from GameEngine.field import cell as c
-from GameEngine.globalEnv.enums import Directions, TreasureTypes
+from GameEngine.globalEnv.enums import Directions
+from GameEngine.globalEnv.types import Position
 from bots_ai.field_handler.field_obj import PossibleExit
-
-riv_dirs = {
-    Directions.top: '/\\',
-    Directions.bottom: '\\/',
-    Directions.right: '>',
-    Directions.left: '<',
-}
 
 
 class Painter:
@@ -20,7 +15,7 @@ class Painter:
         self.start_x = 0
         self.start_y = 0
 
-    def draw(self, grid: list[list[c.CELL]] = None, players=None, treasures=None,
+    def draw(self, grid: list[list[c.CELL]] = None, players=None, treasures: list[Position] | list[Treasure] = None,
              start_x: int = None, start_y: int = None, tile_size: int = None,
              gr=True, pl=True, tr=True):
         dx = start_x if start_x else self.start_x
@@ -59,7 +54,7 @@ class Painter:
             s = str(cell.river.index(cell))
         except ValueError:
             try:
-                s = riv_dirs[cell.direction] if type(cell) is c.CellRiver else 'y'
+                s = get_river_dir(cell.direction) if type(cell) is c.CellRiver else 'y'
             except KeyError:
                 s = '?' if type(cell) is c.CellRiver else 'y'
         text = f1.render(s, True, (180, 180, 180))
@@ -105,22 +100,17 @@ class Painter:
 
     def draw_treasures(self, treasures, dx, dy, ts):
         for treasure in treasures:
-            x, y = treasure.position.x * ts + dx, treasure.position.y * ts + dy
-            self.draw_treasure(treasure, x, y, ts)
+            if type(treasure) is Treasure:
+                x, y = treasure.position.x * ts + dx, treasure.position.y * ts + dy
+                self.draw_treasure(treasure.t_type, x, y, ts)
+            if type(treasure) is Position:
+                x, y = treasure.x * ts + dx, treasure.y * ts + dy
+                self.draw_treasure('', x, y, ts)
 
-    def draw_treasure(self, treasure, x, y, ts):
-        if treasure.t_type is TreasureTypes.very:
-            pygame.draw.rect(self.sc, pygame.Color(209, 171, 0),
-                             (x + ts // 3 + 2, y + ts // 3 + 2,
-                              ts // 3 - 2, ts // 3 - 2))
-        if treasure.t_type is TreasureTypes.spurious:
-            pygame.draw.rect(self.sc, pygame.Color(87, 201, 102),
-                             (x + ts // 3 + 2, y + ts // 3 + 2,
-                              ts // 3 - 2, ts // 3 - 2))
-        if treasure.t_type is TreasureTypes.mined:
-            pygame.draw.rect(self.sc, pygame.Color(201, 92, 87),
-                             (x + ts // 3 + 2, y + ts // 3 + 2,
-                              ts // 3 - 2, ts // 3 - 2))
+    def draw_treasure(self, treasure_type, x, y, ts):
+        pygame.draw.rect(self.sc, get_treasure_color(treasure_type),
+                         (x + ts // 3 + 2, y + ts // 3 + 2,
+                         ts // 3 - 2, ts // 3 - 2))
 
     def draw_players(self, players: dict | list, dx, dy, ts):
         if type(players) is list:

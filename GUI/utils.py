@@ -3,7 +3,7 @@ from pygame.locals import *
 
 from GameEngine.field import cell as c
 from GameEngine.field import wall as w
-from GameEngine.globalEnv.enums import Actions, Directions
+from GameEngine.globalEnv.enums import Actions, Directions, TreasureTypes
 from bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall, PossibleExit
 
 
@@ -94,3 +94,27 @@ def get_player_color(player_name: str):
                 abs(hash(player_name)) % 255,
                 abs(hash(player_name)) % 255,
                 abs(hash(player_name)) % 255)
+
+
+def get_treasure_color(treasure_type: TreasureTypes):
+    match treasure_type:
+        case TreasureTypes.very:
+            return pygame.Color(209, 171, 0)
+        case TreasureTypes.spurious:
+            return pygame.Color(87, 201, 102)
+        case TreasureTypes.mined:
+            return pygame.Color(201, 92, 87)
+        case _:
+            return pygame.Color(189, 35, 189)
+
+
+def get_river_dir(direction: Directions):
+    match direction:
+        case Directions.top:
+            return '/\\'
+        case Directions.bottom:
+            return '\\/'
+        case Directions.right:
+            return '>'
+        case Directions.left:
+            return '<'

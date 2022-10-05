@@ -21,9 +21,11 @@ class FieldState:
                  remaining_obj_amount: dict[Type[cell.CELL], int],
                  players_positions: dict[str, Position | None],
                  preprocessed_rules: RulesPreprocessor,
+                 treasures_positions: list[Position],
                  current_player: str = ''):
         self.field = field
         self.players_positions = players_positions
+        self.treasures_positions = treasures_positions
         self.remaining_obj_amount = remaining_obj_amount
         self.preprocessed_rules = preprocessed_rules
 
@@ -32,7 +34,7 @@ class FieldState:
         self.is_real = False  # todo only for testing
 
     def get_current_data(self):
-        return self.field.get_field(), self.players_positions
+        return self.field.get_field(), self.players_positions, self.treasures_positions
 
     def get_player_cell(self) -> CELL:
         return self.field.get_cell(self.players_positions.get(self.current_player))
@@ -70,6 +72,7 @@ class FieldState:
             self.remaining_obj_amount.copy(),
             self.players_positions.copy() if not player_position else self.update_player_position(player_position),
             self.preprocessed_rules,
+            self.treasures_positions.copy(),
             self.current_player)
 
     def update_player_position(self, player_position: tuple[str, Position]) -> dict[str, Position | None]:
@@ -135,7 +138,8 @@ class FieldState:
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
         target_states = [self] if not next_states else next_states
         for state in target_states:
-            pass
+            for _ in range(cell_treasures_amount):
+                state.treasures_positions.append(state.get_player_cell().position)
         return next_states
 
     def _treasure_swap_processor(self, response: dict) -> list['FieldState']:

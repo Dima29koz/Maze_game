@@ -79,20 +79,20 @@ class SpectatorGUI:
         place = text.get_rect(topleft=(10, HEIGHT - 25 - 25*y))
         self.sc.blit(text, place)
 
-    def draw_leaves(self, fields: list[tuple[list[list], dict[str, Position | None]]], start_y):
+    def draw_leaves(self, fields: list[tuple[list[list], dict[str, Position | None]], list[Position]], start_y):
         dx = len(self.field.game_map.get_level(LevelPosition(0, 0, 0)).field[0]) * self.tile_size + DIST
         pygame.draw.line(self.sc, (255, 0, 0),
                          (dx, start_y), (self.res[0], start_y), 2)
         cols = len(fields[0][0][0])
         rows = len(fields[0][0])
         i = 0
-        for field, players in fields:
+        for field, players, treasures in fields:
             start_x = dx + (cols * TILE_LEAF + DIST) * i
             if start_x + cols * TILE_LEAF + DIST > RES[0]:
                 i = 0
                 start_y += rows * TILE_LEAF + DIST
                 start_x = dx + (cols * TILE_LEAF + DIST) * i
-            self.painter.draw(grid=field, players=players,
+            self.painter.draw(grid=field, players=players, treasures=treasures,
                               start_x=start_x, start_y=start_y, tile_size=TILE_LEAF, pl=True)
             i += 1
 
