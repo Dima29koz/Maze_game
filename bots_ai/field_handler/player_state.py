@@ -23,9 +23,9 @@ class PlayerState:
         self._handle_stats_changes(player_name, action, response)
         for node in self.get_leaf_nodes()[::-1]:
             try:
-                if node.field_state.check_compatibility():
+                if node.check_compatibility():
                     next_states = node.field_state.process_action(player_name, action, direction, response)
-                    node.set_next_states([Node(state) for state in next_states])
+                    [node.add_next_state(state) for state in next_states]
             except (UnreachableState, IncompatibleState):
                 node.remove()
 
@@ -106,5 +106,5 @@ class PlayerState:
         if not root.next_states:
             leaves.append(root)
         for node in root.next_states:
-            if node.field_state.enemy_compatibility[target_player]:
+            if node.enemy_compatibility[target_player]:
                 self._collect_compatible_nodes(node, leaves, target_player)

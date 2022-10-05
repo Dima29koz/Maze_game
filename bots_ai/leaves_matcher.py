@@ -44,7 +44,7 @@ class LeavesMatcher:
 
     def _get_player_compatible_leaves(self, player_name: str, target_player: str) -> list[Node]:
         leaves = self._players.get(player_name).get_compatible_leaves(target_player)
-        [leaf.field_state.update_compatibility(target_player, False) for leaf in leaves]
+        [leaf.update_compatibility(target_player, False) for leaf in leaves]
         return leaves
 
     def _match_node(self, node: Node,
@@ -82,19 +82,19 @@ class LeavesMatcher:
             # print('len of matched nodes is:', len(matchable_nodes))
             return [node]
 
-        merged_states: list[FieldState] = []
+        merged_nodes: list[Node] = []
         for matchable_node in matchable_nodes:
             try:
-                merged_state = node.field_state.merge_with(matchable_node.field_state, other_pl_name)
-                if merged_state:
-                    merged_states.append(merged_state)
+                merged_node = node.merge_with(matchable_node, other_pl_name)
+                if merged_node:
+                    merged_nodes.append(merged_node)
             except MergingError:
                 # matchable_node.update_compatibility(active_pl_name, False)
                 # todo bug here можно представить в виде списка листов с которыми матчится
                 pass
-        if not merged_states:
+        if not merged_nodes:
             return []
-        return [Node(state) for state in merged_states]
+        return merged_nodes
 
     def _match_with_player(self, node: Node,
                            other_nodes: list[Node], active_player: str):
@@ -102,7 +102,7 @@ class LeavesMatcher:
         for pl_node in other_nodes[::-1]:
             if self._is_nodes_matchable(node, pl_node):
                 matchable_nodes.append(pl_node)
-                pl_node.field_state.update_compatibility(active_player, True)
+                pl_node.update_compatibility(active_player, True)
         return matchable_nodes
 
     def _is_nodes_matchable(self, node: Node, other_node: Node):

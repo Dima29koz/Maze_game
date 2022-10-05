@@ -1,32 +1,55 @@
 from GameEngine.globalEnv.types import Position
+from bots_ai.exceptions import IncompatibleState
 from bots_ai.field_handler.field_state import FieldState
 
 
 class Node:
-    def __init__(self, field_state: FieldState, parent: 'Node' = None):
+    def __init__(self, field_state: FieldState,
+                 enemy_compatibility: dict[str, bool],
+                 parent: 'Node' = None):
         self.field_state = field_state
-        self.parent: Node | None = parent
+        self.enemy_compatibility = enemy_compatibility
+        self._parent: Node | None = parent
         self.next_states: list[Node] = []
 
     def get_current_data(self):
         return self.field_state.get_current_data()
 
     def copy(self, player_name: str = None, position: Position = None) -> 'Node':
-        return Node(self.field_state.copy(player_name, position), self)
+        return Node(
+            self.field_state.copy(player_name, position),
+            self.enemy_compatibility.copy(),
+            parent=self)
 
     def remove(self):
-        self.parent._remove_leaf(self)
+        self._parent._remove_leaf(self)
 
-    def _remove_leaf(self, leaf: 'Node'):
-        self.next_states.remove(leaf)
-        if not self.next_states and self.parent:
-            self.parent._remove_leaf(self)
+    def update_compatibility(self, player_name: str, value: bool):
+        self.enemy_compatibility[player_name] = value
 
-    def set_parent(self, parent: 'Node'):
-        self.parent = parent
+    def check_compatibility(self) -> bool:
+        if True not in self.enemy_compatibility.values() and not self.field_state.is_real_spawn:
+            raise IncompatibleState()
+        return True
 
     def set_next_states(self, next_states: list['Node']):
         for state in next_states:
             if state is not self:
-                state.set_parent(self)
+                state._set_parent(self)
                 self.next_states.append(state)
+
+    def add_next_state(self, field_state: FieldState):
+        self.next_states.append(Node(field_state, self.enemy_compatibility.copy(), parent=self))
+
+    def merge_with(self, other_node: 'Node', other_player: str) -> 'Node':
+        merged_node = self.copy()
+        merged_node.field_state.merge_with(other_node.field_state, other_player)
+        return merged_node
+
+    def _remove_leaf(self, leaf: 'Node'):
+        self.next_states.remove(leaf)
+        if not self.next_states and self._parent:
+            self._parent._remove_leaf(self)
+
+    def _set_parent(self, parent: 'Node'):
+        self._parent = parent

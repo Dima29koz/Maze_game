@@ -6,7 +6,7 @@ from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
 
 from bots_ai.field_handler.graph_builder import GraphBuilder
-from bots_ai.exceptions import UnreachableState, IncompatibleState
+from bots_ai.exceptions import UnreachableState
 from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
 from bots_ai.field_handler.grid import Grid, CELL, WALL
 from bots_ai.rules_preprocessor import RulesPreprocessor
@@ -19,7 +19,6 @@ class FieldState:
 
     def __init__(self, field: Grid,
                  remaining_obj_amount: dict[Type[cell.CELL], int],
-                 enemy_compatibility: dict[str, bool],
                  players_positions: dict[str, Position | None],
                  preprocessed_rules: RulesPreprocessor,
                  is_real_spawn: bool = False,
@@ -28,7 +27,6 @@ class FieldState:
         self.players_positions = players_positions
         self.remaining_obj_amount = remaining_obj_amount
         self.is_real_spawn = is_real_spawn
-        self.enemy_compatibility = enemy_compatibility
         self.preprocessed_rules = preprocessed_rules
 
         self.current_player: str = current_player
@@ -72,7 +70,6 @@ class FieldState:
         return FieldState(
             self.field.copy(),
             self.remaining_obj_amount.copy(),
-            self.enemy_compatibility.copy(),
             self.players_positions.copy() if not position else self.update_player_position(player_name, position),
             self.preprocessed_rules,
             self.is_real_spawn,
@@ -82,14 +79,6 @@ class FieldState:
         pl_positions = self.players_positions.copy()
         pl_positions[player_name] = position
         return pl_positions
-
-    def update_compatibility(self, player_name: str, value: bool):
-        self.enemy_compatibility[player_name] = value
-
-    def check_compatibility(self) -> bool:
-        if True not in self.enemy_compatibility.values() and not self.is_real_spawn:
-            raise IncompatibleState()
-        return True
 
     def get_graph(self, player_name: str):
         current_pl_cell = self.field.get_cell(self.get_player_pos(player_name))
@@ -395,8 +384,7 @@ class FieldState:
         else:
             raise UnreachableState()
 
-    def merge_with(self, other_node: 'FieldState', other_player: str):
-        merged_node = self.copy()
-        merged_node.field.merge_with(other_node.field, merged_node.remaining_obj_amount)
-        merged_node.players_positions[other_player] = other_node.get_player_pos(other_player)
-        return merged_node
+    def merge_with(self, other_state: 'FieldState', other_player: str):
+        self.field.merge_with(other_state.field, self.remaining_obj_amount)
+        self.players_positions[other_player] = other_state.get_player_pos(other_player)
+        return self

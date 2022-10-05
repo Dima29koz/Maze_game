@@ -27,12 +27,12 @@ class InitGenerator:
         other_players = [pl_name for pl_name in self._players.keys()]
         base_grid = self._generate_base_grid()
         base_state = FieldState(
-            base_grid, self.get_unique_obj_amount(),
-            {player_name: True for player_name in other_players},
+            base_grid,
+            self.get_unique_obj_amount(),
             {player_name: None for player_name in self._players},
             self.rules_preprocessor
         )
-        root_state = Node(base_state)
+        root_state = Node(base_state, {player_name: True for player_name in other_players})
         for position in self._spawn_points:
             next_state = root_state.copy(player_name, position)
             if position == self._players.get(player_name):
