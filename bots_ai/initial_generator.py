@@ -34,9 +34,9 @@ class InitGenerator:
         )
         root_state = Node(base_state, {player_name: True for player_name in other_players})
         for position in self._spawn_points:
-            next_state = root_state.copy(player_name, position)
+            next_state = root_state.copy(player_position=(player_name, position))
             if position == self._players.get(player_name):
-                next_state.field_state.is_real_spawn = True
+                next_state.is_real_spawn = True
             root_state.next_states.append(next_state)
         return root_state
 

@@ -99,7 +99,7 @@ class PlayerState:
         if not root.next_states:
             leaves.append(root)
         for node in root.next_states:
-            if node.field_state.is_real_spawn:
+            if node.is_real_spawn:
                 self._collect_real_spawn_nodes(node, leaves)
 
     def _collect_compatible_nodes(self, root: Node, leaves: list[Node], target_player: str):

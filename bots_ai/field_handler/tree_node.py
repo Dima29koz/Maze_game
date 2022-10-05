@@ -6,19 +6,22 @@ from bots_ai.field_handler.field_state import FieldState
 class Node:
     def __init__(self, field_state: FieldState,
                  enemy_compatibility: dict[str, bool],
+                 is_real_spawn: bool = False,
                  parent: 'Node' = None):
         self.field_state = field_state
         self.enemy_compatibility = enemy_compatibility
+        self.is_real_spawn = is_real_spawn
         self._parent: Node | None = parent
         self.next_states: list[Node] = []
 
     def get_current_data(self):
         return self.field_state.get_current_data()
 
-    def copy(self, player_name: str = None, position: Position = None) -> 'Node':
+    def copy(self, player_position: tuple[str, Position] = None, field_state: FieldState = None) -> 'Node':
         return Node(
-            self.field_state.copy(player_name, position),
+            self.field_state.copy(player_position) if not field_state else field_state,
             self.enemy_compatibility.copy(),
+            is_real_spawn=self.is_real_spawn,
             parent=self)
 
     def remove(self):
@@ -28,7 +31,7 @@ class Node:
         self.enemy_compatibility[player_name] = value
 
     def check_compatibility(self) -> bool:
-        if True not in self.enemy_compatibility.values() and not self.field_state.is_real_spawn:
+        if True not in self.enemy_compatibility.values() and not self.is_real_spawn:
             raise IncompatibleState()
         return True
 
@@ -39,7 +42,7 @@ class Node:
                 self.next_states.append(state)
 
     def add_next_state(self, field_state: FieldState):
-        self.next_states.append(Node(field_state, self.enemy_compatibility.copy(), parent=self))
+        self.next_states.append(self.copy(field_state=field_state))
 
     def merge_with(self, other_node: 'Node', other_player: str) -> 'Node':
         merged_node = self.copy()

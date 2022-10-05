@@ -21,12 +21,10 @@ class FieldState:
                  remaining_obj_amount: dict[Type[cell.CELL], int],
                  players_positions: dict[str, Position | None],
                  preprocessed_rules: RulesPreprocessor,
-                 is_real_spawn: bool = False,
                  current_player: str = ''):
         self.field = field
         self.players_positions = players_positions
         self.remaining_obj_amount = remaining_obj_amount
-        self.is_real_spawn = is_real_spawn
         self.preprocessed_rules = preprocessed_rules
 
         self.current_player: str = current_player
@@ -66,18 +64,17 @@ class FieldState:
             case Actions.info:
                 return self._info_processor(response)
 
-    def copy(self, player_name: str = None, position: Position = None) -> 'FieldState':
+    def copy(self, player_position: tuple[str, Position] = None) -> 'FieldState':
         return FieldState(
             self.field.copy(),
             self.remaining_obj_amount.copy(),
-            self.players_positions.copy() if not position else self.update_player_position(player_name, position),
+            self.players_positions.copy() if not player_position else self.update_player_position(player_position),
             self.preprocessed_rules,
-            self.is_real_spawn,
             self.current_player)
 
-    def update_player_position(self, player_name: str, position: Position) -> dict[str, Position | None]:
+    def update_player_position(self, player_position: tuple[str, Position]) -> dict[str, Position | None]:
         pl_positions = self.players_positions.copy()
-        pl_positions[player_name] = position
+        pl_positions[player_position[0]] = player_position[1]
         return pl_positions
 
     def get_graph(self, player_name: str):
