@@ -41,11 +41,11 @@ class LocalGame:
         # self.rules['generator_rules']['river_rules']['has_river'] = False
         # self.rules['generator_rules']['walls']['has_walls'] = False
         # self.rules['generator_rules']['exits_amount'] = 20
-        self.rules['generator_rules']['rows'] = 6
-        self.rules['generator_rules']['cols'] = 6
+        # self.rules['generator_rules']['rows'] = 6
+        # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
-        # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 2
+        self.rules['generator_rules']['seed'] = random.random()
+        # self.rules['generator_rules']['seed'] = 2
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = False
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
@@ -93,26 +93,26 @@ class LocalGame:
         self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
     def run(self, auto=False):
+        print('seed:', self.rules['generator_rules']['seed'])
         field = self.game.field
         gui = SpectatorGUI(field, self.bot)
 
         state = Actions.move
         is_running = True
-        dis = Actions.move, Directions.top
         for _ in self.players:
             act = (Actions.info, None) if not self.is_replay else next(self.turns)
-            is_running, dis = self.process_turn(*act)
+            is_running = self.process_turn(*act)
 
         while is_running:
-            act_pl_abilities = field.get_player_allowed_abilities(self.game.get_current_player())
+            act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
             gui.draw(act_pl_abilities, self.game.get_current_player().name)
             act, state = gui.get_action(act_pl_abilities, state)
             if act:
                 if auto:
-                    act = dis
+                    act = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
                 else:
                     act = act if not self.is_replay else next(self.turns)
-                is_running, dis = self.process_turn(*act)
+                is_running = self.process_turn(*act)
         gui.close()
         # self.replay_file.close()
 
@@ -121,16 +121,13 @@ class LocalGame:
         #     self.replay_file.write(action.name + ',' + direction.name if direction else '' + '\n')
         response, next_player = self.game.make_turn(action.name, direction.name if direction else None)
         print(response.get_turn_info(), response.get_info())
-        dis = None
         if self.bot:
-            print(response.get_raw_info())
+            # print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
             self.bot.turn_prepare(self.game.get_current_player().name)
-            dis = self.bot.make_decision(self.game.get_current_player().name)
-            # print('avg', dis)
         if self.game.is_win_condition(self.rules):
-            return False, ()
-        return True, dis
+            return False
+        return True
 
 
 def draw_graph(grid: Grid):
