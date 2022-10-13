@@ -8,8 +8,8 @@ from GUI.spectator import SpectatorGUI
 from GameEngine.game import Game
 from GameEngine.globalEnv.enums import Actions, Directions
 from GameEngine.globalEnv.types import Position, LevelPosition
-
 from GameEngine.rules import rules as ru
+
 from bots_ai.core import BotAI
 from bots_ai.field_handler.grid import Grid
 
@@ -120,7 +120,7 @@ class LocalGame:
     def process_turn(self, action: Actions, direction: Directions):
         # if self.save_replay:
         #     self.replay_file.write(action.name + ',' + direction.name if direction else '' + '\n')
-        response = self.game.field.action_handler(action, direction)
+        response, next_player = self.game.make_turn(action.name, direction.name if direction else None)
         print(response.get_turn_info(), response.get_info())
         dis = None
         if self.bot:

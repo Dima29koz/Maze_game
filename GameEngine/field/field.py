@@ -40,6 +40,7 @@ class Field:
         self.treasures: list[Treasure] = generator.get_treasures()
         self.players: list[Player] = []
         self._active_player_idx = 0
+        self._is_host_turn: bool = False
 
     def spawn_bots(self, bots_amount: int) -> list[Player]:
         """
@@ -110,6 +111,9 @@ class Field:
         response = action_to_handler[action](player, direction)
         response.set_info(player.cell, [treasure.t_type for treasure in self._treasures_on_cell(player.cell)])
         response.update_turn_info(player.name, action.name, direction.name if direction else '')
+        if self._is_host_turn:
+            self._host_turn()
+            self._is_host_turn = False
         return response
 
     def _get_neighbour_cell(self, position: Position, direction: Directions):
@@ -220,8 +224,8 @@ class Field:
         self.players[self._active_player_idx].is_active = False
         self._active_player_idx = (self._active_player_idx + 1) % len(self.players)
         self.players[self._active_player_idx].is_active = True
-        if self._active_player_idx + 1 == len(self.players):
-            self._host_turn()
+        if self._active_player_idx == 0:
+            self._is_host_turn = True
         if not self.players[self._active_player_idx].is_alive:
             self._pass_turn_to_next_player()
 

@@ -2,7 +2,8 @@
 /venv/
 /.idea/
 /.vs/
-/GameEngine/tmp.py
 .env
 tmp
+tmp.txt
+tmp.py
 local_app.py

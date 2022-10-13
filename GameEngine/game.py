@@ -20,6 +20,9 @@ class Game:
         """returns current Player object"""
         return self.field.get_active_player()
 
+    def get_last_player_name(self) -> str:
+        return self.field.players[-1].name
+
     def get_allowed_abilities_str(self, player: Player) -> dict[str, bool]:
         """returns player allowed abilities converted to dict"""
         abilities = self.field.get_player_allowed_abilities(player)
