@@ -6,10 +6,10 @@ from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
 
 from bots_ai.field_handler.graph_builder import GraphBuilder
-from bots_ai.exceptions import UnreachableState
+from bots_ai.exceptions import UnreachableState, MergingError
 from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
 from bots_ai.field_handler.grid import Grid, CELL, WALL
-from bots_ai.rules_preprocessor import RulesPreprocessor
+from bots_ai.field_handler.common_data import CommonData
 
 
 class FieldState:
@@ -20,14 +20,14 @@ class FieldState:
     def __init__(self, field: Grid,
                  remaining_obj_amount: dict[Type[cell.CELL], int],
                  players_positions: dict[str, Position | None],
-                 preprocessed_rules: RulesPreprocessor,
+                 common_data: CommonData,
                  treasures_positions: list[Position],
                  current_player: str = ''):
         self.field = field
         self.players_positions = players_positions
         self.treasures_positions = treasures_positions
         self.remaining_obj_amount = remaining_obj_amount
-        self.preprocessed_rules = preprocessed_rules
+        self.common_data = common_data
 
         self.current_player: str = current_player
 
@@ -40,6 +40,11 @@ class FieldState:
         return self.field.get_cell(self.players_positions.get(self.current_player))
 
     def get_player_pos(self, player_name: str = None) -> Position | None:
+        """
+
+        :param player_name: target player name
+        :return: position of target player if its known, else None
+        """
         if not player_name:
             player_name = self.current_player
         return self.players_positions.get(player_name)
@@ -48,8 +53,6 @@ class FieldState:
                        action: Actions,
                        direction: Directions | None,
                        response: dict) -> list['FieldState']:
-        if not self.players_positions.get(current_player):
-            return []
         self.current_player = current_player
 
         match action:
@@ -71,7 +74,7 @@ class FieldState:
             self.field.copy(),
             self.remaining_obj_amount.copy(),
             self.players_positions.copy() if not player_position else self.update_player_position(player_position),
-            self.preprocessed_rules,
+            self.common_data,
             self.treasures_positions.copy(),
             self.current_player)
 
@@ -103,7 +106,7 @@ class FieldState:
             return
 
         if new_type is cell.CellExit:
-            if type(target_cell) not in self.preprocessed_rules.exit_location:
+            if type(target_cell) not in self.common_data.exit_location:
                 raise UnreachableState()
             self.field.create_exit(direction, position)
             return
@@ -136,14 +139,28 @@ class FieldState:
     def _treasure_info_processor(self, response: dict, next_states: list['FieldState']):
         cell_treasures_amount: int = response.get('cell_treasures_amount')
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
-        target_states = [self] if not next_states else next_states
-        for state in target_states:
-            for _ in range(cell_treasures_amount):
-                state.treasures_positions.append(state.get_player_cell().position)
+
+        if not next_states:
+            self._merge_treasures([self.get_player_cell().position for _ in range(cell_treasures_amount)])
+            return next_states
+
+        for state in next_states[::-1]:
+            try:
+                state._merge_treasures([state.get_player_cell().position for _ in range(cell_treasures_amount)])
+            except MergingError:
+                next_states.remove(state)
+        if not next_states:
+            raise UnreachableState()
         return next_states
 
     def _treasure_swap_processor(self, response: dict) -> list['FieldState']:
+        if not self.get_player_pos():
+            return []
         had_treasure: bool = response.get('had_treasure')  # был ли в руках клад до смены
+        if not had_treasure:
+            current_cell = self.get_player_cell()
+            self.treasures_positions.remove(current_cell.position)
+        # else при текущем способе хранения позиций кладов ничего не изменится
         return []  # todo
 
     def _shooting_processor(self, direction: Directions, response: dict) -> list['FieldState']:
@@ -152,12 +169,24 @@ class FieldState:
         dead_pls: list[str] = response.get('dead_pls')
         drop_pls: list[str] = response.get('drop_pls')
 
-        #  todo add logic here
+        # todo add logic here (мог ли попасть / не попасть)
+        # warning: position of current player might be None
+
+        if drop_pls:
+            treasures_positions = []
+            for player_name in drop_pls:
+                other_pl_pos = self.get_player_pos(player_name)
+                if other_pl_pos:
+                    treasures_positions.append(other_pl_pos)
+            self._merge_treasures(treasures_positions)
 
         return self._pass_processor(response)
 
     def _bomb_throw_processor(self, direction: Directions, response: dict) -> list['FieldState']:
         is_destroyed: bool = response.get('destroyed')
+
+        if not self.get_player_pos():
+            return []
 
         current_cell = self.get_player_cell()
         if is_destroyed:
@@ -174,6 +203,9 @@ class FieldState:
 
     def _pass_processor(self, response: dict) -> list['FieldState']:
         type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
+
+        if not self.get_player_pos():
+            return []
 
         next_states = []
 
@@ -202,6 +234,9 @@ class FieldState:
         is_wall_passed: bool = response.get('wall_passed')
         wall_type: Type[WALL] | None = response.get('wall_type')
         # todo учесть что это не обязательно настоящий тип стены
+
+        if not self.get_player_pos():
+            return []
 
         next_states = []
 
@@ -232,6 +267,10 @@ class FieldState:
 
     def _info_processor(self, response: dict) -> list['FieldState']:
         type_cell_turn_end: Type[cell.CELL] = response.get('type_cell_at_end_of_turn')
+
+        if not self.get_player_pos():
+            return []
+
         next_states = []
         if type_cell_turn_end is not cell.CellRiver:
             self._update_cell_type(type_cell_turn_end, self.players_positions.get(self.current_player))
@@ -388,4 +427,19 @@ class FieldState:
     def merge_with(self, other_state: 'FieldState', other_player: str):
         self.field.merge_with(other_state.field, self.remaining_obj_amount)
         self.players_positions[other_player] = other_state.get_player_pos(other_player)
+        self._merge_treasures(other_state.treasures_positions)
         return self
+
+    def _merge_treasures(self, other_treasures: list[Position]):
+        if not other_treasures:
+            return
+        d_treasures = self.treasures_positions.copy()
+        d_other_treasures = other_treasures.copy()
+        for treasure_pos in other_treasures:
+            if treasure_pos in d_treasures:
+                d_treasures.remove(treasure_pos)
+                d_other_treasures.remove(treasure_pos)
+        merged_treasures_pos = self.treasures_positions + d_other_treasures
+        if len(merged_treasures_pos) + self.common_data.players_with_treasures > self.common_data.treasures_amount:
+            raise MergingError()
+        self.treasures_positions = merged_treasures_pos

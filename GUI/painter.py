@@ -133,7 +133,7 @@ class Painter:
 
         if player.treasure:
             x, y = player.cell.position.x * ts, player.cell.position.y * ts
-            self.draw_treasure(player.treasure, x, y, ts)
+            self.draw_treasure(player.treasure.t_type, x, y, ts)
 
     def draw_bot_ai_player(self, player_name, pl_pos, dx, dy, ts):
         if not pl_pos:

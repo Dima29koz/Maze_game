@@ -43,7 +43,10 @@ class PlayerStats:
         self.bombs -= 1
 
     def on_swap_treasure(self):
-        self.has_treasure = True
+        if not self.has_treasure:
+            self.has_treasure = True
+            return True
+        return False
 
     def on_take_dmg(self):
         self.health -= 1
@@ -51,5 +54,5 @@ class PlayerStats:
             self.is_alive = False
         if self.has_treasure and self.health <= self.health_max // 2:
             self.has_treasure = False
-
-
+            return True
+        return False

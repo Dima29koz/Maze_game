@@ -2,17 +2,17 @@ from typing import Type
 
 from GameEngine.field import cell
 from GameEngine.globalEnv.enums import Actions, Directions
-from bots_ai.exceptions import UnreachableState, IncompatibleState
+from bots_ai.exceptions import UnreachableState, IncompatibleState, MergingError
 from bots_ai.field_handler.tree_node import Node
-from bots_ai.rules_preprocessor import RulesPreprocessor
+from bots_ai.field_handler.common_data import CommonData
 
 
 class PlayerState:
-    def __init__(self, tree_root: Node, preprocessed_rules: RulesPreprocessor, name: str):
+    def __init__(self, tree_root: Node, common_data: CommonData, name: str):
         self._root = tree_root
-        self.preprocessed_rules = preprocessed_rules
+        self.common_data = common_data
         self.name = name
-        self.stats = self.preprocessed_rules.get_player_stats()
+        self.stats = self.common_data.get_player_stats()
 
     def process_turn(self, player_name: str, action: Actions, direction: Directions | None, response: dict):
         # before turn processing:
@@ -26,7 +26,7 @@ class PlayerState:
                 if node.check_compatibility():
                     next_states = node.field_state.process_action(player_name, action, direction, response)
                     [node.add_next_state(state) for state in next_states]
-            except (UnreachableState, IncompatibleState):
+            except (UnreachableState, IncompatibleState, MergingError):
                 node.remove()
 
     def _handle_stats_changes(self, player_name: str, action: Actions, response: dict):
@@ -39,7 +39,7 @@ class PlayerState:
                 case Actions.throw_bomb:
                     self.stats.on_bombing()
                 case Actions.swap_treasure:
-                    self.stats.on_swap_treasure()
+                    self.common_data.players_with_treasures += int(self.stats.on_swap_treasure())
                 case _:
                     pass
 
@@ -60,7 +60,7 @@ class PlayerState:
             dead_pls: list[str] = response.get('dead_pls')
             drop_pls: list[str] = response.get('drop_pls')
             if self.name in dmg_pls:
-                self.stats.on_take_dmg()
+                self.common_data.players_with_treasures -= int(self.stats.on_take_dmg())
 
     def get_spawn_amount(self):
         return len(self._root.next_states)

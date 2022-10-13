@@ -8,7 +8,7 @@ from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit, Unbreakab
 from bots_ai.field_handler.field_state import FieldState
 from bots_ai.field_handler.grid import Grid
 from bots_ai.field_handler.tree_node import Node
-from bots_ai.rules_preprocessor import RulesPreprocessor
+from bots_ai.field_handler.common_data import CommonData
 
 
 class InitGenerator:
@@ -21,7 +21,7 @@ class InitGenerator:
         self._rows = self._size_y + 2
         self._unique_objs = self._gen_field_objs_amount()
         self._spawn_points = self._gen_spawn_points()
-        self.rules_preprocessor = RulesPreprocessor(game_rules)
+        self.common_data = CommonData(game_rules)
 
     def get_start_state(self, player_name: str) -> Node:
         other_players = [pl_name for pl_name in self._players.keys()]
@@ -30,7 +30,7 @@ class InitGenerator:
             base_grid,
             self.get_unique_obj_amount(),
             {player_name: None for player_name in self._players},
-            self.rules_preprocessor,
+            self.common_data,
             treasures_positions=[],
         )
         root_state = Node(base_state, {player_name: True for player_name in other_players})

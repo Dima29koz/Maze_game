@@ -13,7 +13,7 @@ class BotAI:
         init_generator = InitGenerator(game_rules, players)
         self.players: dict[str, PlayerState] = {
             player_name: PlayerState(init_generator.get_start_state(player_name),
-                                     init_generator.rules_preprocessor,
+                                     init_generator.common_data,
                                      player_name)
             for player_name in players.keys()}
         self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players)

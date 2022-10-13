@@ -17,9 +17,11 @@ from bots_ai.field_handler.test_graph import test_graph
 
 
 class LocalGame:
-    def __init__(self, room_id: int = None, server_url: str = '', with_bot=False):
+    def __init__(self, room_id: int = None, server_url: str = '', with_bot=False, save_replay=True):
         self.bot: BotAI | None = None
         self.is_replay = False
+        self.save_replay = save_replay
+        # self.replay_file = open('replay.txt', 'w')
         self.players = []
         self.turns: list | Generator = []
         self.rules = {}
@@ -40,18 +42,18 @@ class LocalGame:
         # self.rules['generator_rules']['river_rules']['has_river'] = False
         # self.rules['generator_rules']['walls']['has_walls'] = False
         # self.rules['generator_rules']['exits_amount'] = 20
-        # self.rules['generator_rules']['rows'] = 7
-        # self.rules['generator_rules']['cols'] = 7
+        self.rules['generator_rules']['rows'] = 6
+        self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
         # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 1
+        self.rules['generator_rules']['seed'] = 2
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = False
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
         # self.rules['generator_rules']['river_rules']['min_coverage'] = 90
         # self.rules['generator_rules']['river_rules']['max_coverage'] = 100
-        spawn: dict[str, int] = {'x': 5, 'y': 1}
-        spawn2: dict[str, int] = {'x': 2, 'y': 1}
+        spawn: dict[str, int] = {'x': 5, 'y': 3}
+        spawn2: dict[str, int] = {'x': 2, 'y': 4}
         spawn3: dict[str, int] = {'x': 2, 'y': 1}
 
         self.players = [
@@ -113,19 +115,22 @@ class LocalGame:
                     act = act if not self.is_replay else next(self.turns)
                 is_running, dis = self.process_turn(*act)
         gui.close()
+        # self.replay_file.close()
 
-    def process_turn(self, action, direction):
+    def process_turn(self, action: Actions, direction: Directions):
+        # if self.save_replay:
+        #     self.replay_file.write(action.name + ',' + direction.name if direction else '' + '\n')
         response = self.game.field.action_handler(action, direction)
         print(response.get_turn_info(), response.get_info())
+        dis = None
         if self.bot:
             print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
             self.bot.turn_prepare(self.game.get_current_player().name)
+            dis = self.bot.make_decision(self.game.get_current_player().name)
+            # print('avg', dis)
         if self.game.is_win_condition(self.rules):
             return False, ()
-        dis = self.bot.make_decision(self.game.get_current_player().name)
-        # dis = None
-        # print('avg', dis)
         return True, dis
 
 
@@ -144,12 +149,13 @@ def draw_graph(grid: Grid):
 def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
     game = LocalGame(room_id, server_url, with_bot)
     start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
-    tr1 = threading.Thread(target=game.run, kwargs={'auto': False})
+    game.run(auto=True)
+    # tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
     # tr2 = threading.Thread(target=draw_graph, args=(start_map,))
-    tr1.start()
+    # tr1.start()
     # tr2.start()
 
-    tr1.join()
+    # tr1.join()
     # tr2.join()
 
 

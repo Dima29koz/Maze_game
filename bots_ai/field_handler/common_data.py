@@ -6,11 +6,13 @@ from bots_ai.field_handler.grid import CELL
 from bots_ai.field_handler.player_stats import PlayerStats
 
 
-class RulesPreprocessor:
+class CommonData:
     def __init__(self, game_rules: dict):
         self._rules = game_rules
         self.exit_location = self._get_exit_location()
         self.compatible_cells = self._get_compatible_cells()
+        self.treasures_amount: int = sum(self._rules.get('generator_rules').get('treasures'))
+        self.players_with_treasures: int = 0
 
     def get_player_stats(self):
         return PlayerStats(self._rules)
