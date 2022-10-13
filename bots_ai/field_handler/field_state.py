@@ -183,6 +183,12 @@ class FieldState:
 
         # todo add logic here (мог ли попасть / не попасть)
         # warning: position of current player might be None
+        current_player_pos = self.get_player_pos()
+        if current_player_pos:
+            for damaged_player_name in dmg_pls:
+                damaged_player_pos = self.get_player_pos(damaged_player_name)
+                if damaged_player_pos:
+                    self._check_shot_possibility(current_player_pos, damaged_player_pos, direction)
 
         if drop_pls:
             treasures_positions = []
@@ -293,6 +299,16 @@ class FieldState:
                 next_states.append(self._get_modified_copy(player_cell.position, type_cell_turn_end, dir_))
 
         return self._treasure_info_processor(response, next_states)
+
+    @staticmethod
+    def _check_shot_possibility(current_player_pos: Position,
+                                damaged_player_pos: Position, shot_direction: Directions):
+        if shot_direction in [Directions.top, Directions.bottom]:
+            if current_player_pos.x != damaged_player_pos.x:
+                raise UnreachableState()
+        elif shot_direction in [Directions.right, Directions.left]:
+            if current_player_pos.y != damaged_player_pos.y:
+                raise UnreachableState()
 
     def _wall_check_handler(self, turn_direction: Directions, type_cell_turn_end: Type[cell.CELL],
                             is_wall_passed: bool, wall_type: Type[WALL] | None):
