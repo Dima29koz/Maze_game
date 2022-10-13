@@ -30,8 +30,9 @@ class BotAI:
         if not self.has_real_field(player_name):
             print(f'{player_name} matcher err!!!')
 
-    def make_decision(self, player_name: str) -> tuple[Actions, Directions | None]:
-        return self.decision_maker.make_decision(player_name)
+    def make_decision(self, player_name: str,
+                      player_abilities: dict[Actions, bool]) -> tuple[Actions, Directions | None]:
+        return self.decision_maker.make_decision(player_name, player_abilities)
 
     def process_turn_resp(self, raw_response: dict):
         action = Actions[raw_response.get('action')]
@@ -41,6 +42,9 @@ class BotAI:
 
         if response.get('hit'):
             self._common_data.players_with_treasures -= len(response.get('drop_pls'))
+        if response.get('type_out_treasure'):
+            self._common_data.players_with_treasures -= 1
+            self._common_data.treasures_amount -= 1
         for name, player_state in self.players.items():
             player_state.process_turn(player_name, action, direction, response)
 

@@ -37,6 +37,9 @@ class PlayerState:
         if player_name == self.name:
             type_cell_turn_end: Type[cell.CELL] | None = response.get('type_cell_at_end_of_turn')
 
+            if response.get('type_out_treasure'):
+                self.stats.has_treasure = False
+
             match action:
                 case Actions.shoot_bow:
                     self.stats.on_shooting()
