@@ -9,7 +9,7 @@ from bots_ai.utils import is_node_is_real, is_node_is_valid
 
 
 class BotAI:
-    def __init__(self, game_rules: dict, players: dict[str, Position]):
+    def __init__(self, game_rules: dict, players: dict[str, Position], last_player_name: str):
         init_generator = InitGenerator(game_rules, players)
         self.players: dict[str, PlayerState] = {
             player_name: PlayerState(init_generator.get_start_state(player_name),
@@ -18,6 +18,8 @@ class BotAI:
             for player_name in players.keys()}
         self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players)
         self.decision_maker = DecisionMaker(game_rules, self.players)
+        self._last_player_name = last_player_name
+        self._common_data = init_generator.common_data
 
         self.real_field: list[list[cell.Cell | None]] = []
 
@@ -36,12 +38,17 @@ class BotAI:
         direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
         player_name: str = raw_response.get('player_name')
         response: dict = raw_response.get('response')
+
+        if response.get('hit'):
+            self._common_data.players_with_treasures -= len(response.get('drop_pls'))
         for name, player_state in self.players.items():
             player_state.process_turn(player_name, action, direction, response)
 
-            if not self.has_real_field(player_name):
-                print(f'{player_name} proc err!!!')
-
+            if not self.has_real_field(name):
+                print(f'{name} proc err!!!')
+        if player_name == self._last_player_name:
+            for player_state in self.players.values():
+                player_state.process_host_turn()
         # at the turn end:
         # удалить все свои листы, которые противоречат листам противников,
         # но кажется что это не нужно

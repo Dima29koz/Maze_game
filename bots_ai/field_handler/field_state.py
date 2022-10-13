@@ -5,7 +5,7 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
 
-from bots_ai.field_handler.graph_builder import GraphBuilder
+from bots_ai.decision_making.graph_builder import GraphBuilder
 from bots_ai.exceptions import UnreachableState, MergingError
 from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
 from bots_ai.field_handler.grid import Grid, CELL, WALL
@@ -69,6 +69,17 @@ class FieldState:
             case Actions.info:
                 return self._info_processor(response)
 
+    def make_host_turn(self):
+        new_treasures_pos = self.treasures_positions.copy()
+        for treasure_position in self.treasures_positions:
+            treasure_cell = self.field.get_cell(treasure_position)
+            if type(treasure_cell) is cell.CellRiver:
+                new_cell = self.field.get_neighbour_cell(treasure_cell.position, treasure_cell.direction)
+                new_treasures_pos.remove(treasure_position)
+                if type(new_cell) is not UnknownCell:
+                    new_treasures_pos.append(new_cell.position)
+        self.treasures_positions = new_treasures_pos
+
     def copy(self, player_position: tuple[str, Position] = None) -> 'FieldState':
         return FieldState(
             self.field.copy(),
@@ -129,7 +140,8 @@ class FieldState:
         if direction:
             self.field.add_wall(position, direction, wall.WallEmpty)
 
-    def _get_modified_copy(self, position: Position, new_type: Type[CELL], direction: Directions = None) -> 'FieldState':
+    def _get_modified_copy(self, position: Position,
+                           new_type: Type[CELL], direction: Directions = None) -> 'FieldState':
         new_state = self.copy()
         new_state._update_cell_type(new_type, position, direction)
         if new_state.players_positions.get(self.current_player) != position:

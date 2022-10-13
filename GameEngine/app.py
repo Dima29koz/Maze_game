@@ -12,8 +12,7 @@ from GameEngine.rules import rules as ru
 
 from bots_ai.core import BotAI
 from bots_ai.field_handler.grid import Grid
-
-from bots_ai.field_handler.test_graph import test_graph
+from bots_ai.decision_making.test_graph import test_graph
 
 
 class LocalGame:
@@ -90,7 +89,7 @@ class LocalGame:
     def _init_bot(self):
         players_: dict[str, Position] = {
             player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in self.players}
-        self.bot = BotAI(self.rules, players_)
+        self.bot = BotAI(self.rules, players_, self.game.get_last_player_name())
         self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
     def run(self, auto=False):

@@ -29,6 +29,10 @@ class PlayerState:
             except (UnreachableState, IncompatibleState, MergingError):
                 node.remove()
 
+    def process_host_turn(self):
+        for node in self.get_leaf_nodes():
+            node.field_state.make_host_turn()
+
     def _handle_stats_changes(self, player_name: str, action: Actions, response: dict):
         if player_name == self.name:
             type_cell_turn_end: Type[cell.CELL] | None = response.get('type_cell_at_end_of_turn')
@@ -60,7 +64,7 @@ class PlayerState:
             dead_pls: list[str] = response.get('dead_pls')
             drop_pls: list[str] = response.get('drop_pls')
             if self.name in dmg_pls:
-                self.common_data.players_with_treasures -= int(self.stats.on_take_dmg())
+                self.stats.on_take_dmg()
 
     def get_spawn_amount(self):
         return len(self._root.next_states)

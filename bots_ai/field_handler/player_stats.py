@@ -54,5 +54,3 @@ class PlayerStats:
             self.is_alive = False
         if self.has_treasure and self.health <= self.health_max // 2:
             self.has_treasure = False
-            return True
-        return False

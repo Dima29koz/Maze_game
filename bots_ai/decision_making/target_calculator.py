@@ -1,5 +1,5 @@
-from bots_ai.field_handler.graph_builder import GraphBuilder
-from bots_ai.field_handler.grid import CELL, cell, UnknownCell, PossibleExit
+from bots_ai.decision_making.graph_builder import GraphBuilder
+from bots_ai.field_handler.grid import CELL, UnknownCell, PossibleExit
 
 
 class TargetCalculator:
