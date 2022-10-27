@@ -1,10 +1,10 @@
 import pygame
 
 from GUI.utils import get_cell_color, get_wall_color, get_player_color, get_treasure_color, get_river_dir
-from GameEngine.entities.treasure import Treasure
-from GameEngine.field import cell as c
-from GameEngine.globalEnv.enums import Directions
-from GameEngine.globalEnv.types import Position
+from game_engine.entities.treasure import Treasure
+from game_engine.field import cell as c
+from game_engine.global_env.enums import Directions
+from game_engine.global_env.types import Position
 from bots_ai.field_handler.field_obj import PossibleExit
 
 

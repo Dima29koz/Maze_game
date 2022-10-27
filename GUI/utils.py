@@ -1,9 +1,9 @@
 import pygame
 from pygame.locals import *
 
-from GameEngine.field import cell as c
-from GameEngine.field import wall as w
-from GameEngine.globalEnv.enums import Actions, Directions, TreasureTypes
+from game_engine.field import cell as c
+from game_engine.field import wall as w
+from game_engine.global_env.enums import Actions, Directions, TreasureTypes
 from bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall, PossibleExit
 
 

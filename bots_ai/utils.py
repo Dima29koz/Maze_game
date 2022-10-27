@@ -1,5 +1,5 @@
-from GameEngine.field import cell
-from GameEngine.globalEnv.enums import Directions
+from game_engine.field import cell
+from game_engine.global_env.enums import Directions
 from bots_ai.field_handler.field_obj import UnknownCell
 from bots_ai.field_handler.field_state import FieldState
 

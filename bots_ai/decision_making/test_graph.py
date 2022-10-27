@@ -1,16 +1,16 @@
 import networkx as nx
 import matplotlib
 
-from GameEngine.globalEnv.types import LevelPosition
+from game_engine.global_env.types import LevelPosition
 from bots_ai.field_handler.grid import Grid
 
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-from GameEngine.rules import rules as ru
+from game_engine.rules import rules as ru
 from bots_ai.decision_making.graph_builder import GraphBuilder
 from bots_ai.initial_generator import make_example_grid
-from GameEngine.game import Game
+from game_engine.game import Game
 
 
 def test_graph(grid):

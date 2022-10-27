@@ -1,7 +1,7 @@
 from typing import Type
 
-from GameEngine.field import cell
-from GameEngine.globalEnv.enums import Actions, Directions
+from game_engine.field import cell
+from game_engine.global_env.enums import Actions, Directions
 from bots_ai.exceptions import UnreachableState, IncompatibleState, MergingError
 from bots_ai.field_handler.tree_node import Node
 from bots_ai.field_handler.common_data import CommonData

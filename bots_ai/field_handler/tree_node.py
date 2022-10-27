@@ -1,4 +1,4 @@
-from GameEngine.globalEnv.types import Position
+from game_engine.global_env.types import Position
 from bots_ai.exceptions import IncompatibleState
 from bots_ai.field_handler.field_state import FieldState
 

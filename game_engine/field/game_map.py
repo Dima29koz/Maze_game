@@ -1,6 +1,6 @@
-from GameEngine.field.cell import CellExit
-from GameEngine.field.game_level import GameLevel
-from GameEngine.globalEnv.types import Position, LevelPosition
+from game_engine.field.cell import CellExit
+from game_engine.field.game_level import GameLevel
+from game_engine.global_env.types import Position, LevelPosition
 
 
 class GameMap:

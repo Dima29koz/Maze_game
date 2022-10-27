@@ -1,6 +1,6 @@
-from GameEngine.field import cell
-from GameEngine.globalEnv.enums import Directions, Actions
-from GameEngine.globalEnv.types import Position
+from game_engine.field import cell
+from game_engine.global_env.enums import Directions, Actions
+from game_engine.global_env.types import Position
 from bots_ai.decision_making.decision_maker import DecisionMaker
 from bots_ai.initial_generator import InitGenerator
 from bots_ai.leaves_matcher import LeavesMatcher

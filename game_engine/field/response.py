@@ -1,9 +1,9 @@
 from typing import Type
 
-from GameEngine.entities.player import Player
-from GameEngine.globalEnv.enums import TreasureTypes
-from GameEngine.field.cell import *
-from GameEngine.field.wall import *
+from game_engine.entities.player import Player
+from game_engine.global_env.enums import TreasureTypes
+from game_engine.field.cell import *
+from game_engine.field.wall import *
 
 info = {
     Cell: {'name': {'ru': 'суша'}, 'mechanics': {'ru': ''}},

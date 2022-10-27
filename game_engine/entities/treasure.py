@@ -1,5 +1,5 @@
-from GameEngine.globalEnv.enums import TreasureTypes
-from GameEngine.globalEnv.types import Position
+from game_engine.global_env.enums import TreasureTypes
+from game_engine.global_env.types import Position
 
 
 class Treasure:

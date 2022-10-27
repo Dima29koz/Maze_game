@@ -2,15 +2,15 @@ from functools import partial
 from operator import attrgetter
 from random import choice, sample
 
-from GameEngine.field.game_map import GameMap
-from GameEngine.field_generator.map_generator import MapGenerator
-from GameEngine.field import response as r, cell as c, wall as w
-from GameEngine.entities.player import Player
-from GameEngine.entities.treasure import Treasure
-from GameEngine.globalEnv.enums import Actions, Directions
-from GameEngine.field.cell import Cell
-from GameEngine.bot_names import bots as data_bots
-from GameEngine.globalEnv.types import Position, LevelPosition
+from game_engine.field.game_map import GameMap
+from game_engine.field_generator.map_generator import MapGenerator
+from game_engine.field import response as r, cell as c, wall as w
+from game_engine.entities.player import Player
+from game_engine.entities.treasure import Treasure
+from game_engine.global_env.enums import Actions, Directions
+from game_engine.field.cell import Cell
+from game_engine.bot_names import bots as data_bots
+from game_engine.global_env.types import Position, LevelPosition
 
 
 class Field:

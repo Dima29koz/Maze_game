@@ -1,10 +1,10 @@
 from copy import deepcopy
 
-from GameEngine.entities.treasure import Treasure
-from GameEngine.field.cell import Cell
-from GameEngine.globalEnv.enums import Actions, TreasureTypes
+from game_engine.entities.treasure import Treasure
+from game_engine.field.cell import Cell
+from game_engine.global_env.enums import Actions, TreasureTypes
 
-from GameEngine.rules import rules
+from game_engine.rules import rules
 
 
 class Player:

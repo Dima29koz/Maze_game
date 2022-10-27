@@ -6,9 +6,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from .. import db, login_manager
 
-from GameEngine.game import Game
-from GameEngine.rules import rules as default_rules
-from GameEngine.entities.player import Player
+from game_engine.game import Game
+from game_engine.rules import rules as default_rules
+from game_engine.entities.player import Player
 from ..main.models import User, get_user_by_id, get_user_by_name
 
 login_manager.login_view = 'main.login'

@@ -1,4 +1,4 @@
-from GameEngine.globalEnv.types import LevelPosition
+from game_engine.global_env.types import LevelPosition
 
 
 class PatternCell:

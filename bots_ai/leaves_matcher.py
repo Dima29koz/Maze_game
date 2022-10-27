@@ -1,7 +1,7 @@
 from typing import Type
 
-from GameEngine.field import cell
-from GameEngine.globalEnv.types import Position
+from game_engine.field import cell
+from game_engine.global_env.types import Position
 from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
 from bots_ai.field_handler.field_state import FieldState, CELL
 from bots_ai.field_handler.player_state import PlayerState

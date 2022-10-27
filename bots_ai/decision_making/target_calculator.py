@@ -1,4 +1,4 @@
-from GameEngine.field import cell
+from game_engine.field import cell
 from bots_ai.decision_making.graph_builder import GraphBuilder
 from bots_ai.field_handler.field_state import FieldState
 from bots_ai.field_handler.grid import CELL, UnknownCell, PossibleExit

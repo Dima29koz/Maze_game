@@ -2,9 +2,9 @@ import pygame
 from pygame.locals import *
 
 from GUI.painter import Painter
-from GameEngine.field.field import Field
-from GameEngine.globalEnv.enums import Directions, Actions
-from GameEngine.globalEnv.types import Position, LevelPosition
+from game_engine.field.field import Field
+from game_engine.global_env.enums import Directions, Actions
+from game_engine.global_env.types import Position, LevelPosition
 from GUI.utils import get_key_act
 from GUI.button import Button
 from GUI.bot_ai_spectator import BotAISpectator

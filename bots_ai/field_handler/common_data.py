@@ -1,6 +1,6 @@
 from typing import Type
 
-from GameEngine.field import cell
+from game_engine.field import cell
 from bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
 from bots_ai.field_handler.grid import CELL
 from bots_ai.field_handler.player_stats import PlayerStats

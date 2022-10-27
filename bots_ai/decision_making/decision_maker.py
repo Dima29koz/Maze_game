@@ -1,6 +1,6 @@
 from random import choice
 
-from GameEngine.globalEnv.enums import Actions, Directions
+from game_engine.global_env.enums import Actions, Directions
 from bots_ai.decision_making.graph_builder import GraphBuilder
 from bots_ai.decision_making.target_calculator import TargetCalculator
 from bots_ai.field_handler.player_state import PlayerState

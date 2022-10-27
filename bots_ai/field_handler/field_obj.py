@@ -1,6 +1,6 @@
-from GameEngine.field import wall, cell
-from GameEngine.globalEnv.enums import Directions
-from GameEngine.globalEnv.types import Position
+from game_engine.field import wall, cell
+from game_engine.global_env.enums import Directions
+from game_engine.global_env.types import Position
 
 
 class UnknownWall(wall.WallEmpty):

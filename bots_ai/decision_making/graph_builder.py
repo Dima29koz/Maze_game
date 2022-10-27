@@ -1,8 +1,8 @@
 import networkx as nx
 
-from GameEngine.field import cell
-from GameEngine.globalEnv.enums import Directions, Actions
-from GameEngine.globalEnv.types import Position
+from game_engine.field import cell
+from game_engine.global_env.enums import Directions, Actions
+from game_engine.global_env.types import Position
 from bots_ai.field_handler.grid import Grid, CELL
 
 

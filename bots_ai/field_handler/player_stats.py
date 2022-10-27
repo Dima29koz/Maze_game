@@ -1,4 +1,4 @@
-from GameEngine.globalEnv.enums import Actions
+from game_engine.global_env.enums import Actions
 
 
 class PlayerStats:

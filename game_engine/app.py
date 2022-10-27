@@ -1,14 +1,14 @@
-"""runs game local for testing GameEngine"""
+"""runs game local for testing game_engine"""
 import random
 from typing import Generator
 import threading
 import requests
 
 from GUI.spectator import SpectatorGUI
-from GameEngine.game import Game
-from GameEngine.globalEnv.enums import Actions, Directions
-from GameEngine.globalEnv.types import Position, LevelPosition
-from GameEngine.rules import rules as ru
+from game_engine.game import Game
+from game_engine.global_env.enums import Actions, Directions
+from game_engine.global_env.types import Position, LevelPosition
+from game_engine.rules import rules as ru
 
 from bots_ai.core import BotAI
 from bots_ai.field_handler.grid import Grid
@@ -44,8 +44,8 @@ class LocalGame:
         # self.rules['generator_rules']['rows'] = 6
         # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
-        self.rules['generator_rules']['seed'] = random.random()
-        # self.rules['generator_rules']['seed'] = 2
+        # self.rules['generator_rules']['seed'] = random.random()
+        self.rules['generator_rules']['seed'] = 0.7701850660952331
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = False
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True

@@ -1,9 +1,9 @@
 from copy import copy
 from typing import Type
 
-from GameEngine.field import cell, wall
-from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
-from GameEngine.globalEnv.types import Position
+from game_engine.field import cell, wall
+from game_engine.global_env.enums import Directions, Actions, TreasureTypes
+from game_engine.global_env.types import Position
 
 from bots_ai.exceptions import UnreachableState, MergingError
 from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit

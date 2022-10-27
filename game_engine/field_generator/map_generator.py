@@ -1,12 +1,12 @@
 from random import seed
 
-from GameEngine.field.game_map import GameMap
-from GameEngine.field_generator.field_generator import FieldGenerator
-from GameEngine.entities.treasure import Treasure
-from GameEngine.field_generator.level_pattern import LevelPattern
-from GameEngine.field.cell import (
+from game_engine.field.game_map import GameMap
+from game_engine.field_generator.field_generator import FieldGenerator
+from game_engine.entities.treasure import Treasure
+from game_engine.field_generator.level_pattern import LevelPattern
+from game_engine.field.cell import (
     Cell, CellRiver, CellExit, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CellClinic, NoneCell)
-from GameEngine.globalEnv.types import LevelPosition
+from game_engine.global_env.types import LevelPosition
 
 
 class MapGenerator:
