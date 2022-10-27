@@ -5,7 +5,6 @@ from GameEngine.field import cell, wall
 from GameEngine.globalEnv.enums import Directions, Actions, TreasureTypes
 from GameEngine.globalEnv.types import Position
 
-from bots_ai.decision_making.graph_builder import GraphBuilder
 from bots_ai.exceptions import UnreachableState, MergingError
 from bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
 from bots_ai.field_handler.grid import Grid, CELL, WALL
@@ -36,8 +35,10 @@ class FieldState:
     def get_current_data(self):
         return self.field.get_field(), self.players_positions, self.treasures_positions
 
-    def get_player_cell(self) -> CELL:
-        return self.field.get_cell(self.players_positions.get(self.current_player))
+    def get_player_cell(self, player_name: str = None) -> CELL:
+        if not player_name:
+            player_name = self.current_player
+        return self.field.get_cell(self.players_positions.get(player_name))
 
     def get_player_pos(self, player_name: str = None) -> Position | None:
         """
@@ -93,10 +94,6 @@ class FieldState:
         pl_positions = self.players_positions.copy()
         pl_positions[player_position[0]] = player_position[1]
         return pl_positions
-
-    def get_graph(self, player_name: str):
-        current_pl_cell = self.field.get_cell(self.get_player_pos(player_name))
-        return GraphBuilder(self.field, current_pl_cell)
 
     def _move_player(self, position: Position):
         self.players_positions[self.current_player] = position

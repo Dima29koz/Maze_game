@@ -7,9 +7,10 @@ from bots_ai.field_handler.grid import Grid, CELL
 
 
 class GraphBuilder:
-    def __init__(self, game_map: Grid, current_player_cell: CELL):
+    def __init__(self, game_map: Grid, current_player_cell: CELL, player_abilities: dict[Actions, bool]):
         self.game_map = game_map
         self.current_player_cell = current_player_cell
+        self._player_abilities = player_abilities
         self.graph = nx.MultiDiGraph()
         self.build_from_map()
         self.paths = self.calc_paths(self.current_player_cell)
@@ -46,7 +47,8 @@ class GraphBuilder:
             return
         for direction in Directions:
             self._calc_relation_wall_collision(tile, direction)
-            self._calc_relation_no_wall_collision(tile, direction)
+            if self._player_abilities.get(Actions.throw_bomb):
+                self._calc_relation_no_wall_collision(tile, direction)
 
     def _calc_relation_wall_collision(self, tile: CELL, direction: Directions):
         if tile.walls[direction].player_collision:
