@@ -18,7 +18,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="GameEngine.entities package" href="GameEngine.entities.html" />
-    <link rel="prev" title="server.app.api package" href="server.app.api.html" /> 
+    <link href="server.app.main.html" rel="prev" title="server.app.main package"/>
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -33,8 +33,8 @@
           <a href="GameEngine.entities.html" title="GameEngine.entities package"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="server.app.api.html" title="server.app.api package"
-             accesskey="P">previous</a> |</li>
+            <a href="server.app.main.html" title="server.app.main package"
+               accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Maze Game  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">GameEngine package</a></li> 
       </ul>
@@ -49,99 +49,55 @@
 <h1>GameEngine package<a class="headerlink" href="#gameengine-package" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="GameEngine.entities.html">GameEngine.entities package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.entities.html#module-GameEngine.entities.player">GameEngine.entities.player module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.entities.html#module-GameEngine.entities.treasure">GameEngine.entities.treasure module</a></li>
-</ul>
+<li class="toctree-l1"><a class="reference internal" href="GameEngine.entities.html">GameEngine.entities package</a>
+    <ul>
+        <li class="toctree-l2"><a class="reference internal"
+                                  href="GameEngine.entities.html#gameengine-entities-player-module">GameEngine.entities.player
+            module</a></li>
+        <li class="toctree-l2"><a class="reference internal"
+                                  href="GameEngine.entities.html#gameengine-entities-treasure-module">GameEngine.entities.treasure
+            module</a></li>
+    </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="GameEngine.field.html">GameEngine.field package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#module-GameEngine.field.cell">GameEngine.field.cell module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#module-GameEngine.field.field">GameEngine.field.field module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#module-GameEngine.field.response">GameEngine.field.response module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#module-GameEngine.field.wall">GameEngine.field.wall module</a></li>
-</ul>
+<li class="toctree-l1"><a class="reference internal" href="GameEngine.field.html">GameEngine.field package</a>
+    <ul>
+        <li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#gameengine-field-cell-module">GameEngine.field.cell
+            module</a></li>
+        <li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#gameengine-field-field-module">GameEngine.field.field
+            module</a></li>
+        <li class="toctree-l2"><a class="reference internal"
+                                  href="GameEngine.field.html#gameengine-field-response-module">GameEngine.field.response
+            module</a></li>
+        <li class="toctree-l2"><a class="reference internal" href="GameEngine.field.html#gameengine-field-wall-module">GameEngine.field.wall
+            module</a></li>
+    </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="GameEngine.field_generator.html">GameEngine.field_generator package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.field_generator.html#module-GameEngine.field_generator.field_generator">GameEngine.field_generator.field_generator module</a></li>
+    <li class="toctree-l2"><a class="reference internal"
+                              href="GameEngine.field_generator.html#gameengine-field-generator-field-generator-module">GameEngine.field_generator.field_generator
+        module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="GameEngine.globalEnv.html">GameEngine.globalEnv package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GameEngine.globalEnv.html#module-GameEngine.globalEnv.enums">GameEngine.globalEnv.enums module</a></li>
+    <li class="toctree-l2"><a class="reference internal"
+                              href="GameEngine.globalEnv.html#gameengine-globalenv-enums-module">GameEngine.globalEnv.enums
+        module</a></li>
 </ul>
 </li>
 </ul>
 </div>
-<section id="module-GameEngine.app">
-<span id="gameengine-app-module"></span><h2>GameEngine.app module<a class="headerlink" href="#module-GameEngine.app" title="Permalink to this headline">¶</a></h2>
-<p>runs game local for testing GameEngine</p>
-</section>
-<section id="module-GameEngine.game">
-<span id="gameengine-game-module"></span><h2>GameEngine.game module<a class="headerlink" href="#module-GameEngine.game" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="GameEngine.game.Game">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.game.</span></span><span class="sig-name descname"><span class="pre">Game</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.game.Game" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class used for top-level interaction with the game object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><p><strong>field</strong> – game field object which contains all logic and game objects</p>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.get_allowed_abilities">
-<span class="sig-name descname"><span class="pre">get_allowed_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Actions" title="GameEngine.globalEnv.enums.Actions"><span class="pre">GameEngine.globalEnv.enums.Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#GameEngine.game.Game.get_allowed_abilities" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns player allowed abilities converted to dict</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.get_allowed_abilities_str">
-<span class="sig-name descname"><span class="pre">get_allowed_abilities_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GameEngine.game.Game.get_allowed_abilities_str" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns player allowed abilities converted to dict</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.get_current_player">
-<span class="sig-name descname"><span class="pre">get_current_player</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></span><a class="headerlink" href="#GameEngine.game.Game.get_current_player" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns current Player object</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.get_players_data">
-<span class="sig-name descname"><span class="pre">get_players_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GameEngine.game.Game.get_players_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns data for players in game</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.get_spawn_point">
-<span class="sig-name descname"><span class="pre">get_spawn_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#GameEngine.game.Game.get_spawn_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns coordinates of player if player is spawned</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.is_win_condition">
-<span class="sig-name descname"><span class="pre">is_win_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#GameEngine.game.Game.is_win_condition" title="Permalink to this definition">¶</a></dt>
-<dd><p>checks win condition</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.game.Game.make_turn">
-<span class="sig-name descname"><span class="pre">make_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.field.html#GameEngine.field.response.RespHandler" title="GameEngine.field.response.RespHandler"><span class="pre">GameEngine.field.response.RespHandler</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GameEngine.game.Game.make_turn" title="Permalink to this definition">¶</a></dt>
-<dd><p>active player makes turk with provided action and direction
-checks players ability to make provided action</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>turn response object if action is available, current player object</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="module-GameEngine.rules">
-<span id="gameengine-rules-module"></span><h2>GameEngine.rules module<a class="headerlink" href="#module-GameEngine.rules" title="Permalink to this headline">¶</a></h2>
-<p>Base game rules</p>
-</section>
+      <section id="gameengine-app-module">
+          <h2>GameEngine.app module<a class="headerlink" href="#gameengine-app-module"
+                                      title="Permalink to this headline">¶</a></h2>
+      </section>
+      <section id="gameengine-game-module">
+          <h2>GameEngine.game module<a class="headerlink" href="#gameengine-game-module"
+                                       title="Permalink to this headline">¶</a></h2>
+      </section>
+      <section id="gameengine-rules-module">
+          <h2>GameEngine.rules module<a class="headerlink" href="#gameengine-rules-module"
+                                        title="Permalink to this headline">¶</a></h2>
+      </section>
 </section>
 
 
@@ -154,20 +110,21 @@ checks players ability to make provided action</p>
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">GameEngine package</a><ul>
-<li><a class="reference internal" href="#module-GameEngine.app">GameEngine.app module</a></li>
-<li><a class="reference internal" href="#module-GameEngine.game">GameEngine.game module</a></li>
-<li><a class="reference internal" href="#module-GameEngine.rules">GameEngine.rules module</a></li>
-</ul>
+<li><a class="reference internal" href="#">GameEngine package</a>
+    <ul>
+        <li><a class="reference internal" href="#gameengine-app-module">GameEngine.app module</a></li>
+        <li><a class="reference internal" href="#gameengine-game-module">GameEngine.game module</a></li>
+        <li><a class="reference internal" href="#gameengine-rules-module">GameEngine.rules module</a></li>
+    </ul>
 </li>
 </ul>
 
   </div>
-  <div>
-    <h4>Previous topic</h4>
-    <p class="topless"><a href="server.app.api.html"
-                          title="previous chapter">server.app.api package</a></p>
-  </div>
+            <div>
+                <h4>Previous topic</h4>
+                <p class="topless"><a href="server.app.main.html"
+                                      title="previous chapter">server.app.main package</a></p>
+            </div>
   <div>
     <h4>Next topic</h4>
     <p class="topless"><a href="GameEngine.entities.html"
@@ -207,8 +164,8 @@ checks players ability to make provided action</p>
           <a href="GameEngine.entities.html" title="GameEngine.entities package"
              >next</a> |</li>
         <li class="right" >
-          <a href="server.app.api.html" title="server.app.api package"
-             >previous</a> |</li>
+            <a href="server.app.main.html" title="server.app.main package"
+            >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">Maze Game  documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">GameEngine package</a></li> 
       </ul>

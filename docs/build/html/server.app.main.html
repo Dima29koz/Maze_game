@@ -53,16 +53,175 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-server.app.main.forms">
-<span id="server-app-main-forms-module"></span><h2>server.app.main.forms module<a class="headerlink" href="#module-server.app.main.forms" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.forms.LoginForm">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">LoginForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.LoginForm" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code></p>
-<p>Login form</p>
-<dl class="field-list simple">
-<dt class="field-odd">Variables</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – user nickname</p></li>
+    <span id="server-app-main-forms-module"></span>
+    <h2>server.app.main.forms module<a class="headerlink" href="#module-server.app.main.forms"
+                                       title="Permalink to this headline">¶</a></h2>
+    <dl class="py class">
+        <dt class="sig sig-object py" id="server.app.main.forms.ChangeEmailForm">
+            <em class="property"><span class="pre">class</span><span class="w"> </span></em><span
+                class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span
+                class="sig-name descname"><span class="pre">ChangeEmailForm</span></span><span
+                class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span
+                class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span
+                class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangeEmailForm"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code>
+        </p>
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangeEmailForm.new_email">
+                    <span class="sig-name descname"><span class="pre">new_email</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(EmailField,</span> <span class="pre">('Новый</span> <span
+                        class="pre">адрес:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+                    <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span
+                            class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                                        href="#server.app.main.forms.ChangeEmailForm.new_email"
+                                                                        title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangeEmailForm.submit">
+                    <span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Сохранить</span> <span
+                        class="pre">адрес',),</span> <span class="pre">{'id':</span> <span class="pre">'ChangeEmail'})&gt;</span></em><a
+                        class="headerlink" href="#server.app.main.forms.ChangeEmailForm.submit"
+                        title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+        </dd>
+    </dl>
+
+    <dl class="py class">
+        <dt class="sig sig-object py" id="server.app.main.forms.ChangeNameForm">
+            <em class="property"><span class="pre">class</span><span class="w"> </span></em><span
+                class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span
+                class="sig-name descname"><span class="pre">ChangeNameForm</span></span><span class="sig-paren">(</span><em
+                class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>,
+            <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangeNameForm"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code>
+        </p>
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangeNameForm.new_name">
+                    <span class="sig-name descname"><span class="pre">new_name</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Новый</span> <span
+                        class="pre">никнейм:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+                    <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                                      href="#server.app.main.forms.ChangeNameForm.new_name"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangeNameForm.submit">
+                    <span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Сохранить</span> <span
+                        class="pre">никнейм',),</span> <span class="pre">{'id':</span> <span class="pre">'ChangeName'})&gt;</span></em><a
+                        class="headerlink" href="#server.app.main.forms.ChangeNameForm.submit"
+                        title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+            <dl class="py method">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangeNameForm.validate_username">
+                    <span class="sig-name descname"><span class="pre">validate_username</span></span><span
+                        class="sig-paren">(</span><em class="sig-param"><span class="n"><span
+                        class="pre">new_name</span></span><span class="p"><span class="pre">:</span></span><span
+                        class="w"> </span><span class="n"><span
+                        class="pre">wtforms.fields.simple.StringField</span></span></em><span class="sig-paren">)</span><a
+                        class="headerlink" href="#server.app.main.forms.ChangeNameForm.validate_username"
+                        title="Permalink to this definition">¶</a></dt>
+                <dd><p>username validator</p>
+                    <dl class="field-list simple">
+                        <dt class="field-odd">Parameters</dt>
+                        <dd class="field-odd"><p><strong>new_name</strong> (<em>StringField</em>) – user nickname</p>
+                        </dd>
+                        <dt class="field-even">Raises</dt>
+                        <dd class="field-even"><p><strong>ValidationError</strong> – if nickname is already taken</p>
+                        </dd>
+                    </dl>
+                </dd>
+            </dl>
+
+        </dd>
+    </dl>
+
+    <dl class="py class">
+        <dt class="sig sig-object py" id="server.app.main.forms.ChangePwdForm">
+            <em class="property"><span class="pre">class</span><span class="w"> </span></em><span
+                class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span
+                class="sig-name descname"><span class="pre">ChangePwdForm</span></span><span
+                class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span
+                class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span
+                class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangePwdForm"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code>
+        </p>
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangePwdForm.new_pwd">
+                    <span class="sig-name descname"><span class="pre">new_pwd</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Новый</span> <span
+                        class="pre">пароль:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+                    <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.EqualTo</span> <span
+                            class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Length</span> <span
+                            class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                                        href="#server.app.main.forms.ChangePwdForm.new_pwd"
+                                                                        title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangePwdForm.new_pwd2">
+                    <span class="sig-name descname"><span class="pre">new_pwd2</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Повторите</span> <span
+                        class="pre">пароль:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+                    <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                                      href="#server.app.main.forms.ChangePwdForm.new_pwd2"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ChangePwdForm.submit">
+                    <span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Сохранить</span> <span
+                        class="pre">пароль',),</span> <span class="pre">{'id':</span> <span class="pre">'ChangePwd'})&gt;</span></em><a
+                        class="headerlink" href="#server.app.main.forms.ChangePwdForm.submit"
+                        title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+        </dd>
+    </dl>
+
+    <dl class="py class">
+        <dt class="sig sig-object py" id="server.app.main.forms.LoginForm">
+            <em class="property"><span class="pre">class</span><span class="w"> </span></em><span
+                class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span
+                class="sig-name descname"><span class="pre">LoginForm</span></span><span class="sig-paren">(</span><em
+                class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>,
+            <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.LoginForm"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code>
+        </p>
+            <p>Login form</p>
+            <dl class="field-list simple">
+                <dt class="field-odd">Variables</dt>
+                <dd class="field-odd">
+                    <ul class="simple">
+                        <li><p><strong>name</strong> – user nickname</p></li>
 <li><p><strong>pwd</strong> – user password</p></li>
 <li><p><strong>remember</strong> – remembers users for the duration of the session</p></li>
 <li><p><strong>submit</strong> – submit field</p></li>
@@ -107,47 +266,136 @@
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.pwd">
-<span class="sig-name descname"><span class="pre">pwd</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Пароль:</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.pwd" title="Permalink to this definition">¶</a></dt>
+    <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.pwd">
+        <span class="sig-name descname"><span class="pre">pwd</span></span><em class="property"><span class="w"> </span><span
+            class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span>
+        <span class="pre">('Пароль:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+        <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                          href="#server.app.main.forms.RegistrationForm.pwd"
+                                                          title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.pwd2">
-<span class="sig-name descname"><span class="pre">pwd2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Повторите</span> <span class="pre">пароль:</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.EqualTo</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.pwd2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.pwd2">
+            <span class="sig-name descname"><span class="pre">pwd2</span></span><em class="property"><span
+                class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Повторите</span> <span
+                class="pre">пароль:',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+            <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.EqualTo</span> <span
+                    class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                                href="#server.app.main.forms.RegistrationForm.pwd2"
+                                                                title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.submit">
-<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Регистрация',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.submit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.submit">
+            <span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span
+                class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Регистрация',),</span> <span
+                class="pre">{})&gt;</span></em><a class="headerlink"
+                                                  href="#server.app.main.forms.RegistrationForm.submit"
+                                                  title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.username">
-<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Никнейм:</span> <span class="pre">',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#server.app.main.forms.RegistrationForm.username" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.user_email">
+            <span class="sig-name descname"><span class="pre">user_email</span></span><em class="property"><span
+                class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                class="pre">&lt;UnboundField(EmailField,</span> <span class="pre">('Почта:',),</span> <span class="pre">{'validators':</span>
+            <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span
+                    class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a
+                class="headerlink" href="#server.app.main.forms.RegistrationForm.user_email"
+                title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.validate_username">
-<span class="sig-name descname"><span class="pre">validate_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">wtforms.fields.simple.StringField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.RegistrationForm.validate_username" title="Permalink to this definition">¶</a></dt>
-<dd><p>username validator</p>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.username">
+            <span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span
+                class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Никнейм:',),</span> <span
+                class="pre">{})&gt;</span></em><a class="headerlink"
+                                                  href="#server.app.main.forms.RegistrationForm.username"
+                                                  title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.validate_username">
+            <span class="sig-name descname"><span class="pre">validate_username</span></span><span
+                class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span
+                class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">wtforms.fields.simple.StringField</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink"
+                                             href="#server.app.main.forms.RegistrationForm.validate_username"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd><p>username validator</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>username</strong> (<em>StringField</em>) – user nickname</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>ValidationError</strong> – if nickname is already taken</p>
+    <dd class="field-odd"><p><strong>username</strong> (<em>StringField</em>) – user nickname</p>
+    </dd>
+    <dt class="field-even">Raises</dt>
+    <dd class="field-even"><p><strong>ValidationError</strong> – if nickname is already taken</p>
+    </dd>
+</dl>
+        </dd>
+    </dl>
+
 </dd>
 </dl>
-</dd></dl>
 
-</dd></dl>
+    <dl class="py class">
+        <dt class="sig sig-object py" id="server.app.main.forms.ResetPasswordRequestForm">
+            <em class="property"><span class="pre">class</span><span class="w"> </span></em><span
+                class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span
+                class="sig-name descname"><span class="pre">ResetPasswordRequestForm</span></span><span
+                class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span
+                class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span
+                class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ResetPasswordRequestForm"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_wtf.form.FlaskForm</span></code>
+        </p>
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ResetPasswordRequestForm.submit">
+                    <span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Запросить</span> <span
+                        class="pre">сброс</span> <span class="pre">пароля',),</span> <span
+                        class="pre">{})&gt;</span></em><a class="headerlink"
+                                                          href="#server.app.main.forms.ResetPasswordRequestForm.submit"
+                                                          title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+            <dl class="py attribute">
+                <dt class="sig sig-object py" id="server.app.main.forms.ResetPasswordRequestForm.username">
+                    <span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span
+                        class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span
+                        class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Никнейм:',),</span> <span
+                        class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span>
+                    <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink"
+                                                                      href="#server.app.main.forms.ResetPasswordRequestForm.username"
+                                                                      title="Permalink to this definition">¶</a></dt>
+                <dd></dd>
+            </dl>
+
+        </dd>
+    </dl>
 
 </section>
 <section id="module-server.app.main.models">
 <span id="server-app-main-models-module"></span><h2>server.app.main.models module<a class="headerlink" href="#module-server.app.main.models" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="server.app.main.models.User">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User" title="Permalink to this definition">¶</a></dt>
+    <dt class="sig sig-object py" id="server.app.main.models.User">
+        <em class="property"><span class="pre">class</span><span class="w"> </span></em><span
+            class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span
+            class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em
+            class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em
+            class="sig-param"><span class="n"><span class="pre">user_email</span></span></em>, <em
+            class="sig-param"><span class="n"><span class="pre">pwd</span></span></em><span class="sig-paren">)</span><a
+            class="headerlink" href="#server.app.main.models.User" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.orm.decl_api.Model</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">flask_login.mixins.UserMixin</span></code></p>
 <p>This is a User Model</p>
 <dl class="field-list simple">
@@ -184,30 +432,139 @@
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.models.User.date">
-<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#server.app.main.models.User.date" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.date">
+            <span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink"
+                                                                                   href="#server.app.main.models.User.date"
+                                                                                   title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.models.User.games">
-<span class="sig-name descname"><span class="pre">games</span></span><a class="headerlink" href="#server.app.main.models.User.games" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.games">
+            <span class="sig-name descname"><span class="pre">games</span></span><a class="headerlink"
+                                                                                    href="#server.app.main.models.User.games"
+                                                                                    title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.models.User.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#server.app.main.models.User.id" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.models.User.get_token">
+            <span class="sig-name descname"><span class="pre">get_token</span></span><span class="sig-paren">(</span><em
+                class="sig-param"><span class="n"><span class="pre">token_type</span></span><span class="p"><span
+                class="pre">:</span></span><span class="w"> </span><span class="n"><span
+                class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span
+                class="pre">expires_in</span></span><span class="o"><span class="pre">=</span></span><span
+                class="default_value"><span class="pre">600</span></span></em><span class="sig-paren">)</span><a
+                class="headerlink" href="#server.app.main.models.User.get_token"
+                title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.models.User.pwd">
-<span class="sig-name descname"><span class="pre">pwd</span></span><a class="headerlink" href="#server.app.main.models.User.pwd" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.id">
+            <span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink"
+                                                                                 href="#server.app.main.models.User.id"
+                                                                                 title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="server.app.main.models.User.user_name">
-<span class="sig-name descname"><span class="pre">user_name</span></span><a class="headerlink" href="#server.app.main.models.User.user_name" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.is_email_verified">
+            <span class="sig-name descname"><span class="pre">is_email_verified</span></span><a class="headerlink"
+                                                                                                href="#server.app.main.models.User.is_email_verified"
+                                                                                                title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.pwd">
+            <span class="sig-name descname"><span class="pre">pwd</span></span><a class="headerlink"
+                                                                                  href="#server.app.main.models.User.pwd"
+                                                                                  title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.models.User.set_email">
+            <span class="sig-name descname"><span class="pre">set_email</span></span><span class="sig-paren">(</span><em
+                class="sig-param"><span class="n"><span class="pre">new_email</span></span><span class="p"><span
+                class="pre">:</span></span><span class="w"> </span><span class="n"><span
+                class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink"
+                                                                                     href="#server.app.main.models.User.set_email"
+                                                                                     title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.models.User.set_name">
+            <span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em
+                class="sig-param"><span class="n"><span class="pre">new_name</span></span><span class="p"><span
+                class="pre">:</span></span><span class="w"> </span><span class="n"><span
+                class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink"
+                                                                                     href="#server.app.main.models.User.set_name"
+                                                                                     title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.models.User.set_pwd">
+            <span class="sig-name descname"><span class="pre">set_pwd</span></span><span class="sig-paren">(</span><em
+                class="sig-param"><span class="n"><span class="pre">new_pwd</span></span><span class="p"><span
+                class="pre">:</span></span><span class="w"> </span><span class="n"><span
+                class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink"
+                                                                                     href="#server.app.main.models.User.set_pwd"
+                                                                                     title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.user_email">
+            <span class="sig-name descname"><span class="pre">user_email</span></span><a class="headerlink"
+                                                                                         href="#server.app.main.models.User.user_email"
+                                                                                         title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py attribute">
+        <dt class="sig sig-object py" id="server.app.main.models.User.user_name">
+            <span class="sig-name descname"><span class="pre">user_name</span></span><a class="headerlink"
+                                                                                        href="#server.app.main.models.User.user_name"
+                                                                                        title="Permalink to this definition">¶</a>
+        </dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.models.User.verify_email">
+            <span class="sig-name descname"><span class="pre">verify_email</span></span><span class="sig-paren">(</span><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User.verify_email"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
+
+    <dl class="py method">
+        <dt class="sig sig-object py" id="server.app.main.models.User.verify_token">
+            <em class="property"><span class="pre">static</span><span class="w"> </span></em><span
+                class="sig-name descname"><span class="pre">verify_token</span></span><span
+                class="sig-paren">(</span><em class="sig-param"><span class="n"><span
+                class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span
+                class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span
+                class="pre">token_type</span></span><span class="p"><span class="pre">:</span></span><span
+                class="w"> </span><span class="n"><span class="pre">str</span></span></em><span
+                class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User.verify_token"
+                                             title="Permalink to this definition">¶</a></dt>
+        <dd></dd>
+    </dl>
 
 </dd></dl>
 
@@ -224,17 +581,43 @@
 </dd></dl>
 
 </section>
-<section id="module-server.app.main.routes">
-<span id="server-app-main-routes-module"></span><h2>server.app.main.routes module<a class="headerlink" href="#module-server.app.main.routes" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.handle_404">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">handle_404</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.handle_404" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>404</cite> page</p>
-</dd></dl>
+      <section id="module-server.app.main.routes">
+          <span id="server-app-main-routes-module"></span>
+          <h2>server.app.main.routes module<a class="headerlink" href="#module-server.app.main.routes"
+                                              title="Permalink to this headline">¶</a></h2>
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.confirm_email">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">confirm_email</span></span><span
+                      class="sig-paren">(</span><em class="sig-param"><span class="n"><span
+                      class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink"
+                                                                                             href="#server.app.main.routes.confirm_email"
+                                                                                             title="Permalink to this definition">¶</a>
+              </dt>
+              <dd></dd>
+          </dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.index">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.index" title="Permalink to this definition">¶</a></dt>
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.handle_404">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">handle_404</span></span><span
+                      class="sig-paren">(</span><em class="sig-param"><span class="n"><span
+                      class="pre">err</span></span></em><span class="sig-paren">)</span><a class="headerlink"
+                                                                                           href="#server.app.main.routes.handle_404"
+                                                                                           title="Permalink to this definition">¶</a>
+              </dt>
+              <dd><p>view of <cite>404</cite> page</p>
+              </dd>
+          </dl>
+
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.index">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">index</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.index"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
 <dd><p>view of <cite>game</cite> page</p>
 </dd></dl>
 
@@ -256,31 +639,119 @@ logs out user</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="server.app.main.routes.play">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.play" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>play</cite> page</p>
-</dd></dl>
+    <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+        class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><span
+        class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.play"
+                                     title="Permalink to this definition">¶</a></dt>
+    <dd><p>view of <cite>play</cite> page</p>
+    </dd>
+</dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.profile">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>profile</cite> page</p>
-</dd></dl>
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.profile">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">profile</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.profile"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd><p>view of <cite>profile</cite> page</p>
+              </dd>
+          </dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.registration">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.registration" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>registration</cite> page
-available methods: POST, GET
-creates User after validation</p>
-</dd></dl>
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.profile_settings">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">profile_settings</span></span><span class="sig-paren">(</span><span
+                      class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile_settings"
+                                                   title="Permalink to this definition">¶</a></dt>
+              <dd><p>view of <cite>profile</cite> page</p>
+              </dd>
+          </dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.rules">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">rules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.rules" title="Permalink to this definition">¶</a></dt>
-<dd><p>view of <cite>rules</cite> page</p>
-</dd></dl>
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.profile_settings_email">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">profile_settings_email</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.profile_settings_email"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd></dd>
+          </dl>
 
-</section>
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.profile_settings_name">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">profile_settings_name</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.profile_settings_name"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd></dd>
+          </dl>
+
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.profile_settings_pwd">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">profile_settings_pwd</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.profile_settings_pwd"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd></dd>
+          </dl>
+
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.registration">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">registration</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.registration"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd><p>view of <cite>registration</cite> page
+                  available methods: POST, GET
+                  creates User after validation</p>
+              </dd>
+          </dl>
+
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.reset_password">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">reset_password</span></span><span
+                      class="sig-paren">(</span><em class="sig-param"><span class="n"><span
+                      class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink"
+                                                                                             href="#server.app.main.routes.reset_password"
+                                                                                             title="Permalink to this definition">¶</a>
+              </dt>
+              <dd></dd>
+          </dl>
+
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.reset_password_request">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">reset_password_request</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.reset_password_request"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd></dd>
+          </dl>
+
+          <dl class="py function">
+              <dt class="sig sig-object py" id="server.app.main.routes.rules">
+                  <span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span
+                      class="sig-name descname"><span class="pre">rules</span></span><span
+                      class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink"
+                                                                                   href="#server.app.main.routes.rules"
+                                                                                   title="Permalink to this definition">¶</a>
+              </dt>
+              <dd><p>view of <cite>rules</cite> page</p>
+              </dd>
+          </dl>
+
+      </section>
 <section id="module-server.app.main">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-server.app.main" title="Permalink to this headline">¶</a></h2>
 <p>Initialization of BluePrints</p>

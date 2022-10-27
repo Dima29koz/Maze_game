@@ -341,7 +341,18 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="server.app.game.models.GameRoom.on_turn">
-<span class="sig-name descname"><span class="pre">on_turn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player"><span class="pre">GameEngine.entities.player.Player</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.game.models.GameRoom.on_turn" title="Permalink to this definition">¶</a></dt>
+    <span class="sig-name descname"><span class="pre">on_turn</span></span><span class="sig-paren">(</span><em
+        class="sig-param"><span class="n"><span class="pre">player</span></span><span class="p"><span
+        class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">game_engine.entities.player.Player</span></span></em>,
+    <em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span
+            class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,
+    <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span
+            class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span
+            class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span
+            class="pre">]</span></span></span><span class="w"> </span><span class="o"><span
+            class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span
+        class="sig-paren">)</span><a class="headerlink" href="#server.app.game.models.GameRoom.on_turn"
+                                     title="Permalink to this definition">¶</a></dt>
 <dd><p>calculates turn feedback;
 append turn info to DB</p>
 <dl class="field-list simple">
@@ -349,8 +360,8 @@ append turn info to DB</p>
 <dd class="field-odd"><p>next player name, turn_data, win_data[Optional]</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(<a class="reference internal" href="GameEngine.entities.html#GameEngine.entities.player.Player" title="GameEngine.entities.player.Player">Player</a>, dict, dict | None)</p>
-</dd>
+    <dd class="field-even"><p>(Player, dict, dict | None)</p>
+    </dd>
 </dl>
 </dd></dl>
 

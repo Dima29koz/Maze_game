@@ -48,135 +48,14 @@
             
   <section id="gameengine-entities-package">
 <h1>GameEngine.entities package<a class="headerlink" href="#gameengine-entities-package" title="Permalink to this headline">¶</a></h1>
-<section id="module-GameEngine.entities.player">
-<span id="gameengine-entities-player-module"></span><h2>GameEngine.entities.player module<a class="headerlink" href="#module-GameEngine.entities.player" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.entities.player.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.field.html#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><span class="pre">GameEngine.field.cell.Cell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_bot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.player.Player" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is a player object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – players name</p></li>
-<li><p><strong>cell</strong> (<a class="reference internal" href="GameEngine.field.html#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a>) – players location cell</p></li>
-<li><p><strong>is_bot</strong> (<em>bool</em>) – describe is player bot</p></li>
-<li><p><strong>turn</strong> (<em>int</em>) – players turn number</p></li>
-</ul>
-</dd>
-<dt class="field-even">Variables</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>health_max</strong> – players max health</p></li>
-<li><p><strong>health</strong> – players current health</p></li>
-<li><p><strong>bombs_max</strong> – players max bombs</p></li>
-<li><p><strong>bombs</strong> – players current bombs</p></li>
-<li><p><strong>arrows_max</strong> – players max arrows</p></li>
-<li><p><strong>arrows</strong> – players current arrows</p></li>
-<li><p><strong>treasure</strong> – players treasure</p></li>
-<li><p><strong>is_alive</strong> – describe is player alive</p></li>
-<li><p><strong>is_active</strong> – describe is player active</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.can_take_treasure">
-<span class="sig-name descname"><span class="pre">can_take_treasure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.can_take_treasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>return players ability to take treasure</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.drop_treasure">
-<span class="sig-name descname"><span class="pre">drop_treasure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#GameEngine.entities.treasure.Treasure" title="GameEngine.entities.treasure.Treasure"><span class="pre">GameEngine.entities.treasure.Treasure</span></a></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.drop_treasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>remove player Treasure</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.get_allowed_abilities">
-<span class="sig-name descname"><span class="pre">get_allowed_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_tr_under</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.Actions" title="GameEngine.globalEnv.enums.Actions"><span class="pre">GameEngine.globalEnv.enums.Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.get_allowed_abilities" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns dict of players abilities</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.heal">
-<span class="sig-name descname"><span class="pre">heal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.player.Player.heal" title="Permalink to this definition">¶</a></dt>
-<dd><p>set player health to max</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.move">
-<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.field.html#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><span class="pre">GameEngine.field.cell.Cell</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.player.Player.move" title="Permalink to this definition">¶</a></dt>
-<dd><p>change player cell parameter</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.restore_armory">
-<span class="sig-name descname"><span class="pre">restore_armory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.player.Player.restore_armory" title="Permalink to this definition">¶</a></dt>
-<dd><p>set player arrows and bombs to max</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.restore_arrows">
-<span class="sig-name descname"><span class="pre">restore_arrows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.player.Player.restore_arrows" title="Permalink to this definition">¶</a></dt>
-<dd><p>set player arrows to max</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.restore_bombs">
-<span class="sig-name descname"><span class="pre">restore_bombs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.player.Player.restore_bombs" title="Permalink to this definition">¶</a></dt>
-<dd><p>set player bombs to max</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.shoot_bow">
-<span class="sig-name descname"><span class="pre">shoot_bow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.shoot_bow" title="Permalink to this definition">¶</a></dt>
-<dd><p>reduce player arrows. return true if player has an arrow</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.take_damage">
-<span class="sig-name descname"><span class="pre">take_damage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#GameEngine.entities.treasure.Treasure" title="GameEngine.entities.treasure.Treasure"><span class="pre">GameEngine.entities.treasure.Treasure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.take_damage" title="Permalink to this definition">¶</a></dt>
-<dd><p>damage player and drop treasure if exists</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.throw_bomb">
-<span class="sig-name descname"><span class="pre">throw_bomb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.throw_bomb" title="Permalink to this definition">¶</a></dt>
-<dd><p>reduce player bombs. return true if player has bomb</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.player.Player.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#GameEngine.entities.player.Player.to_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>convert player object to dict</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="gameengine-entities-player-module">
+    <h2>GameEngine.entities.player module<a class="headerlink" href="#gameengine-entities-player-module"
+                                            title="Permalink to this headline">¶</a></h2>
 </section>
-<section id="module-GameEngine.entities.treasure">
-<span id="gameengine-entities-treasure-module"></span><h2>GameEngine.entities.treasure module<a class="headerlink" href="#module-GameEngine.entities.treasure" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="GameEngine.entities.treasure.Treasure">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GameEngine.entities.treasure.</span></span><span class="sig-name descname"><span class="pre">Treasure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.TreasureTypes" title="GameEngine.globalEnv.enums.TreasureTypes"><span class="pre">GameEngine.globalEnv.enums.TreasureTypes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="GameEngine.field.html#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><span class="pre">GameEngine.field.cell.Cell</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.treasure.Treasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This is a treasure object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>t_type</strong> (<a class="reference internal" href="GameEngine.globalEnv.html#GameEngine.globalEnv.enums.TreasureTypes" title="GameEngine.globalEnv.enums.TreasureTypes"><em>TreasureTypes</em></a>) – describe treasure type</p></li>
-<li><p><strong>cell</strong> (<a class="reference internal" href="GameEngine.field.html#GameEngine.field.cell.Cell" title="GameEngine.field.cell.Cell"><em>Cell</em></a>) – treasure location cell</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py method">
-<dt class="sig sig-object py" id="GameEngine.entities.treasure.Treasure.idle">
-<span class="sig-name descname"><span class="pre">idle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GameEngine.entities.treasure.Treasure.idle" title="Permalink to this definition">¶</a></dt>
-<dd><p>idle handler. change treasure location</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
+      <section id="gameengine-entities-treasure-module">
+          <h2>GameEngine.entities.treasure module<a class="headerlink" href="#gameengine-entities-treasure-module"
+                                                    title="Permalink to this headline">¶</a></h2>
+      </section>
 </section>
 
 
@@ -189,10 +68,13 @@
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
-<li><a class="reference internal" href="#">GameEngine.entities package</a><ul>
-<li><a class="reference internal" href="#module-GameEngine.entities.player">GameEngine.entities.player module</a></li>
-<li><a class="reference internal" href="#module-GameEngine.entities.treasure">GameEngine.entities.treasure module</a></li>
-</ul>
+<li><a class="reference internal" href="#">GameEngine.entities package</a>
+    <ul>
+        <li><a class="reference internal" href="#gameengine-entities-player-module">GameEngine.entities.player
+            module</a></li>
+        <li><a class="reference internal" href="#gameengine-entities-treasure-module">GameEngine.entities.treasure
+            module</a></li>
+    </ul>
 </li>
 </ul>
 
