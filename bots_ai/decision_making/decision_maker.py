@@ -50,11 +50,11 @@ class DecisionMaker:
         target_cell = target_calc.get_target(graph, leaf.field_state)
         return graph.get_first_act(target_cell)
 
-    @staticmethod
-    def _direction_to_shoot(leaf: Node, current_player_name: str) -> Directions | None:
+    def _direction_to_shoot(self, leaf: Node, current_player_name: str) -> Directions | None:
         cur_pl_pos = leaf.field_state.get_player_pos(current_player_name)
         other_pl_pos = [
-            pos for name, pos in leaf.field_state.players_positions.items() if name != current_player_name and pos]
+            pos for name, pos in leaf.field_state.players_positions.items()
+            if name != current_player_name and pos and self.players_stats.get(name).is_alive]
 
         grid = leaf.field_state.field
         allowed_directions = []
