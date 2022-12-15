@@ -6,7 +6,7 @@ def get_hidden_email(raw_email: str):
         to_hide = raw_email[1:raw_email.index('@')-1]
         hidden_email = re.sub(to_hide, '*' * len(to_hide), raw_email)
         return hidden_email
-    except ValueError:
+    except (ValueError, AttributeError):
         return raw_email
 
 
