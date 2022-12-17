@@ -306,7 +306,6 @@ class TurnInfo(db.Model):
 
 class BotState(db.Model):
     def __init__(self, rules: dict, pl_positions: dict, last_player_name: str):
-        print(pl_positions)
         self.state = BotAI(rules, pl_positions, last_player_name)
 
     __tablename__ = 'bot_state'
