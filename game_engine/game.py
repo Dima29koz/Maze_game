@@ -2,7 +2,7 @@ from game_engine.field.field import Field
 from game_engine.entities.player import Player
 from game_engine.field.response import RespHandler
 from game_engine.global_env.enums import Actions, Directions, TreasureTypes
-from game_engine.global_env.types import LevelPosition
+from game_engine.global_env.types import LevelPosition, Position
 
 
 class Game:
@@ -66,6 +66,9 @@ class Game:
     def get_players_positions(self) -> list[dict] | list:
         return [player.cell.position.to_dict() | {'name': player.name}
                 for player in self.field.players if player.is_alive]
+
+    def get_players_pos(self) -> dict[str, Position]:
+        return {player.name: player.cell.position for player in self.field.players}
 
     def get_spawn_point(self, player_name: str) -> dict | None:
         """returns coordinates of player if player is spawned"""

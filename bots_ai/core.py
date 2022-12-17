@@ -9,7 +9,7 @@ from bots_ai.utils import is_node_is_real, is_node_is_valid
 
 
 class BotAI:
-    def __init__(self, game_rules: dict, players: dict[str, Position], last_player_name: str):
+    def __init__(self, game_rules: dict, players: dict[str, Position], last_player_name: str, debug=False):
         init_generator = InitGenerator(game_rules, players)
         self.players: dict[str, PlayerState] = {
             player_name: PlayerState(init_generator.get_start_state(player_name),
@@ -20,14 +20,15 @@ class BotAI:
         self.decision_maker = DecisionMaker(game_rules, self.players)
         self._last_player_name = last_player_name
         self._common_data = init_generator.common_data
-
-        self.real_field: list[list[cell.Cell | None]] = []
+        self.debug = debug
+        if self.debug:
+            self.real_field: list[list[cell.Cell | None]] = []
 
     def turn_prepare(self, player_name: str):
         # before decision-making:
         # удалить все свои листы с правильным спавном, которые противоречат листам противников
         self.leaves_matcher.match_real_spawn_leaves(player_name)
-        if not self.has_real_field(player_name):
+        if self.debug and not self.has_real_field(player_name):
             print(f'{player_name} matcher err!!!')
 
     def make_decision(self, player_name: str,
@@ -48,7 +49,7 @@ class BotAI:
         for name, player_state in self.players.items():
             player_state.process_turn(player_name, action, direction, response)
 
-            if not self.has_real_field(name):
+            if self.debug and not self.has_real_field(name):
                 print(f'{name} proc err!!!')
         if player_name == self._last_player_name:
             for player_state in self.players.values():

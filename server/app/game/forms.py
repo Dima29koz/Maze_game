@@ -34,7 +34,7 @@ class RulesForm(FlaskForm):
         "Число ботов",
         validators=[NumberRange(min=0, max=10, message='Число ботов должно быть от 0 до 10')],
         default=0,
-        render_kw={'disabled': True})
+        render_kw={'disabled': False})
     is_not_rect = BooleanField("Поле произвольной формы", default=False, render_kw={'disabled': True})
     is_separated_armory = BooleanField("Раздельные склады оружия и взрывчатки", default=False)
     is_same_wall_outer_concrete = BooleanField("Не различать внешние и внутренние стены", default=False)

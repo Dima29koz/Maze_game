@@ -45,7 +45,10 @@ class GameNamespace(Namespace):
         if win_data:
             emit('win_msg', win_data, room=room_id)
         while next_player.is_bot and not win_data:
-            next_player, turn_data, win_data = room.on_turn(next_player, 'skip')
+            action, direction = room.bot_state.state.make_decision(
+                next_player.name, room.game.get_allowed_abilities(next_player))
+            next_player, turn_data, win_data = room.on_turn(
+                next_player, action.name, direction.name if direction else None)
             if turn_data:
                 emit('turn_info',
                      {

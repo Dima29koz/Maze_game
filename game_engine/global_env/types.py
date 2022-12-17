@@ -39,7 +39,8 @@ class Position:
 
     def __eq__(self, other: 'Position'):
         """True if coords and level_pos are same"""
-        return self.x == other.x and self.y == other.y and self.level_position == other.level_position
+        level_pos_eq = self.level_position == other.level_position if self.level_position else True  # fixme
+        return self.x == other.x and self.y == other.y and level_pos_eq
 
     def __sub__(self, other) -> Directions:
         """

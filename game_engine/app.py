@@ -44,10 +44,10 @@ class LocalGame:
         # self.rules['generator_rules']['rows'] = 6
         # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
-        # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 0.7701850660952331
+        self.rules['generator_rules']['seed'] = random.random()
+        # self.rules['generator_rules']['seed'] = 0.7701850660952331
         # self.rules['generator_rules']['levels_amount'] = 2
-        self.rules['gameplay_rules']['fast_win'] = False
+        self.rules['gameplay_rules']['fast_win'] = True
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
         # self.rules['generator_rules']['river_rules']['min_coverage'] = 90
         # self.rules['generator_rules']['river_rules']['max_coverage'] = 100
@@ -89,7 +89,7 @@ class LocalGame:
     def _init_bot(self):
         players_: dict[str, Position] = {
             player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in self.players}
-        self.bot = BotAI(self.rules, players_, self.game.get_last_player_name())
+        self.bot = BotAI(self.rules, players_, self.game.get_last_player_name(), debug=True)
         self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
     def run(self, auto=False):
