@@ -17,9 +17,9 @@ class BaseConfig:
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')  # введите свой адрес электронной почты здесь
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')  # и здесь
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')  # введите пароль
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
 
 class DevelopmentConfig(BaseConfig):
@@ -43,7 +43,5 @@ class TestConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     MANAGE_SESSION = False
-    try:
-        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres', 'postgresql', 1)
-    except AttributeError:
-        SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'maze.db')
+    LOGGER = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'maze.db')
