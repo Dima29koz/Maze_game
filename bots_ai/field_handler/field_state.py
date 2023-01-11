@@ -30,8 +30,6 @@ class FieldState:
 
         self.current_player: str = current_player
 
-        self.is_real = False  # todo only for testing
-
     def get_current_data(self):
         return self.field.get_field(), self.players_positions, self.treasures_positions
 
@@ -94,6 +92,12 @@ class FieldState:
         pl_positions = self.players_positions.copy()
         pl_positions[player_position[0]] = player_position[1]
         return pl_positions
+
+    def merge_with(self, other_state: 'FieldState', other_player: str):
+        self.field.merge_with(other_state.field, self.remaining_obj_amount)
+        self.players_positions[other_player] = other_state.get_player_pos(other_player)
+        self._merge_treasures(other_state.treasures_positions)
+        return self
 
     def _move_player(self, position: Position):
         self.players_positions[self.current_player] = position
@@ -448,12 +452,6 @@ class FieldState:
             return [self]
         else:
             raise UnreachableState()
-
-    def merge_with(self, other_state: 'FieldState', other_player: str):
-        self.field.merge_with(other_state.field, self.remaining_obj_amount)
-        self.players_positions[other_player] = other_state.get_player_pos(other_player)
-        self._merge_treasures(other_state.treasures_positions)
-        return self
 
     def _merge_treasures(self, other_treasures: list[Position]):
         if not other_treasures:

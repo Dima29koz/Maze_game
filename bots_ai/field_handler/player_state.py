@@ -69,9 +69,6 @@ class PlayerState:
             if self.name in dmg_pls:
                 self.stats.on_take_dmg()
 
-    def get_spawn_amount(self):
-        return len(self._root.next_states)
-
     def get_leaf_nodes(self):
         """
         :return: list of all leaves of a tree

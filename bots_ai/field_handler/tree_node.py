@@ -14,6 +14,8 @@ class Node:
         self._parent: Node | None = parent
         self.next_states: list[Node] = []
 
+        self.is_real = False  # todo debug only
+
     def get_current_data(self):
         return self.field_state.get_current_data()
 
