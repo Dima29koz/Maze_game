@@ -53,7 +53,7 @@ class Field:
         bot_names = sample(data_bots, bots_amount)
         for i in range(bots_amount):
             spawn_cell = c.NoneCell(Position(0, 0))
-            while type(spawn_cell) is c.NoneCell:
+            while type(spawn_cell) in [c.NoneCell, c.CellExit]:
                 spawn_cell = choice(choice(self.game_map.get_level(LevelPosition(0, 0, 0)).field))
             bots.append(Player(spawn_cell, bot_names[i], True))
         return bots
