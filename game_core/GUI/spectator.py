@@ -14,14 +14,15 @@ from ..bots_ai.core import BotAI
 
 
 class SpectatorGUI:
-    def __init__(self, field: Field, bot: BotAI = None):
-        self.fps = FPS
+    def __init__(self, field: Field, bot: BotAI = None, fps: int = None):
+        self.fps = fps if fps else FPS
         self.res = RES
         self.tile_size = TILE
         self.field = field
         pygame.init()
         pygame.font.init()
-        self.sc = pygame.display.set_mode(RES)
+        self.window = pygame.display.set_mode(RES)
+        self.sc = pygame.Surface(RES)
         self.clock = pygame.time.Clock()
         self.painter = Painter(self.sc, self.tile_size)
         self.bot_spectator = BotAISpectator(bot, limit=LIMIT) if bot else None
@@ -48,7 +49,6 @@ class SpectatorGUI:
         self.buttons_dirs = [up, down, left, right]
 
     def draw(self, allowed_actions, active_player: str = None):
-        self.clock.tick(self.fps)
         self.sc.fill(pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
         self.painter.draw(
@@ -69,9 +69,10 @@ class SpectatorGUI:
                     self.draw_leaves(fields, start_y=max_y * i)
                 self.draw_text('other player comp. leaves', f'{fields_amount} / {amount}', i)
 
-            # field = self.bot_spectator.get_avg_field(active_player)  # todo bug with exit cell
-            # self.painter.draw(field, start_y=600)
-        pygame.display.flip()
+        self.window.blit(self.sc, self.sc.get_rect())
+        pygame.event.pump()
+        pygame.display.update()
+        self.clock.tick(self.fps)
 
     def draw_text(self, text, amount, y):
         f1 = pygame.font.Font(None, 25)
