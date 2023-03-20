@@ -1,8 +1,8 @@
 from typing import Type, Union
 
-from game_core.game_engine.global_env.enums import Directions
-from game_core.game_engine.global_env.types import Position
-from game_core.game_engine.field.wall import WallEmpty, WallOuter, WallEntrance
+from ..global_env.enums import Directions
+from ..global_env.types import Position
+from .wall import WallEmpty, WallOuter, WallEntrance
 
 
 class NoneCell:

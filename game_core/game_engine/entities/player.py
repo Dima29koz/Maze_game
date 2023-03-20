@@ -1,10 +1,10 @@
 from copy import deepcopy
 
-from game_core.game_engine.entities.treasure import Treasure
-from game_core.game_engine.field.cell import Cell
-from game_core.game_engine.global_env.enums import Actions
+from .treasure import Treasure
+from ..field.cell import Cell
+from ..global_env.enums import Actions
 
-from game_core.game_engine.rules import rules
+from ..rules import rules  # fixme rules should be atr of Player instance
 
 
 class Player:

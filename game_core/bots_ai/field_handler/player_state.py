@@ -1,10 +1,10 @@
 from typing import Type
 
-from game_core.game_engine.field import cell
-from game_core.game_engine.global_env.enums import Actions, Directions
-from game_core.bots_ai.exceptions import UnreachableState, IncompatibleState, MergingError
-from game_core.bots_ai.field_handler.tree_node import Node
-from game_core.bots_ai.field_handler.common_data import CommonData
+from ...game_engine.field import cell
+from ...game_engine.global_env.enums import Actions, Directions
+from ..exceptions import UnreachableState, IncompatibleState, MergingError
+from .tree_node import Node
+from .common_data import CommonData
 
 
 class PlayerState:

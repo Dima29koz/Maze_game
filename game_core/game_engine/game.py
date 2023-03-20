@@ -1,8 +1,8 @@
-from game_core.game_engine.field.field import Field
-from game_core.game_engine.entities.player import Player
-from game_core.game_engine.field.response import RespHandler
-from game_core.game_engine.global_env.enums import Actions, Directions, TreasureTypes
-from game_core.game_engine.global_env.types import LevelPosition, Position
+from .field.field import Field
+from .entities.player import Player
+from .field.response import RespHandler
+from .global_env.enums import Actions, Directions, TreasureTypes
+from .global_env.types import LevelPosition, Position
 
 
 class Game:

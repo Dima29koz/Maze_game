@@ -1,3 +1,5 @@
+from typing import Union
+
 
 class WallEmpty:
     """
@@ -61,3 +63,6 @@ class WallRubber(WallEmpty):
         self.weapon_collision = True
         self.player_collision = True
         self.player_state = False
+
+
+WALL = Union[WallEmpty, WallConcrete, WallOuter, WallExit, WallEntrance, WallRubber]

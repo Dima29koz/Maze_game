@@ -1,8 +1,8 @@
 import networkx as nx
 
-from game_core.game_engine.field import cell
-from game_core.game_engine.global_env.enums import Directions, Actions
-from game_core.bots_ai.field_handler.grid import Grid, CELL
+from ...game_engine.field import cell
+from ...game_engine.global_env.enums import Directions, Actions
+from ..field_handler.grid import Grid, CELL
 
 
 class GraphBuilder:

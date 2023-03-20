@@ -1,11 +1,11 @@
 from copy import copy
 from typing import Union, Type
 
-from game_core.game_engine.field import cell, wall
-from game_core.game_engine.global_env.enums import Directions
-from game_core.game_engine.global_env.types import Position
-from game_core.bots_ai.exceptions import MergingError, OnlyAllowedDir
-from game_core.bots_ai.field_handler.field_obj import UnknownCell, UnbreakableWall, UnknownWall, PossibleExit
+from ...game_engine.field import cell, wall
+from ...game_engine.global_env.enums import Directions
+from ...game_engine.global_env.types import Position
+from ..exceptions import MergingError, OnlyAllowedDir
+from .field_obj import UnknownCell, UnbreakableWall, UnknownWall, PossibleExit
 
 CELL = Union[cell.CELL, UnknownCell, PossibleExit]
 

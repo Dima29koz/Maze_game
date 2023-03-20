@@ -1,6 +1,6 @@
-from game_core.game_engine.field.cell import CELL, NoneCell
-from game_core.game_engine.global_env.enums import Directions
-from game_core.game_engine.global_env.types import LevelPosition, Position
+from .cell import CELL, NoneCell
+from ..global_env.enums import Directions
+from ..global_env.types import LevelPosition, Position
 
 
 class GameLevel:

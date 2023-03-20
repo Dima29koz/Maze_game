@@ -1,12 +1,12 @@
 from typing import Type
 
-from game_core.game_engine.field import cell
-from game_core.game_engine.global_env.types import Position
-from game_core.bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
-from game_core.bots_ai.field_handler.field_state import CELL
-from game_core.bots_ai.field_handler.player_state import PlayerState
-from game_core.bots_ai.exceptions import MatchingError, MergingError
-from game_core.bots_ai.field_handler.tree_node import Node
+from ..game_engine.field import cell
+from ..game_engine.global_env.types import Position
+from .field_handler.field_obj import UnknownCell, PossibleExit
+from .field_handler.field_state import CELL
+from .field_handler.player_state import PlayerState
+from .exceptions import MatchingError, MergingError
+from .field_handler.tree_node import Node
 
 MAX_MATCHABLE_NODES = 8
 

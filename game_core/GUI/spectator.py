@@ -1,16 +1,16 @@
 import pygame
 from pygame.locals import *
 
-from game_core.GUI.painter import Painter
-from game_core.game_engine.field.field import Field
-from game_core.game_engine.global_env.enums import Directions, Actions
-from game_core.game_engine.global_env.types import Position, LevelPosition
-from game_core.GUI.utils import get_key_act
-from game_core.GUI.button import Button
-from game_core.GUI.bot_ai_spectator import BotAISpectator
-from game_core.GUI.config import *
+from .painter import Painter
+from ..game_engine.field.field import Field
+from ..game_engine.global_env.enums import Directions, Actions
+from ..game_engine.global_env.types import Position, LevelPosition
+from .utils import get_key_act
+from .button import Button
+from .bot_ai_spectator import BotAISpectator
+from .config import *
 
-from game_core.bots_ai.core import BotAI
+from ..bots_ai.core import BotAI
 
 
 class SpectatorGUI:

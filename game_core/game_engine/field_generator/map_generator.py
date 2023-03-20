@@ -1,12 +1,12 @@
 from random import seed
 
-from game_core.game_engine.field.game_map import GameMap
-from game_core.game_engine.field_generator.field_generator import FieldGenerator
-from game_core.game_engine.entities.treasure import Treasure
-from game_core.game_engine.field_generator.level_pattern import LevelPattern
-from game_core.game_engine.field.cell import (
+from ..field.game_map import GameMap
+from .field_generator import FieldGenerator
+from ..entities.treasure import Treasure
+from .level_pattern import LevelPattern
+from ..field.cell import (
     CellExit)
-from game_core.game_engine.global_env.types import LevelPosition
+from ..global_env.types import LevelPosition
 
 
 class MapGenerator:

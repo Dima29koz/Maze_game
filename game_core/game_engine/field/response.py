@@ -1,27 +1,27 @@
 from typing import Type
 
-from game_core.game_engine.entities.player import Player
-from game_core.game_engine.global_env.enums import TreasureTypes
-from game_core.game_engine.field.cell import *
-from game_core.game_engine.field.wall import *
+from ..entities.player import Player
+from ..global_env.enums import TreasureTypes
+from . import cell as c
+from . import wall as w
 
 info = {
-    Cell: {'name': {'ru': 'суша'}, 'mechanics': {'ru': ''}},
-    CellRiver: {'name': {'ru': 'река'}, 'mechanics': {'ru': ''}},
-    CellRiverBridge: {'name': {'ru': 'мост'}, 'mechanics': {'ru': ''}},
-    CellRiverMouth: {'name': {'ru': 'устье'}, 'mechanics': {'ru': ''}},
-    CellExit: {'name': {'ru': 'выход'}, 'mechanics': {'ru': ''}},
-    CellClinic: {'name': {'ru': 'Медпункт'}, 'mechanics': {'ru': 'запас здоровья восстановлен'}},
-    CellArmory: {'name': {'ru': 'Арсенал'}, 'mechanics': {'ru': 'запас оружия восстановлен'}},
-    CellArmoryWeapon: {'name': {'ru': 'Склад оружия'}, 'mechanics': {'ru': 'запас стрел восстановлен'}},
-    CellArmoryExplosive: {'name': {'ru': 'Склад взрывчатки'}, 'mechanics': {'ru': 'запас бомб восстановлен'}},
+    c.Cell: {'name': {'ru': 'суша'}, 'mechanics': {'ru': ''}},
+    c.CellRiver: {'name': {'ru': 'река'}, 'mechanics': {'ru': ''}},
+    c.CellRiverBridge: {'name': {'ru': 'мост'}, 'mechanics': {'ru': ''}},
+    c.CellRiverMouth: {'name': {'ru': 'устье'}, 'mechanics': {'ru': ''}},
+    c.CellExit: {'name': {'ru': 'выход'}, 'mechanics': {'ru': ''}},
+    c.CellClinic: {'name': {'ru': 'Медпункт'}, 'mechanics': {'ru': 'запас здоровья восстановлен'}},
+    c.CellArmory: {'name': {'ru': 'Арсенал'}, 'mechanics': {'ru': 'запас оружия восстановлен'}},
+    c.CellArmoryWeapon: {'name': {'ru': 'Склад оружия'}, 'mechanics': {'ru': 'запас стрел восстановлен'}},
+    c.CellArmoryExplosive: {'name': {'ru': 'Склад взрывчатки'}, 'mechanics': {'ru': 'запас бомб восстановлен'}},
 
-    WallEmpty: {'name': {'ru': 'прошёл', 'en': '', 'ai': WallEmpty}, 'mechanics': {'ru': '', 'ai': True}},
-    WallConcrete: {'name': {'ru': 'стена', 'ai': WallConcrete}, 'mechanics': {'ru': '', 'ai': False}},
-    WallOuter: {'name': {'ru': 'внешняя стена', 'ai': WallOuter}, 'mechanics': {'ru': '', 'ai': False}},
-    WallRubber: {'name': {'ru': 'прошёл', 'ai': WallRubber}, 'mechanics': {'ru': '', 'ai': True}},
-    WallExit: {'name': {'ru': 'прошёл', 'ai': WallExit}, 'mechanics': {'ru': '', 'ai': True}},
-    WallEntrance: {'name': {'ru': 'прошёл', 'ai': WallEntrance}, 'mechanics': {'ru': '', 'ai': True}},
+    w.WallEmpty: {'name': {'ru': 'прошёл', 'en': '', 'ai': w.WallEmpty}, 'mechanics': {'ru': '', 'ai': True}},
+    w.WallConcrete: {'name': {'ru': 'стена', 'ai': w.WallConcrete}, 'mechanics': {'ru': '', 'ai': False}},
+    w.WallOuter: {'name': {'ru': 'внешняя стена', 'ai': w.WallOuter}, 'mechanics': {'ru': '', 'ai': False}},
+    w.WallRubber: {'name': {'ru': 'прошёл', 'ai': w.WallRubber}, 'mechanics': {'ru': '', 'ai': True}},
+    w.WallExit: {'name': {'ru': 'прошёл', 'ai': w.WallExit}, 'mechanics': {'ru': '', 'ai': True}},
+    w.WallEntrance: {'name': {'ru': 'прошёл', 'ai': w.WallEntrance}, 'mechanics': {'ru': '', 'ai': True}},
 
     TreasureTypes.very: {'name': {'ru': 'истинный'}, },
     TreasureTypes.spurious: {'name': {'ru': 'ложный'}, },
@@ -47,12 +47,12 @@ class RespHandler:
 
     def __init__(self):
         self.treasures: list[TreasureTypes] = []
-        self.cell_at_end_of_turn: Cell | None = None
+        self.cell_at_end_of_turn: c.CELL | None = None
         self.player_name: str = ''
         self.action: str = ''
         self.direction: str = ''
 
-    def set_info(self, turn_end_cell: Cell, treasures: list[TreasureTypes]):
+    def set_info(self, turn_end_cell: c.CELL, treasures: list[TreasureTypes]):
         """Update location and treasures"""
         self.cell_at_end_of_turn = turn_end_cell
         self.treasures = treasures
@@ -67,7 +67,7 @@ class RespHandler:
         """returns turn info converted to str"""
         res = ''
         if len(self.treasures) > 0:
-            if type(self.cell_at_end_of_turn) == CellExit:
+            if type(self.cell_at_end_of_turn) == c.CellExit:
                 treasure = self.treasures[0]
                 res = f', вынесен {self._translate(treasure)} клад'
             else:
@@ -85,13 +85,13 @@ class RespHandler:
         return self.get_turn_info() | {
             'response': {
                 'type_out_treasure': self.treasures[0]
-                if len(self.treasures) > 0 and type(self.cell_at_end_of_turn) == CellExit else None,
-                'cell_treasures_amount': len(self.treasures) if not type(self.cell_at_end_of_turn) == CellExit else 0,
+                if len(self.treasures) > 0 and type(self.cell_at_end_of_turn) == c.CellExit else None,
+                'cell_treasures_amount': len(self.treasures) if not type(self.cell_at_end_of_turn) == c.CellExit else 0,
             }
         }
 
     @staticmethod
-    def _translate(obj: Type[Cell | WallEmpty] | TreasureTypes, rtype='name', lang='ru'):
+    def _translate(obj: Type[c.CELL | w.WALL] | TreasureTypes, rtype='name', lang='ru'):
         return info[obj][rtype][lang]
 
 
@@ -177,7 +177,7 @@ class RespHandlerBombing(RespHandlerSkip):
     Response handler object for action Bombing
     """
 
-    def __init__(self, damaged_wall_type: WallEmpty):
+    def __init__(self, damaged_wall_type: w.WALL):
         super().__init__()
         self.damaged_wall = damaged_wall_type
 
@@ -198,10 +198,10 @@ class RespHandlerMoving(RespHandler):
     Response handler object for action Move
     """
 
-    def __init__(self, wall_type: Type[WallEmpty], cell_after_wall_check: Cell, is_same_wall_outer_concrete: bool):
+    def __init__(self, wall_type: Type[w.WALL], cell_after_wall_check: c.CELL, is_same_wall_outer_concrete: bool):
         super().__init__()
-        if wall_type is WallOuter and is_same_wall_outer_concrete:
-            wall_type = WallConcrete
+        if wall_type is w.WallOuter and is_same_wall_outer_concrete:
+            wall_type = w.WallConcrete
         self.wall_type = wall_type
         self.cell_after_wall_check = cell_after_wall_check
 

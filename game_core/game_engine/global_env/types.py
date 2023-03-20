@@ -1,4 +1,4 @@
-from game_core.game_engine.global_env.enums import Directions
+from .enums import Directions
 
 
 class LevelPosition:

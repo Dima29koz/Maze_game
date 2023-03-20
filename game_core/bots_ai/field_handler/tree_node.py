@@ -1,6 +1,6 @@
-from game_core.game_engine.global_env.types import Position
-from game_core.bots_ai.exceptions import IncompatibleState
-from game_core.bots_ai.field_handler.field_state import FieldState
+from ...game_engine.global_env.types import Position
+from ..exceptions import IncompatibleState
+from .field_state import FieldState
 
 
 class Node:

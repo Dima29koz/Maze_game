@@ -1,4 +1,4 @@
-from game_core.bots_ai.core import BotAI
+from ..bots_ai.core import BotAI
 
 
 class BotAISpectator:

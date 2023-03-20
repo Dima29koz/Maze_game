@@ -1,9 +1,9 @@
-from game_core.game_engine.field import cell
-from game_core.bots_ai.decision_making.graph_builder import GraphBuilder
-from game_core.bots_ai.field_handler.field_state import FieldState
-from game_core.bots_ai.field_handler.grid import CELL, UnknownCell, PossibleExit
-from game_core.bots_ai.field_handler.player_stats import PlayerStats
-from game_core.game_engine.global_env.enums import Actions
+from ...game_engine.field import cell
+from .graph_builder import GraphBuilder
+from ..field_handler.field_state import FieldState
+from ..field_handler.grid import CELL, UnknownCell, PossibleExit
+from ..field_handler.player_stats import PlayerStats
+from ...game_engine.global_env.enums import Actions
 
 
 class TargetCalculator:

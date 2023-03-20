@@ -1,14 +1,14 @@
 from typing import Type
 
-from game_core.game_engine.field import cell, wall
-from game_core.game_engine.global_env.enums import Directions
-from game_core.game_engine.global_env.types import Position
-from game_core.game_engine.rules import rules as base_rules
-from game_core.bots_ai.field_handler.field_obj import UnknownCell, PossibleExit, UnbreakableWall
-from game_core.bots_ai.field_handler.field_state import FieldState
-from game_core.bots_ai.field_handler.grid import Grid
-from game_core.bots_ai.field_handler.tree_node import Node
-from game_core.bots_ai.field_handler.common_data import CommonData
+from ..game_engine.field import cell, wall
+from ..game_engine.global_env.enums import Directions
+from ..game_engine.global_env.types import Position
+from ..game_engine.rules import rules as base_rules
+from .field_handler.field_obj import UnknownCell, PossibleExit, UnbreakableWall
+from .field_handler.field_state import FieldState
+from .field_handler.grid import Grid
+from .field_handler.tree_node import Node
+from .field_handler.common_data import CommonData
 
 
 class InitGenerator:

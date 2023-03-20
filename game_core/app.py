@@ -3,15 +3,13 @@ import random
 from typing import Generator
 import requests
 
-from game_core.GUI.spectator import SpectatorGUI
-from game_core.game_engine.game import Game
-from game_core.game_engine.global_env.enums import Actions, Directions
-from game_core.game_engine.global_env.types import Position, LevelPosition
-from game_core.game_engine.rules import rules as ru
+from game_core.GUI import SpectatorGUI
+from game_core.game_engine import Game, base_rules as ru
+from game_core.game_engine import Actions, Directions, Position, LevelPosition
 
 from game_core.bots_ai.core import BotAI, BotAIDebug
 from game_core.bots_ai.field_handler.grid import Grid
-from game_core.bots_ai.decision_making.test_graph import test_graph
+from game_core.bots_ai.decision_making.draw_graph_utils import test_graph
 
 
 class LocalGame:

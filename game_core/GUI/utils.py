@@ -1,10 +1,10 @@
 import pygame
 from pygame.locals import *
 
-from game_core.game_engine.field import cell as c
-from game_core.game_engine.field import wall as w
-from game_core.game_engine.global_env.enums import Actions, Directions, TreasureTypes
-from game_core.bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall, PossibleExit
+from ..game_engine.field import cell as c
+from ..game_engine.field import wall as w
+from ..game_engine.global_env.enums import Actions, Directions, TreasureTypes
+from ..bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall, PossibleExit
 
 
 def convert_keys(key) -> tuple[Actions | None, Directions | None]:

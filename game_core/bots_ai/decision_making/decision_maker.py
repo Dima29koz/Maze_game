@@ -1,11 +1,11 @@
 from random import choice
 
-from game_core.game_engine.global_env.enums import Actions, Directions
-from game_core.bots_ai.decision_making.graph_builder import GraphBuilder
-from game_core.bots_ai.decision_making.target_calculator import TargetCalculator
-from game_core.bots_ai.field_handler.player_state import PlayerState
-from game_core.bots_ai.field_handler.player_stats import PlayerStats
-from game_core.bots_ai.field_handler.tree_node import Node
+from ...game_engine.global_env.enums import Actions, Directions
+from .graph_builder import GraphBuilder
+from .target_calculator import TargetCalculator
+from ..field_handler.player_state import PlayerState
+from ..field_handler.player_stats import PlayerStats
+from ..field_handler.tree_node import Node
 
 
 class DecisionMaker:

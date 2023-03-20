@@ -1,14 +1,14 @@
 from random import choice, sample, randint
 
-from game_core.game_engine.field.game_level import GameLevel
-from game_core.game_engine.global_env.enums import Directions
-from game_core.game_engine.entities.treasure import Treasure, TreasureTypes
-from game_core.game_engine.field_generator.level_pattern import LevelPattern
-from game_core.game_engine.field_generator.river_generator import RiverGenerator
-from game_core.game_engine.field.cell import (
+from ..field.game_level import GameLevel
+from ..global_env.enums import Directions
+from ..entities.treasure import Treasure, TreasureTypes
+from .level_pattern import LevelPattern
+from .river_generator import RiverGenerator
+from ..field.cell import (
     Cell, CellRiver, CellExit, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CellClinic, NoneCell)
-from game_core.game_engine.field.wall import *
-from game_core.game_engine.global_env.types import Position
+from ..field.wall import *
+from ..global_env.types import Position
 
 
 class FieldGenerator:

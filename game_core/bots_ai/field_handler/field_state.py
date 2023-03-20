@@ -1,14 +1,14 @@
 from copy import copy
 from typing import Type
 
-from game_core.game_engine.field import cell, wall
-from game_core.game_engine.global_env.enums import Directions, Actions, TreasureTypes
-from game_core.game_engine.global_env.types import Position
+from ...game_engine.field import cell, wall
+from ...game_engine.global_env.enums import Directions, Actions, TreasureTypes
+from ...game_engine.global_env.types import Position
 
-from game_core.bots_ai.exceptions import UnreachableState, MergingError
-from game_core.bots_ai.field_handler.field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
-from game_core.bots_ai.field_handler.grid import Grid, CELL, WALL
-from game_core.bots_ai.field_handler.common_data import CommonData
+from ..exceptions import UnreachableState, MergingError
+from .field_obj import UnknownCell, UnknownWall, UnbreakableWall, PossibleExit
+from .grid import Grid, CELL, WALL
+from .common_data import CommonData
 
 
 class FieldState:

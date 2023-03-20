@@ -1,9 +1,9 @@
 from typing import Type
 
-from game_core.game_engine.field import cell
-from game_core.bots_ai.field_handler.field_obj import UnknownCell, PossibleExit
-from game_core.bots_ai.field_handler.grid import CELL
-from game_core.bots_ai.field_handler.player_stats import PlayerStats
+from ...game_engine.field import cell
+from .field_obj import UnknownCell, PossibleExit
+from .grid import CELL
+from .player_stats import PlayerStats
 
 
 class CommonData:

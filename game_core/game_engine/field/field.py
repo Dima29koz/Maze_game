@@ -2,15 +2,14 @@ from functools import partial
 from operator import attrgetter
 from random import choice, sample
 
-from game_core.game_engine.field.game_map import GameMap
-from game_core.game_engine.field_generator.map_generator import MapGenerator
-from game_core.game_engine.field import response as r, cell as c, wall as w
-from game_core.game_engine.entities.player import Player
-from game_core.game_engine.entities.treasure import Treasure
-from game_core.game_engine.global_env.enums import Actions, Directions
-from game_core.game_engine.field.cell import Cell
-from game_core.game_engine.bot_names import bots as data_bots
-from game_core.game_engine.global_env.types import Position, LevelPosition
+from .game_map import GameMap
+from ..field_generator.map_generator import MapGenerator
+from . import response as r, cell as c, wall as w
+from ..entities.player import Player
+from ..entities.treasure import Treasure
+from ..global_env.enums import Actions, Directions
+from ..bot_names import bots as data_bots
+from ..global_env.types import Position, LevelPosition
 
 
 class Field:
@@ -120,7 +119,7 @@ class Field:
     def _get_neighbour_cell(self, position: Position, direction: Directions):
         return self.game_map.get_level(position.level_position).get_neighbour_cell(position, direction)
 
-    def break_wall(self, cell: Cell, direction: Directions):
+    def break_wall(self, cell: c.Cell, direction: Directions):
         """
         Break wall by direction if wall is breakable
 
@@ -134,11 +133,11 @@ class Field:
                 neighbour.walls[-direction] = w.WallEmpty()
         return wall
 
-    def _check_players(self, current_cell: Cell) -> list[Player]:
+    def _check_players(self, current_cell: c.Cell) -> list[Player]:
         return [player for player in self.players
                 if player.cell == current_cell and not player.is_active and player.is_alive]
 
-    def _treasures_on_cell(self, cell: Cell) -> list[Treasure]:
+    def _treasures_on_cell(self, cell: c.Cell) -> list[Treasure]:
         return [treasure for treasure in self.treasures if cell.position == treasure.position]
 
     def _treasure_swap_handler(self, player: Player, direction: Directions = None):

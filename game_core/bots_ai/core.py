@@ -1,11 +1,11 @@
-from game_core.game_engine.field import cell
-from game_core.game_engine.global_env.enums import Directions, Actions
-from game_core.game_engine.global_env.types import Position
-from game_core.bots_ai.decision_making.decision_maker import DecisionMaker
-from game_core.bots_ai.initial_generator import InitGenerator
-from game_core.bots_ai.leaves_matcher import LeavesMatcher
-from game_core.bots_ai.field_handler.player_state import PlayerState
-from game_core.bots_ai.utils import is_node_is_real
+from ..game_engine.field import cell
+from ..game_engine.global_env.enums import Directions, Actions
+from ..game_engine.global_env.types import Position
+from .decision_making.decision_maker import DecisionMaker
+from .initial_generator import InitGenerator
+from .leaves_matcher import LeavesMatcher
+from .field_handler.player_state import PlayerState
+from .utils import is_node_is_real
 
 
 class BotAI:
