@@ -52,12 +52,9 @@ class Painter:
     def draw_river_dir(self, cell, x, y, ts):
         f1 = pygame.font.Font(None, ts * 3 // 3)
         try:
-            s = str(cell.river.index(cell))
-        except ValueError:
-            try:
-                s = get_river_dir(cell.direction) if type(cell) is c.CellRiver else 'y'
-            except KeyError:
-                s = '?' if type(cell) is c.CellRiver else 'y'
+            s = get_river_dir(cell.direction) if type(cell) is c.CellRiver else 'y'
+        except (KeyError, ValueError):
+            s = '?' if type(cell) is c.CellRiver else 'y'
         text = f1.render(s, True, (180, 180, 180))
         place = text.get_rect(center=(x + ts // 2, y + ts // 2))
         self.sc.blit(text, place)

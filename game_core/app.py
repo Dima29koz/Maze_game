@@ -1,5 +1,6 @@
 """runs game local for testing game_engine"""
 import random
+import threading
 from typing import Generator
 import requests
 
@@ -129,14 +130,14 @@ class LocalGame:
 
 def draw_graph(grid: Grid):
     gb = test_graph(grid)
-    while True:
-        try:
-            p1 = Position(*[int(i) for i in input('p1: (x, y):').split(',')])
-            p2 = Position(*[int(i) for i in input('p2: (x, y):').split(',')])
-            gb.get_path(grid.get_cell(p1), grid.get_cell(p2))
-        except Exception:
-            print('stopped')
-            break
+    # while True:
+    #     try:
+    #         p1 = Position(*[int(i) for i in input('p1: (x, y):').split(',')])
+    #         p2 = Position(*[int(i) for i in input('p2: (x, y):').split(',')])
+    #         gb.get_path(grid.get_cell(p1), grid.get_cell(p2))
+    #     except Exception:
+    #         print('stopped')
+    #         break
 
 
 def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
