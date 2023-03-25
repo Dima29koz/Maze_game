@@ -12,11 +12,11 @@ from .graph_builder import GraphBuilder
 from ...game_engine.game import Game
 
 
-def test_graph(grid):
+def test_graph(grid, player_cell=None, player_abilities=None):
     for row in grid.get_field():
         print(row)
     print('\n')
-    gb = GraphBuilder(grid, None, {})
+    gb = GraphBuilder(grid, player_cell, player_abilities)
     gr = gb.graph
     print('nodes\n', gr.nodes)
     # print('edges\n', gr.edges(data=True))

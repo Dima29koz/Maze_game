@@ -42,8 +42,8 @@ class LocalGame:
         # self.rules['generator_rules']['rows'] = 6
         # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
-        self.rules['generator_rules']['seed'] = random.random()
-        # self.rules['generator_rules']['seed'] = 0.7701850660952331
+        # self.rules['generator_rules']['seed'] = random.random()
+        self.rules['generator_rules']['seed'] = 0.18346507016243863
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = True
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
@@ -128,8 +128,8 @@ class LocalGame:
         return True
 
 
-def draw_graph(grid: Grid):
-    gb = test_graph(grid)
+def draw_graph(grid: Grid, player_cell=None, player_abilities=None):
+    gb = test_graph(grid, player_cell, player_abilities)
     # while True:
     #     try:
     #         p1 = Position(*[int(i) for i in input('p1: (x, y):').split(',')])
@@ -143,14 +143,16 @@ def draw_graph(grid: Grid):
 def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
     game = LocalGame(room_id, server_url, with_bot)
     start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
-    game.run(auto=True)
-    # tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
-    # tr2 = threading.Thread(target=draw_graph, args=(start_map,))
-    # tr1.start()
-    # tr2.start()
+    current_player = game.game.get_current_player()
+    current_player_abilities = game.game.get_allowed_abilities(current_player)
+    # game.run(auto=True)
+    tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
+    tr2 = threading.Thread(target=draw_graph, args=(start_map, current_player.cell, current_player_abilities))
+    tr1.start()
+    tr2.start()
 
-    # tr1.join()
-    # tr2.join()
+    tr1.join()
+    tr2.join()
 
 
 if __name__ == "__main__":
