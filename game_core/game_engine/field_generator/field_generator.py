@@ -97,6 +97,7 @@ class FieldGenerator:
 
     def _generate_walls(self, wall_rules: dict):
         if not wall_rules.get('has_walls'):
+            self._river_dir_fix()
             return
         cells = []
         for row in self.levels[0].field:
@@ -111,6 +112,12 @@ class FieldGenerator:
                     cell.add_wall(direction, WallConcrete())
                     self.levels[0].get_neighbour_cell(cell.position, direction).add_wall(-direction, WallConcrete())
         self._wall_fix()
+
+    def _river_dir_fix(self):
+        for river in self.rivers:
+            for i in range(len(river) - 1):
+                direction = river[i] - river[i + 1]
+                river[i].direction = direction
 
     def _wall_fix(self):
         for river in self.rivers:
