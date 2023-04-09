@@ -51,6 +51,7 @@ class Player:
         self.treasure: Treasure | None = None
         self.is_alive = True
         self.is_active = False
+        self.is_treasure_swapped: bool = False
         self.is_bot = is_bot
         self.turn = turn
 
@@ -67,7 +68,7 @@ class Player:
 
     def can_take_treasure(self) -> bool:
         """return players ability to take treasure"""
-        return self.health == self.health_max
+        return self.health == self.health_max and not self.is_treasure_swapped
 
     def take_damage(self) -> Treasure | None:
         """damage player and drop treasure if exists"""
@@ -114,13 +115,22 @@ class Player:
         self.restore_bombs()
         self.restore_arrows()
 
-    def drop_treasure(self) -> Treasure:
-        """remove player Treasure"""
+    def drop_treasure(self) -> Treasure | None:
+        """remove player`s Treasure"""
         if self.treasure:
             treasure = self.treasure
             self.treasure = None
             treasure.drop(self.cell.position)
             return treasure
+
+    def pick_up_treasure(self, treasure: Treasure):
+        self.treasure = treasure
+        self.treasure.pick_up()
+        self.is_treasure_swapped = True
+
+    def on_turn_end(self):
+        self.is_active = False
+        self.is_treasure_swapped = False
 
     def to_dict(self) -> dict:
         """convert player object to dict"""

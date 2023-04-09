@@ -142,16 +142,16 @@ class Field:
 
     def _treasure_swap_handler(self, player: Player, direction: Directions = None):
         treasures = self._treasures_on_cell(player.cell)
-        has_treasure = False
+        had_treasure = False
         pl_treasure = player.drop_treasure()
         if pl_treasure:
-            has_treasure = True
+            had_treasure = True
             self.treasures.append(pl_treasure)
 
-        player.treasure = treasures.pop(0)
-        self.treasures.remove(player.treasure)
-        player.treasure.pick_up()
-        return r.RespHandlerSwapTreasure(has_treasure)
+        treasure = treasures.pop(0)
+        self.treasures.remove(treasure)
+        player.pick_up_treasure(treasure)
+        return r.RespHandlerSwapTreasure(had_treasure)
 
     def _shooting_handler(self, active_player: Player, shot_direction: Directions):
         current_cell = active_player.cell
@@ -221,7 +221,7 @@ class Field:
             cell_type_to_player_handler[type(cell)]()
 
     def _pass_turn_to_next_player(self):
-        self.players[self._active_player_idx].is_active = False
+        self.players[self._active_player_idx].on_turn_end()
         self._active_player_idx = (self._active_player_idx + 1) % len(self.players)
         self.players[self._active_player_idx].is_active = True
         if self._active_player_idx == 0:

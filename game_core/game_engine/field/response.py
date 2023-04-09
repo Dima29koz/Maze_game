@@ -118,16 +118,16 @@ class RespHandlerSwapTreasure(RespHandler):
     Response handler object for action SwapTreasure
     """
 
-    def __init__(self, has_treasure: bool):
+    def __init__(self, had_treasure: bool):
         super().__init__()
-        self.has_treasure = has_treasure
+        self.had_treasure = had_treasure
 
     def get_info(self):
-        return 'сменил клад' if self.has_treasure else 'подобрал клад'
+        return 'сменил клад' if self.had_treasure else 'подобрал клад'
 
     def get_raw_info(self):
         return self.get_turn_info() | {
-            'response': {'had_treasure': self.has_treasure}
+            'response': {'had_treasure': self.had_treasure}
         }
 
 
