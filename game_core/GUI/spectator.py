@@ -49,7 +49,7 @@ class SpectatorGUI:
         self.buttons_dirs = [up, down, left, right]
 
     def draw(self, allowed_actions, active_player: str = None):
-        self.sc.fill(BG_COLOR)
+        self.sc.fill(BG_COLOR or pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
         self.painter.draw(
             grid=self.field.game_map.get_level(LevelPosition(0, 0, 0)).field,

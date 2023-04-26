@@ -6,4 +6,5 @@ BTN_Y = 400  # pos_y bnt block
 DIST = 15  # margin between leaves
 LIMIT = 20  # amount of displaying leaves
 TILE_LEAF = 20
-BG_COLOR = (255, 255, 255)  # pygame.Color('darkslategray')
+BG_COLOR = None
+# BG_COLOR = (255, 255, 255)

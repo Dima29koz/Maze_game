@@ -1,6 +1,7 @@
 """runs game local for testing game_engine"""
 import random
 import threading
+import time
 from typing import Generator
 import requests
 
@@ -43,7 +44,7 @@ class LocalGame:
         # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
         # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 0.18346507016243863
+        self.rules['generator_rules']['seed'] = 0.49938802943428107
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = True
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
@@ -99,7 +100,7 @@ class LocalGame:
         is_running = True
         for _ in self.players:
             act = (Actions.info, None) if not self.is_replay else next(self.turns)
-            is_running = self.process_turn(*act)
+            is_running, _ = self.process_turn(*act)
 
         while is_running:
             act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
@@ -110,22 +111,49 @@ class LocalGame:
                     act = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
                 else:
                     act = act if not self.is_replay else next(self.turns)
-                is_running = self.process_turn(*act)
+                is_running, _ = self.process_turn(*act)
         gui.close()
-        # self.replay_file.close()
 
-    def process_turn(self, action: Actions, direction: Directions):
-        # if self.save_replay:
-        #     self.replay_file.write(action.name + ',' + direction.name if direction else '' + '\n')
+    def run_performance_test(self, verbose=False):
+        print('seed:', self.rules['generator_rules']['seed'])
+
+        is_running = True
+        for _ in self.players:
+            act = (Actions.info, None) if not self.is_replay else next(self.turns)
+            is_running, _ = self.process_turn(*act, verbose=verbose)
+        step = 0
+        times = []
+        tr_step = 0
+        num_shot = 0
+        shot_success = 0
+        while is_running:
+            act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
+            time_start = time.time()
+            act = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
+
+            if tr_step == 0 and act[0] is Actions.swap_treasure:
+                tr_step = step
+            if act[0] is Actions.shoot_bow:
+                num_shot += 1
+            is_running, response = self.process_turn(*act, verbose=verbose)
+            time_end = time.time() - time_start
+            if response.get_raw_info().get('response').get('hit'):
+                shot_success += 1
+            times.append(time_end)
+            step += 1
+        return times, step, tr_step, num_shot, shot_success
+
+    def process_turn(self, action: Actions, direction: Directions, verbose=True):
         response, next_player = self.game.make_turn(action.name, direction.name if direction else None)
-        print(response.get_turn_info(), response.get_info())
+        if verbose:
+            print(response.get_turn_info(), response.get_info())
         if self.bot:
             # print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
             self.bot.turn_prepare(self.game.get_current_player().name)
         if self.game.is_win_condition(self.rules):
-            return False
-        return True
+            return False, response
+        return True, response
 
 
 def draw_graph(grid: Grid, player_cell=None, player_abilities=None):
@@ -145,14 +173,35 @@ def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
     start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
     current_player = game.game.get_current_player()
     current_player_abilities = game.game.get_allowed_abilities(current_player)
-    # game.run(auto=True)
-    tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
-    tr2 = threading.Thread(target=draw_graph, args=(start_map, current_player.cell, current_player_abilities))
-    tr1.start()
-    tr2.start()
+    game.run(auto=True)
+    # tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
+    # tr2 = threading.Thread(target=draw_graph, args=(start_map, current_player.cell, current_player_abilities))
+    # tr1.start()
+    # tr2.start()
 
-    tr1.join()
-    tr2.join()
+    # tr1.join()
+    # tr2.join()
+
+
+def performance_test(iters=10, verbose=False):
+    all_times = []
+    all_steps = []
+    all_steps_tr = []
+    shots, shoots_s = 0, 0
+    for i in range(iters):
+        game = LocalGame(with_bot=True)
+        times, steps, tr_steps, sh, sh_s = game.run_performance_test(verbose)
+        all_steps.append(steps)
+        all_steps_tr.append(tr_steps)
+        all_times.append(times)
+        shots += sh
+        shoots_s += sh_s
+    return {
+        'steps': all_steps,
+        'tr_steps': all_steps_tr,
+        'times': all_times,
+        'shooting res': (shots, shoots_s)
+    }
 
 
 if __name__ == "__main__":
@@ -160,3 +209,5 @@ if __name__ == "__main__":
     s_url = '192.168.1.118:5000'
     # main(room_id=r_id, server_url=s_url, with_bot=True)
     main()
+    # res = performance_test(verbose=True)
+    # print(res)
