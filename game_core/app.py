@@ -43,8 +43,8 @@ class LocalGame:
         # self.rules['generator_rules']['rows'] = 6
         # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
-        # self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['seed'] = 0.49938802943428107
+        self.rules['generator_rules']['seed'] = random.random()
+        # self.rules['generator_rules']['seed'] = 0.49938802943428107
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = True
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
@@ -150,7 +150,8 @@ class LocalGame:
         if self.bot:
             # print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
-            self.bot.turn_prepare(self.game.get_current_player().name)
+            act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
+            self.bot.turn_prepare(self.game.get_current_player().name, act_pl_abilities)
         if self.game.is_win_condition(self.rules):
             return False, response
         return True, response
@@ -209,5 +210,5 @@ if __name__ == "__main__":
     s_url = '192.168.1.118:5000'
     # main(room_id=r_id, server_url=s_url, with_bot=True)
     main()
-    # res = performance_test(verbose=True)
+    # res = performance_test(iters=100, verbose=False)
     # print(res)

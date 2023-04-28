@@ -29,6 +29,13 @@ class PlayerState:
             except (UnreachableState, IncompatibleState, MergingError):
                 node.remove()
 
+    def preprocess_turn(self, player_name: str, player_allowed_abilities: dict[Actions, bool]):
+        for node in self.get_leaf_nodes()[::-1]:
+            try:
+                node.field_state.preprocess(player_name, player_allowed_abilities)
+            except MergingError:
+                node.remove()
+
     def process_host_turn(self):
         for node in self.get_leaf_nodes():
             node.field_state.make_host_turn()

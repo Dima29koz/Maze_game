@@ -48,6 +48,18 @@ class FieldState:
             player_name = self.current_player
         return self.players_positions.get(player_name)
 
+    def preprocess(self, current_player: str, allowed_abilities: dict[Actions, bool]):
+        """
+        add treasure into player cell if player is allowed to swap treasure
+
+        :raise MergingError: if num treasures on map > treasures_amount
+        """
+        self.current_player = current_player
+        if not self.get_player_pos():
+            return
+        if allowed_abilities.get(Actions.swap_treasure):
+            self._merge_treasures([self.get_player_cell().position])
+
     def process_action(self, current_player: str,
                        action: Actions,
                        direction: Directions | None,
@@ -154,13 +166,15 @@ class FieldState:
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
         if not next_states:
+            self._check_treasures_amount(cell_treasures_amount, self.get_player_cell().position)
             self._merge_treasures([self.get_player_cell().position for _ in range(cell_treasures_amount)])
             return next_states
 
         for state in next_states[::-1]:
             try:
+                state._check_treasures_amount(cell_treasures_amount, state.get_player_cell().position)
                 state._merge_treasures([state.get_player_cell().position for _ in range(cell_treasures_amount)])
-            except MergingError:
+            except (MergingError, UnreachableState):
                 next_states.remove(state)
         if not next_states:
             raise UnreachableState()
@@ -168,7 +182,16 @@ class FieldState:
 
     def _treasure_swap_processor(self, response: dict) -> list['FieldState']:
         if not self.get_player_pos():
-            return []
+            next_states = []
+            if len(self.treasures_positions) < self.common_data.treasures_amount:
+                next_states.append(self.copy())
+                # сделать копию без каждого из кладов
+                for treasure_pos in self.treasures_positions:
+                    next_state = self.copy()
+                    next_state.treasures_positions.remove(treasure_pos)
+                    # todo add logic here: position of player may be updated
+                    next_states.append(next_state)
+            return next_states
         had_treasure: bool = response.get('had_treasure')  # был ли в руках клад до смены
         if not had_treasure:
             current_cell = self.get_player_cell()
@@ -466,3 +489,8 @@ class FieldState:
         if len(merged_treasures_pos) + self.common_data.players_with_treasures > self.common_data.treasures_amount:
             raise MergingError()
         self.treasures_positions = merged_treasures_pos
+
+    def _check_treasures_amount(self, cell_treasures_amount: int, position: Position):
+        tr_pos_amount = len([pos for pos in self.treasures_positions if pos == position])
+        if tr_pos_amount > cell_treasures_amount:
+            raise UnreachableState()

@@ -212,7 +212,8 @@ class GameRoom(db.Model):
         win_data = {}
         if turn_resp:
             if self.bot_state:
-                self.bot_state.process_turn(turn_resp.get_raw_info(), next_player.name)
+                next_pl_abilities = self.game.get_allowed_abilities(next_player)
+                self.bot_state.process_turn(turn_resp.get_raw_info(), next_player.name, next_pl_abilities)
             turn_info = TurnInfo(self.id, turn_resp.get_turn_info(), turn_resp.get_info())
             turn_info.save()
             turn_data = turn_info.to_dict()
@@ -312,9 +313,9 @@ class BotState(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.PickleType)
 
-    def process_turn(self, raw_response: dict, next_pl_name: str):
+    def process_turn(self, raw_response: dict, next_pl_name: str, next_pl_abilities: dict):
         self.state.process_turn_resp(raw_response)
-        self.state.turn_prepare(next_pl_name)
+        self.state.turn_prepare(next_pl_name, next_pl_abilities)
         self.state = copy(self.state)  # fixme это затычка
         db.session.commit()
 

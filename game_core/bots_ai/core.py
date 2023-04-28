@@ -21,8 +21,11 @@ class BotAI:
         self._last_player_name = last_player_name
         self._common_data = init_generator.common_data
 
-    def turn_prepare(self, player_name: str):
+    def turn_prepare(self, player_name: str, player_abilities: dict[Actions, bool]):
         # before decision-making:
+        # добавить клад под игроком если его там нет, но действие `swap_treasure` доступно
+        for name, player_state in self.players.items():
+            player_state.preprocess_turn(player_name, player_abilities)
         # удалить все свои листы с правильным спавном, которые противоречат листам противников
         self.leaves_matcher.match_real_spawn_leaves(player_name)
 
@@ -54,10 +57,11 @@ class BotAIDebug(BotAI):
         super().__init__(game_rules, players, last_player_name)
         self.real_field: list[list[cell.Cell | None]] = []
 
-    def turn_prepare(self, player_name: str):
+    def turn_prepare(self, player_name: str, player_abilities: dict[Actions, bool]):
         # before decision-making:
         # удалить все свои листы с правильным спавном, которые противоречат листам противников
-        self.leaves_matcher.match_real_spawn_leaves(player_name)
+        super().turn_prepare(player_name, player_abilities)
+
         if not self.has_real_field(player_name):
             print(f'{player_name} matcher err!!!')
 
