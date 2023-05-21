@@ -190,8 +190,7 @@ class GameRoom(db.Model):
         self.game.field.sort_players()
         self.game = copy(self.game)
         if self.rules.get('bots_amount', 0):
-            self.bot_state = BotState(
-                self.rules, self.game.get_players_pos(), self.game.get_last_player_name())
+            self.bot_state = BotState(self.rules, self.game.get_players_pos())
         self.is_running = True
         for player in self.game.field.players:
             self.on_turn(player, 'info')
@@ -212,8 +211,7 @@ class GameRoom(db.Model):
         win_data = {}
         if turn_resp:
             if self.bot_state:
-                next_pl_abilities = self.game.get_allowed_abilities(next_player)
-                self.bot_state.process_turn(turn_resp.get_raw_info(), next_player.name, next_pl_abilities)
+                self.bot_state.process_turn(turn_resp.get_raw_info())
             turn_info = TurnInfo(self.id, turn_resp.get_turn_info(), turn_resp.get_info())
             turn_info.save()
             turn_data = turn_info.to_dict()
@@ -306,16 +304,15 @@ class TurnInfo(db.Model):
 
 
 class BotState(db.Model):
-    def __init__(self, rules: dict, pl_positions: dict, last_player_name: str):
-        self.state = BotAI(rules, pl_positions, last_player_name)
+    def __init__(self, rules: dict, pl_positions: dict):
+        self.state = BotAI(rules, pl_positions)
 
     __tablename__ = 'bot_state'
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.PickleType)
 
-    def process_turn(self, raw_response: dict, next_pl_name: str, next_pl_abilities: dict):
+    def process_turn(self, raw_response: dict):
         self.state.process_turn_resp(raw_response)
-        self.state.turn_prepare(next_pl_name, next_pl_abilities)
         self.state = copy(self.state)  # fixme это затычка
         db.session.commit()
 

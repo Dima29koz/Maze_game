@@ -33,6 +33,8 @@ class GameNamespace(Namespace):
         if current_player.name != current_user.user_name:  # todo bugs if there is bot with same name in room
             return
 
+        if room.bot_state:
+            room.bot_state.state.turn_prepare(current_player.name, room.game.get_allowed_abilities(current_player))
         next_player, turn_data, win_data = room.on_turn(
             current_player, data.get('action'), data.get('direction'))
         if turn_data:

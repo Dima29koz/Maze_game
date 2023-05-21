@@ -185,12 +185,12 @@ class FieldState:
             next_states = []
             if len(self.treasures_positions) < self.common_data.treasures_amount:
                 next_states.append(self.copy())
-                # сделать копию без каждого из кладов
-                for treasure_pos in self.treasures_positions:
-                    next_state = self.copy()
-                    next_state.treasures_positions.remove(treasure_pos)
-                    # todo add logic here: position of player may be updated
-                    next_states.append(next_state)
+            # сделать копию без каждого из кладов
+            for treasure_pos in self.treasures_positions:
+                next_state = self.copy()
+                next_state.treasures_positions.remove(treasure_pos)
+                # todo add logic here: position of player may be updated
+                next_states.append(next_state)
             return next_states
         had_treasure: bool = response.get('had_treasure')  # был ли в руках клад до смены
         if not had_treasure:

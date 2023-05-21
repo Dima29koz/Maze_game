@@ -4,12 +4,13 @@ from ..game_engine.global_env.types import Position
 from .decision_making.decision_maker import DecisionMaker
 from .initial_generator import InitGenerator
 from .leaves_matcher import LeavesMatcher
+from .player_iterator import PlayerIterator
 from .field_handler.player_state import PlayerState
 from .utils import is_node_is_real
 
 
 class BotAI:
-    def __init__(self, game_rules: dict, players: dict[str, Position], last_player_name: str):
+    def __init__(self, game_rules: dict, players: dict[str, Position]):
         init_generator = InitGenerator(game_rules, players)
         self.players: dict[str, PlayerState] = {
             player_name: PlayerState(init_generator.get_start_state(player_name),
@@ -18,7 +19,7 @@ class BotAI:
             for player_name in players.keys()}
         self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players)
         self.decision_maker = DecisionMaker(game_rules, self.players)
-        self._last_player_name = last_player_name
+        self._player_iter = PlayerIterator(self.players)
         self._common_data = init_generator.common_data
 
     def turn_prepare(self, player_name: str, player_abilities: dict[Actions, bool]):
@@ -31,6 +32,7 @@ class BotAI:
 
     def make_decision(self, player_name: str,
                       player_abilities: dict[Actions, bool]) -> tuple[Actions, Directions | None]:
+        self.turn_prepare(player_name, player_abilities)
         return self.decision_maker.make_decision(player_name, player_abilities)
 
     def process_turn_resp(self, raw_response: dict):
@@ -47,14 +49,17 @@ class BotAI:
         for name, player_state in self.players.items():
             player_state.process_turn(player_name, action, direction, response)
 
-        if player_name == self._last_player_name:
+        if action is not Actions.swap_treasure:
+            next(self._player_iter)
+        if self._player_iter.is_host_turn:
             for player_state in self.players.values():
                 player_state.process_host_turn()
+            self._player_iter.is_host_turn = False
 
 
 class BotAIDebug(BotAI):
-    def __init__(self, game_rules: dict, players: dict[str, Position], last_player_name: str):
-        super().__init__(game_rules, players, last_player_name)
+    def __init__(self, game_rules: dict, players: dict[str, Position]):
+        super().__init__(game_rules, players)
         self.real_field: list[list[cell.Cell | None]] = []
 
     def turn_prepare(self, player_name: str, player_abilities: dict[Actions, bool]):
@@ -66,24 +71,11 @@ class BotAIDebug(BotAI):
             print(f'{player_name} matcher err!!!')
 
     def process_turn_resp(self, raw_response: dict):
-        action = Actions[raw_response.get('action')]
-        direction = Directions[raw_response.get('direction')] if raw_response.get('direction') else None
-        player_name: str = raw_response.get('player_name')
-        response: dict = raw_response.get('response')
+        super().process_turn_resp(raw_response)
 
-        if response.get('hit'):
-            self._common_data.players_with_treasures -= len(response.get('drop_pls'))
-        if response.get('type_out_treasure'):
-            self._common_data.players_with_treasures -= 1
-            self._common_data.treasures_amount -= 1
         for name, player_state in self.players.items():
-            player_state.process_turn(player_name, action, direction, response)
-
             if not self.has_real_field(name):
                 print(f'{name} proc err!!!')
-        if player_name == self._last_player_name:
-            for player_state in self.players.values():
-                player_state.process_host_turn()
 
     def has_real_field(self, player_name: str):
         if not len(self.players.get(player_name)._root.next_states):

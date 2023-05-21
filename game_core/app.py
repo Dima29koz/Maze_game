@@ -96,7 +96,7 @@ class LocalGame:
     def _init_bot(self):
         players_: dict[str, Position] = {
             player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in self.players}
-        self.bot = BotAIDebug(self.rules, players_, self.game.get_last_player_name())
+        self.bot = BotAIDebug(self.rules, players_)
         self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
     def run(self, auto=False):
@@ -157,10 +157,7 @@ class LocalGame:
         if verbose:
             print(self.turn_number, response.get_turn_info(), response.get_info())
         if self.bot:
-            # print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
-            act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
-            self.bot.turn_prepare(self.game.get_current_player().name, act_pl_abilities)
         self.turn_number += 1
         if self.game.is_win_condition(self.rules):
             return False, response
@@ -221,8 +218,8 @@ def performance_test(num_players=2, iters=10, verbose=False):
 if __name__ == "__main__":
     r_id = 43
     s_url = '192.168.1.118:5000'
-    _seed = 0.0034940357309529713
-    _num_players = 3
+    _seed = 0.5380936623177652
+    _num_players = 4
     _spawn_points = (
         {'x': 5, 'y': 3},
         {'x': 2, 'y': 4},
