@@ -1,4 +1,4 @@
-from game_core.bots_ai.field_handler.player_state import PlayerState
+from .field_handler.player_state import PlayerState
 
 
 class PlayerIterator:
