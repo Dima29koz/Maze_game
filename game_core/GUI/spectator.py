@@ -80,7 +80,7 @@ class SpectatorGUI:
         place = text.get_rect(topleft=(10, HEIGHT - 25 - 25*y))
         self.sc.blit(text, place)
 
-    def draw_leaves(self, fields: list[tuple[list[list], dict[str, Position | None]], list[Position]], start_y):
+    def draw_leaves(self, fields: list[tuple[list[list], dict[str, Position | None], list[Position]]], start_y):
         dx = len(self.field.game_map.get_level(LevelPosition(0, 0, 0)).field[0]) * self.tile_size + DIST
         pygame.draw.line(self.sc, (255, 0, 0),
                          (dx, start_y), (self.res[0], start_y), 2)

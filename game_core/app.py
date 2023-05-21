@@ -15,16 +15,20 @@ from game_core.bots_ai.decision_making.draw_graph_utils import test_graph
 
 
 class LocalGame:
-    def __init__(self, room_id: int = None, server_url: str = '', with_bot=False, save_replay=True):
+    def __init__(
+            self, num_players=2, spawn_points: tuple = None, seed: float = None,
+            room_id: int = None, server_url: str = '', with_bot=False, save_replay=True
+    ):
         self.bot: BotAI | None = None
         self.is_replay = False
+        self.turn_number = 0
         self.save_replay = save_replay
         # self.replay_file = open('replay.txt', 'w')
         self.players = []
         self.turns: list | Generator = []
         self.rules = {}
         if room_id is None or server_url == '':
-            self.setup_game_local()
+            self.setup_game_local(num_players, spawn_points, seed)
         else:
             self.is_replay = True
             self.setup_game_replay(room_id, server_url)
@@ -35,7 +39,7 @@ class LocalGame:
         if with_bot:
             self._init_bot()
 
-    def setup_game_local(self):
+    def setup_game_local(self, num_players: int, spawn_points: tuple | None, seed: float = None):
         self.rules = ru
         # self.rules['generator_rules']['river_rules']['has_river'] = False
         # self.rules['generator_rules']['walls']['has_walls'] = False
@@ -43,23 +47,27 @@ class LocalGame:
         # self.rules['generator_rules']['rows'] = 6
         # self.rules['generator_rules']['cols'] = 6
         self.rules['generator_rules']['is_separated_armory'] = True
-        self.rules['generator_rules']['seed'] = random.random()
-        # self.rules['generator_rules']['seed'] = 0.49938802943428107
+        self.rules['generator_rules']['seed'] = random.random() if seed is None else seed
         # self.rules['generator_rules']['levels_amount'] = 2
         self.rules['gameplay_rules']['fast_win'] = True
         self.rules['gameplay_rules']['diff_outer_concrete_walls'] = True
         # self.rules['generator_rules']['river_rules']['min_coverage'] = 90
         # self.rules['generator_rules']['river_rules']['max_coverage'] = 100
-        spawn: dict[str, int] = {'x': 5, 'y': 3}
-        spawn2: dict[str, int] = {'x': 2, 'y': 4}
-        spawn3: dict[str, int] = {'x': 2, 'y': 1}
 
-        self.players = [
-            (spawn, 'Skipper'),
-            (spawn2, 'Tester'),
-            # (spawn3, 'player'),
-        ]
+        self.players = self._create_players(num_players, spawn_points)
         self.turns = []
+
+    def _create_players(self, num_players: int, spawn_points: tuple | None):
+        random.seed(self.rules.get('generator_rules').get('seed'))
+        if spawn_points and len(spawn_points) == num_players:
+            return [(spawn_points[i], f'player_{i}') for i, spawn_point in enumerate(spawn_points)]
+        return [(self._create_spawn(), f'player_{i}') for i in range(num_players)]
+
+    def _create_spawn(self) -> dict[str, int]:
+        return {
+            'x': random.randint(1, self.rules.get('generator_rules').get('cols')),
+            'y': random.randint(1, self.rules.get('generator_rules').get('rows'))
+        }
 
     def setup_game_replay(self, room_id: int, server_url: str):
         resp = self._get_game_data(room_id, server_url)
@@ -102,11 +110,12 @@ class LocalGame:
             act = (Actions.info, None) if not self.is_replay else next(self.turns)
             is_running, _ = self.process_turn(*act)
 
+        skip_turns = 0
         while is_running:
             act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
             gui.draw(act_pl_abilities, self.game.get_current_player().name)
             act, state = gui.get_action(act_pl_abilities, state)
-            if act:
+            if act or self.turn_number < skip_turns:
                 if auto:
                     act = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
                 else:
@@ -146,12 +155,13 @@ class LocalGame:
     def process_turn(self, action: Actions, direction: Directions, verbose=True):
         response, next_player = self.game.make_turn(action.name, direction.name if direction else None)
         if verbose:
-            print(response.get_turn_info(), response.get_info())
+            print(self.turn_number, response.get_turn_info(), response.get_info())
         if self.bot:
             # print(response.get_raw_info())
             self.bot.process_turn_resp(response.get_raw_info())
             act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
             self.bot.turn_prepare(self.game.get_current_player().name, act_pl_abilities)
+        self.turn_number += 1
         if self.game.is_win_condition(self.rules):
             return False, response
         return True, response
@@ -169,8 +179,11 @@ def draw_graph(grid: Grid, player_cell=None, player_abilities=None):
     #         break
 
 
-def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
-    game = LocalGame(room_id, server_url, with_bot)
+def main(
+        num_players: int = 2, spawn_points: tuple = None, seed: float = None,
+        room_id: int = None, server_url: str = '', with_bot: bool = True
+):
+    game = LocalGame(num_players, spawn_points, seed, room_id, server_url, with_bot)
     start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
     current_player = game.game.get_current_player()
     current_player_abilities = game.game.get_allowed_abilities(current_player)
@@ -184,13 +197,13 @@ def main(room_id: int = None, server_url: str = '', with_bot: bool = True):
     # tr2.join()
 
 
-def performance_test(iters=10, verbose=False):
+def performance_test(num_players=2, iters=10, verbose=False):
     all_times = []
     all_steps = []
     all_steps_tr = []
     shots, shoots_s = 0, 0
     for i in range(iters):
-        game = LocalGame(with_bot=True)
+        game = LocalGame(num_players=num_players, with_bot=True)
         times, steps, tr_steps, sh, sh_s = game.run_performance_test(verbose)
         all_steps.append(steps)
         all_steps_tr.append(tr_steps)
@@ -208,7 +221,16 @@ def performance_test(iters=10, verbose=False):
 if __name__ == "__main__":
     r_id = 43
     s_url = '192.168.1.118:5000'
+    _seed = 0.0034940357309529713
+    _num_players = 3
+    _spawn_points = (
+        {'x': 5, 'y': 3},
+        {'x': 2, 'y': 4},
+        {'x': 2, 'y': 1},
+        {'x': 3, 'y': 2},
+    )
     # main(room_id=r_id, server_url=s_url, with_bot=True)
-    main()
-    # res = performance_test(iters=100, verbose=False)
+    main(num_players=_num_players, spawn_points=None, seed=_seed)
+    # main(num_players=_num_players, spawn_points=_spawn_points[:_num_players], seed=_seed)
+    # res = performance_test(num_players=_num_players, iters=100, verbose=False)
     # print(res)

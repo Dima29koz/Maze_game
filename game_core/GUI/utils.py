@@ -89,6 +89,14 @@ def get_player_color(player_name: str):
             return pygame.Color(1, 255, 1)
         case 'player':
             return pygame.Color(1, 1, 255)
+        case 'player_0':
+            return pygame.Color(255, 0, 0)
+        case 'player_1':
+            return pygame.Color(255, 255, 0)
+        case 'player_2':
+            return pygame.Color(0, 255, 0)
+        case 'player_3':
+            return pygame.Color(0, 0, 255)
         case _:
             return pygame.Color(
                 abs(hash(player_name)) % 255,

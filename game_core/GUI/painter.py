@@ -120,14 +120,19 @@ class Painter:
                 self.draw_bot_ai_player(*player, dx, dy, ts)
 
     def draw_player(self, player, dx, dy, ts):
-        x = player.cell.position.x * ts + ts // 2 + dx
-        y = player.cell.position.y * ts + ts // 2 + dy
         name = player.name
+        try:
+            td = int(name[-1]) + 1
+        except Exception:
+            td = 1
+        x = player.cell.position.x * ts + ts * (1 if td % 2 == 1 else 3) // 4 + dx
+        y = player.cell.position.y * ts + ts * (1 if td < 3 else 3) // 4 + dy
+
         if player.is_active:
             pygame.draw.circle(self.sc, (255, 255, 255),
-                               (x, y), ts // 3.5)
+                               (x, y), ts // 7)
         pygame.draw.circle(self.sc, get_player_color(name),
-                           (x, y), ts // 4)
+                           (x, y), ts // 8)
 
         if player.treasure:
             x, y = player.cell.position.x * ts, player.cell.position.y * ts
@@ -136,16 +141,11 @@ class Painter:
     def draw_bot_ai_player(self, player_name, pl_pos, dx, dy, ts):
         if not pl_pos:
             return
+        try:
+            td = int(player_name[-1]) + 1
+        except Exception:
+            td = 1
         x, y = pl_pos.get()
-        x, y = x * ts + dx, y * ts + dy
-        pygame.draw.line(self.sc, get_player_color(player_name),
-                         (x + 2, y + 2), (x + ts - 2, y + 2), 2)
-
-        pygame.draw.line(self.sc, get_player_color(player_name),
-                         (x + ts - 2, y + 2), (x + ts - 2, y + ts - 4), 2)
-
-        pygame.draw.line(self.sc, get_player_color(player_name),
-                         (x + ts - 2, y + ts - 4), (x + 2, y + ts - 4), 2)
-
-        pygame.draw.line(self.sc, get_player_color(player_name),
-                         (x + 2, y + ts - 4), (x + 2, y + 2), 2)
+        x = x * ts + dx + (0 if td % 2 == 1 else ts // 2)
+        y = y * ts + dy + (0 if td < 3 else ts // 2)
+        pygame.draw.rect(self.sc, get_player_color(player_name), (x + 2, y + 2, ts // 2 - 4, ts // 2 - 4), 2)
