@@ -2,6 +2,7 @@
 import random
 import threading
 import time
+import json
 from typing import Generator
 import requests
 
@@ -135,10 +136,12 @@ class LocalGame:
         tr_step = 0
         num_shot = 0
         shot_success = 0
+        leaves = {player: [] for player in self.bot.players.keys()}
         while is_running:
-            act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
+            current_player = self.game.get_current_player()
+            act_pl_abilities = self.game.get_allowed_abilities(current_player)
             time_start = time.time()
-            act = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
+            act = self.bot.make_decision(current_player.name, act_pl_abilities)
 
             if tr_step == 0 and act[0] is Actions.swap_treasure:
                 tr_step = step
@@ -146,11 +149,12 @@ class LocalGame:
                 num_shot += 1
             is_running, response = self.process_turn(*act, verbose=verbose)
             time_end = time.time() - time_start
+            [leaves[player].append(len(state.get_leaf_nodes())) for player, state in self.bot.players.items()]
             if response.get_raw_info().get('response').get('hit'):
                 shot_success += 1
             times.append(time_end)
             step += 1
-        return times, step, tr_step, num_shot, shot_success
+        return times, step, tr_step, num_shot, shot_success, leaves
 
     def process_turn(self, action: Actions, direction: Directions, verbose=True):
         response, next_player = self.game.make_turn(action.name, direction.name if direction else None)
@@ -194,24 +198,29 @@ def main(
     # tr2.join()
 
 
-def performance_test(num_players=2, iters=10, verbose=False):
+def performance_test(num_players=2, iters=10, seeds=None, verbose=False):
+    if seeds is None:
+        seeds = [random.random() for _ in range(iters)]
     all_times = []
     all_steps = []
     all_steps_tr = []
     shots, shoots_s = 0, 0
+    all_leaves = []
     for i in range(iters):
-        game = LocalGame(num_players=num_players, with_bot=True)
-        times, steps, tr_steps, sh, sh_s = game.run_performance_test(verbose)
+        game = LocalGame(num_players=num_players, seed=seeds[i], with_bot=True)
+        times, steps, tr_steps, sh, sh_s, leaves = game.run_performance_test(verbose)
         all_steps.append(steps)
         all_steps_tr.append(tr_steps)
         all_times.append(times)
         shots += sh
         shoots_s += sh_s
+        all_leaves.append(leaves)
     return {
         'steps': all_steps,
         'tr_steps': all_steps_tr,
         'times': all_times,
-        'shooting res': (shots, shoots_s)
+        'shooting res': (shots, shoots_s),
+        'leaves': all_leaves
     }
 
 
@@ -219,6 +228,7 @@ if __name__ == "__main__":
     r_id = 43
     s_url = '192.168.1.118:5000'
     _seed = 0.5380936623177652
+    # _seed = random.random()
     _num_players = 4
     _spawn_points = (
         {'x': 5, 'y': 3},
@@ -229,5 +239,8 @@ if __name__ == "__main__":
     # main(room_id=r_id, server_url=s_url, with_bot=True)
     main(num_players=_num_players, spawn_points=None, seed=_seed)
     # main(num_players=_num_players, spawn_points=_spawn_points[:_num_players], seed=_seed)
-    # res = performance_test(num_players=_num_players, iters=100, verbose=False)
+
+    # res = performance_test(num_players=_num_players, iters=1, seeds=[_seed], verbose=False)
+    # with open(f'performance_res_{time.strftime("%m-%d-%Y_%H-%M-%S", time.localtime())}.json', 'w') as f:
+    #     json.dump(res, f)
     # print(res)

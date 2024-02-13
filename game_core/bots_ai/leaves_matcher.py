@@ -119,44 +119,48 @@ class LeavesMatcher:
                             x: int, y: int, unique_objs: dict[Type[CELL], int]):
         self_cell = node.field_state.field.get_cell(Position(x, y))
         other_cell = other_node.field_state.field.get_cell(Position(x, y))
+        self_type = type(self_cell)
+        other_type = type(other_cell)
 
-        if type(self_cell) is cell.NoneCell and type(other_cell) in [cell.NoneCell, PossibleExit]:
+        if self_type is cell.NoneCell and other_type in [cell.NoneCell, PossibleExit]:
             return True
-        if type(self_cell) is cell.CellExit and type(other_cell) in [cell.CellExit, PossibleExit]:
+        if self_type is cell.CellExit and other_type in [cell.CellExit, PossibleExit]:
             return True
-        if type(self_cell) is PossibleExit and type(other_cell) in [cell.CellExit, cell.NoneCell, PossibleExit]:
+        if self_type is PossibleExit and other_type in [cell.CellExit, cell.NoneCell, PossibleExit]:
             return True
-        if type(self_cell) is UnknownCell:
-            if type(other_cell) is UnknownCell:
+        if self_type is UnknownCell:
+            if other_type is UnknownCell:
                 return True
-            if type(other_cell) in unique_objs:
-                if unique_objs.get(type(other_cell)) > 0:
-                    unique_objs[type(other_cell)] -= 1
+            if other_type in unique_objs:
+                if unique_objs.get(other_type) > 0:
+                    unique_objs[other_type] -= 1
                 else:
                     return False
-            if type(other_cell) is cell.CellRiver:
-                if not node.field_state.field.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
+            if other_type is cell.CellRiver:
+                if not node.field_state.field.is_river_direction_available(self_cell, other_cell.direction,
+                                                                           no_raise=True):
                     return False
             return True
 
-        if type(other_cell) is UnknownCell:
-            if type(self_cell) in unique_objs:
-                if unique_objs.get(type(self_cell)) > 0:
-                    unique_objs[type(self_cell)] -= 1
+        if other_type is UnknownCell:
+            if self_type in unique_objs:
+                if unique_objs.get(self_type) > 0:
+                    unique_objs[self_type] -= 1
                 else:
                     return False
-            if type(self_cell) is cell.CellRiver:
-                if not other_node.field_state.field.is_river_direction_available(other_cell, self_cell.direction, no_raise=True):
+            if self_type is cell.CellRiver:
+                if not other_node.field_state.field.is_river_direction_available(other_cell, self_cell.direction,
+                                                                                 no_raise=True):
                     return False
             return True
 
-        if type(self_cell) is type(other_cell):
-            if type(self_cell) in unique_objs:
-                if unique_objs.get(type(self_cell)) > 0:
-                    unique_objs[type(self_cell)] -= 1
+        if self_type is other_type:
+            if self_type in unique_objs:
+                if unique_objs.get(self_type) > 0:
+                    unique_objs[self_type] -= 1
                 else:
                     return False
-            if type(other_cell) is cell.CellRiver:
+            if other_type is cell.CellRiver:
                 if other_cell.direction is not self_cell.direction:
                     return False
             return True

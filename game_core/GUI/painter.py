@@ -2,6 +2,7 @@ import pygame
 
 from .utils import get_cell_color, get_wall_color, get_player_color, get_treasure_color, get_river_dir
 
+from ..game_engine.entities.player import Player
 from ..game_engine.entities.treasure import Treasure
 from ..game_engine.field import cell as c
 from ..game_engine.global_env.enums import Directions
@@ -96,7 +97,7 @@ class Painter:
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.left]),
                          (x, y + ts - 2), (x, y), 2)
 
-    def draw_treasures(self, treasures, dx, dy, ts):
+    def draw_treasures(self, treasures: list[Treasure | Position], dx, dy, ts):
         for treasure in treasures:
             if type(treasure) is Treasure:
                 x, y = treasure.position.x * ts + dx, treasure.position.y * ts + dy
@@ -119,7 +120,7 @@ class Painter:
             for player in players.items():
                 self.draw_bot_ai_player(*player, dx, dy, ts)
 
-    def draw_player(self, player, dx, dy, ts):
+    def draw_player(self, player: Player, dx, dy, ts):
         name = player.name
         try:
             td = int(name[-1]) + 1

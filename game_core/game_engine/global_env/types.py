@@ -32,6 +32,9 @@ class Position:
     :ivar y: y position
     :ivar level_position: position of level
     """
+
+    __slots__ = 'x', 'y', 'level_position'
+
     def __init__(self, x: int, y: int, level_position: LevelPosition = None):
         self.x = x
         self.y = y
@@ -42,7 +45,7 @@ class Position:
         level_pos_eq = self.level_position == other.level_position if self.level_position else True  # fixme
         return self.x == other.x and self.y == other.y and level_pos_eq
 
-    def __sub__(self, other) -> Directions:
+    def __sub__(self, other: 'Position') -> Directions:
         """
         :return: direction between adjacent positions
         """

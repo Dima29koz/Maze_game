@@ -67,7 +67,7 @@ class SpectatorGUI:
                 f, amount = self.bot_spectator.get_fields(other_player)
                 if fields_amount:
                     self.draw_leaves(fields, start_y=max_y * i)
-                self.draw_text('other player comp. leaves', f'{fields_amount} / {amount}', i)
+                self.draw_text(f'{other_player} comp. leaves', f'{fields_amount} / {amount}', i)
 
         self.window.blit(self.sc, self.sc.get_rect())
         pygame.event.pump()

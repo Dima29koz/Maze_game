@@ -24,7 +24,7 @@ class InitGenerator:
         self.common_data = CommonData(game_rules)
 
     def get_start_state(self, player_name: str) -> Node:
-        other_players = [pl_name for pl_name in self._players.keys()]
+        other_players = [pl_name for pl_name in self._players.keys() if pl_name != player_name]
         base_grid = self._generate_base_grid()
         base_state = FieldState(
             base_grid,
