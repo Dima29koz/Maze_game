@@ -17,6 +17,17 @@ class LeavesMatcher:
                  players: dict[str, PlayerState]):
         self._unique_objs_amount = unique_objs_amount
         self._players = players
+        self._set_init_compatible_nodes()
+
+    def _set_init_compatible_nodes(self):
+        for player, state in self._players.items():
+            player_nodes = self._get_player_real_spawn_leaves(player)
+            other_players = list(self._players.keys())
+            other_players.remove(player)
+            for other_player in other_players:
+                leaves = self._players[other_player].get_leaf_nodes()
+                for node in player_nodes:
+                    node.compatible_with[other_player] = leaves
 
     def match_real_spawn_leaves(self, active_player: str):
         active_player_nodes = self._get_player_real_spawn_leaves(active_player)
@@ -25,13 +36,14 @@ class LeavesMatcher:
         if not other_players:
             return
 
-        other_players_nodes: list[tuple[str, list[Node]]] = [
-            (player, self._get_player_compatible_leaves(player, active_player)) for player in other_players]
-
         for node in active_player_nodes[::-1]:
             try:
                 final_nodes: list[Node] = []
-                self._match_node(node, other_players_nodes.copy(), active_player, final_nodes)
+                other_players_nodes = [
+                    (player, self._get_node_compatible_leaves(node, player, active_player))
+                    for player in other_players
+                ]
+                self._match_node(node, other_players_nodes, active_player, final_nodes)
                 if not final_nodes:
                     node.remove()
                     continue
@@ -45,6 +57,13 @@ class LeavesMatcher:
     def _get_player_compatible_leaves(self, player_name: str, target_player: str) -> list[Node]:
         leaves = self._players.get(player_name).get_compatible_leaves(target_player)
         [leaf.update_compatibility(target_player, False) for leaf in leaves]
+        return leaves
+
+    def _get_node_compatible_leaves(self, node: Node, other_player: str, current_player: str):
+        leaves = self._players.get(other_player).get_subtrees_leaf_nodes(node.compatible_with[other_player])
+        if not leaves:
+            raise MatchingError
+        [leaf.update_compatibility(current_player, False) for leaf in leaves]
         return leaves
 
     def _match_node(self, node: Node,
@@ -76,6 +95,7 @@ class LeavesMatcher:
             return [node]
         # node еще не содержит инфы о player
         matchable_nodes = self._match_with_player(node, other_pl_nodes, active_pl_name)
+        node.compatible_with[other_pl_name] = matchable_nodes
         if not matchable_nodes:
             # todo raise MatchingError but did not work with it
             return []

@@ -33,7 +33,11 @@ class InitGenerator:
             self.common_data,
             treasures_positions=[],
         )
-        root_state = Node(base_state, {player_name: True for player_name in other_players})
+        root_state = Node(
+            base_state,
+            {player_name: True for player_name in other_players},
+            {player_name: None for player_name in other_players}
+        )
         for position in self._spawn_points:
             next_state = root_state.copy(player_position=(player_name, position))
             if position == self._players.get(player_name):

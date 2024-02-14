@@ -6,10 +6,12 @@ from .field_state import FieldState
 class Node:
     def __init__(self, field_state: FieldState,
                  enemy_compatibility: dict[str, bool],
+                 compatible_with: dict[str, list['Node'] | None],
                  is_real_spawn: bool = False,
                  parent: 'Node' = None):
         self.field_state = field_state
         self.enemy_compatibility = enemy_compatibility
+        self.compatible_with = compatible_with
         self.is_real_spawn = is_real_spawn
         self._parent: Node | None = parent
         self.next_states: list[Node] = []
@@ -23,6 +25,7 @@ class Node:
         return Node(
             self.field_state.copy(player_position) if not field_state else field_state,
             self.enemy_compatibility.copy(),
+            {key: value.copy() if value else None for key, value in self.compatible_with.items()},
             is_real_spawn=self.is_real_spawn,
             parent=self)
 

@@ -75,8 +75,8 @@ class SpectatorGUI:
             self.draw_text(f'{active_player} real leaves', f'{nodes_amount} / {amount}', 0)
             target_node = target_node if target_node else nodes[0]
             for i, other_player in enumerate(self.bot_spectator.get_other_players(active_player), 1):
-                nodes, nodes_amount = self.bot_spectator.get_compatible_leaves(active_player, other_player)
-                # nodes, nodes_amount = self.bot_spectator.get_node_compatible_leaves(other_player, target_node)
+                # nodes, nodes_amount = self.bot_spectator.get_compatible_leaves(active_player, other_player)
+                nodes, nodes_amount = self.bot_spectator.get_node_compatible_leaves(other_player, target_node)
                 _, amount = self.bot_spectator.get_fields(other_player)
                 if nodes_amount:
                     self.draw_leaves(nodes, start_y=self.leaves_area_size_y * i)
