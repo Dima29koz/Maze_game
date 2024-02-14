@@ -67,8 +67,9 @@ class BotAIDebug(BotAI):
         # удалить все свои листы с правильным спавном, которые противоречат листам противников
         super().turn_prepare(player_name, player_abilities)
 
-        if not self.has_real_field(player_name):
-            print(f'{player_name} matcher err!!!')
+        for name, player_state in self.players.items():
+            if not self.has_real_field(name):
+                print(f'{name} matcher err!!!')
 
     def process_turn_resp(self, raw_response: dict):
         super().process_turn_resp(raw_response)
@@ -83,7 +84,12 @@ class BotAIDebug(BotAI):
         flag = False
         for node in self.players.get(player_name).get_leaf_nodes():
             cropped_field = [row[1:-1] for row in node.field_state.field.get_field()[1:-1]]
-            if is_node_is_real(cropped_field, [row[1:-1] for row in self.real_field[1:-1]]):
+            if is_node_is_real(
+                    cropped_field,
+                    [row[1:-1] for row in self.real_field[1:-1]],
+                    self.leaves_matcher._unique_objs_amount.copy()):
                 node.is_real = True
                 flag = True
+            else:
+                node.is_real = False
         return flag

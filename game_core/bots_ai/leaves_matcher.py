@@ -37,11 +37,13 @@ class LeavesMatcher:
             return
 
         for node in active_player_nodes[::-1]:
+            if all(node.field_state.players_positions.values()):
+                continue
             try:
                 final_nodes: list[Node] = []
                 other_players_nodes = [
                     (player, self._get_node_compatible_leaves(node, player, active_player))
-                    for player in other_players
+                    for player in other_players if node.compatible_with[player] is not None
                 ]
                 self._match_node(node, other_players_nodes, active_player, final_nodes)
                 if not final_nodes:
@@ -108,6 +110,7 @@ class LeavesMatcher:
             try:
                 merged_node = node.merge_with(matchable_node, other_pl_name)
                 if merged_node:
+                    merged_node.compatible_with[other_pl_name] = None
                     merged_nodes.append(merged_node)
             except MergingError:
                 # matchable_node.update_compatibility(active_pl_name, False)

@@ -26,5 +26,8 @@ class BotAISpectator:
         return leaves[:limit], len(leaves)
 
     def get_node_compatible_leaves(self, player_name: str, node):
-        leaves = self.bot.players.get(player_name).get_subtrees_leaf_nodes(node.compatible_with[player_name])
+        try:
+            leaves = self.bot.players.get(player_name).get_subtrees_leaf_nodes(node.compatible_with[player_name])
+        except TypeError:
+            leaves = []
         return leaves[:self.limit], len(leaves)
