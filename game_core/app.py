@@ -114,14 +114,16 @@ class LocalGame:
         skip_turns = 0
         while is_running:
             act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
-            gui.draw(act_pl_abilities, self.game.get_current_player().name)
             act, state = gui.get_action(act_pl_abilities, state)
+            action = None
             if act or self.turn_number < skip_turns:
                 if auto:
-                    act = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
+                    action = self.bot.make_decision(self.game.get_current_player().name, act_pl_abilities)
                 else:
-                    act = act if not self.is_replay else next(self.turns)
-                is_running, _ = self.process_turn(*act)
+                    action = act if not self.is_replay else next(self.turns)
+            gui.draw(act_pl_abilities, self.game.get_current_player().name)
+            if action:
+                is_running, _ = self.process_turn(*action)
         gui.close()
 
     def run_performance_test(self, verbose=False):

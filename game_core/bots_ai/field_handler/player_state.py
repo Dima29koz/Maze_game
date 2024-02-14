@@ -76,7 +76,7 @@ class PlayerState:
             if self.name in dmg_pls:
                 self.stats.on_take_dmg()
 
-    def get_leaf_nodes(self):
+    def get_leaf_nodes(self) -> list[Node]:
         """
         :return: list of all leaves of a tree
         """
@@ -84,7 +84,19 @@ class PlayerState:
         self._collect_leaf_nodes(self._root, leaves)
         return leaves
 
-    def get_real_spawn_leaves(self):
+    def get_subtrees_leaf_nodes(self, roots: list[Node]) -> list[Node]:
+        """
+        :return: list of all leaves of a subtrees
+        """
+        leaves: list[Node] = []
+        for root in roots[::-1]:
+            if root.is_deleted():
+                roots.remove(root)
+            else:
+                self._collect_leaf_nodes(root, leaves)
+        return leaves
+
+    def get_real_spawn_leaves(self) -> list[Node]:
         """
         :return: list of only real-spawn leaves of a tree
         """
@@ -92,7 +104,7 @@ class PlayerState:
         self._collect_real_spawn_nodes(self._root, leaves)
         return leaves
 
-    def get_compatible_leaves(self, target_player: str):
+    def get_compatible_leaves(self, target_player: str) -> list[Node]:
         """
         :return: list of all leaves of a tree which compatible with target player
         """

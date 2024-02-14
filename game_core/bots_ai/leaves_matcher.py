@@ -77,6 +77,7 @@ class LeavesMatcher:
         # node еще не содержит инфы о player
         matchable_nodes = self._match_with_player(node, other_pl_nodes, active_pl_name)
         if not matchable_nodes:
+            # todo raise MatchingError but did not work with it
             return []
         if len(matchable_nodes) > MAX_MATCHABLE_NODES:
             # print('len of matched nodes is:', len(matchable_nodes))

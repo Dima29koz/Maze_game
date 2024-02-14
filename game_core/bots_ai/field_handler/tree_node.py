@@ -58,3 +58,6 @@ class Node:
 
     def _set_parent(self, parent: 'Node'):
         self._parent = parent
+
+    def is_deleted(self) -> bool:
+        return self not in self._parent.next_states
