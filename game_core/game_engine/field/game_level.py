@@ -9,7 +9,7 @@ class GameLevel:
         self.field: list[list[CELL]] = field
 
     def get_neighbour_cell(self, position: Position, direction: Directions):
-        x, y = position.get_adjacent(direction).get()
+        x, y = direction.get_neighbour_cords(position.x, position.y)
         try:
             return self.field[y][x]
         except IndexError:

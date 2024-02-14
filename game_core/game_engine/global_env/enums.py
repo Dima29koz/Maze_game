@@ -25,6 +25,19 @@ class Directions(Enum):
         if self is Directions.right:
             return Directions.left
 
+    def get_neighbour_cords(self, x: int, y: int) -> tuple[int, int]:
+        """:return: cords of adjacent object by direction"""
+        match self:
+            case Directions.top:
+                y -= 1
+            case Directions.bottom:
+                y += 1
+            case Directions.left:
+                x -= 1
+            case Directions.right:
+                x += 1
+        return x, y
+
 
 # noinspection PyArgumentList
 class Actions(Enum):

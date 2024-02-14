@@ -85,7 +85,7 @@ class InitGenerator:
             for cell_obj in row:
                 if type(cell_obj) is cell.NoneCell:
                     for direction in Directions:
-                        x, y = cell_obj.position.get_adjacent(direction).get()
+                        x, y = direction.get_neighbour_cords(cell_obj.position.x, cell_obj.position.y)
                         try:
                             neighbour = field[y][x]
                         except IndexError:
@@ -100,7 +100,7 @@ class InitGenerator:
             for cell_obj in row:
                 if type(cell_obj) is cell.NoneCell:
                     for direction in Directions:
-                        x, y = cell_obj.position.get_adjacent(direction).get()
+                        x, y = direction.get_neighbour_cords(cell_obj.position.x, cell_obj.position.y)
                         try:
                             neighbour = field[y][x]
                         except IndexError:

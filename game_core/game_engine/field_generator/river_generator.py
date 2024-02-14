@@ -48,7 +48,7 @@ class RiverGenerator:
     def __check_directions(self, current_cell: Cell) -> list[Cell] | None:
         empty_neighbours = []
         for direction in Directions:
-            x, y = current_cell.position.get_adjacent(direction).get()
+            x, y = direction.get_neighbour_cords(current_cell.position.x, current_cell.position.y)
             if x in range(self.__cols) and y in range(self.__rows) and \
                     not self.__pattern[y][x].visited and type(self.__field[y][x]) == Cell:
                 empty_neighbours.append(self.__field[y][x])
@@ -77,7 +77,7 @@ class RiverGenerator:
     def __calc_river_lengths(self, min_coverage: int, max_coverage: int, min_len: int) -> list[int]:
         coverage = randint(min_coverage, max_coverage) / 100
         river_cells_amount = int((len(self.__ground_cells) - 5) * coverage)
-        if river_cells_amount < min_len*2:
+        if river_cells_amount < min_len * 2:
             return [river_cells_amount]
         rivers = []
         while river_cells_amount > 0:

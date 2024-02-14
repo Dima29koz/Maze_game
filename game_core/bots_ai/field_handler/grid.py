@@ -34,7 +34,7 @@ class Grid:
         return self._field[position.y][position.x]
 
     def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
-        x, y = position.get_adjacent(direction).get()
+        x, y = direction.get_neighbour_cords(position.x, position.y)
         try:
             if x < 0 or y < 0:
                 raise IndexError

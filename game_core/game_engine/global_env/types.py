@@ -2,6 +2,8 @@ from .enums import Directions
 
 
 class LevelPosition:
+    __slots__ = 'level', 'sub_level', 'dimension'
+
     def __init__(self, level: int, sub_level: int, dimension: int = 0):
         """
 
