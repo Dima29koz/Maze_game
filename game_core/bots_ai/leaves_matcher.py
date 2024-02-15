@@ -14,10 +14,13 @@ MAX_MATCHABLE_NODES = 8
 class LeavesMatcher:
     def __init__(self,
                  unique_objs_amount: dict[Type[cell.Cell], int],
-                 players: dict[str, PlayerState]):
+                 players: dict[str, PlayerState],
+                 game_rules: dict):
         self._unique_objs_amount = unique_objs_amount
         self._players = players
         self._set_init_compatible_nodes()
+        self._size_x: int = game_rules.get('generator_rules').get('cols') + 2
+        self._size_y: int = game_rules.get('generator_rules').get('rows') + 2
 
     def _set_init_compatible_nodes(self):
         for player, state in self._players.items():
@@ -96,13 +99,14 @@ class LeavesMatcher:
         if node.field_state.players_positions.get(other_pl_name):
             return [node]
         # node еще не содержит инфы о player
-        matchable_nodes = self._match_with_player(node, other_pl_nodes, active_pl_name)
+        matchable_nodes = self._match_with_player(node, other_pl_nodes)
         node.compatible_with[other_pl_name] = matchable_nodes
         if not matchable_nodes:
             # todo raise MatchingError but did not work with it
             return []
         if len(matchable_nodes) > MAX_MATCHABLE_NODES:
             # print('len of matched nodes is:', len(matchable_nodes))
+            [other_node.update_compatibility(active_pl_name, True) for other_node in matchable_nodes]
             return [node]
 
         merged_nodes: list[Node] = []
@@ -120,20 +124,13 @@ class LeavesMatcher:
             return []
         return merged_nodes
 
-    def _match_with_player(self, node: Node,
-                           other_nodes: list[Node], active_player: str):
-        matchable_nodes = []
-        for pl_node in other_nodes[::-1]:
-            if self._is_nodes_matchable(node, pl_node):
-                matchable_nodes.append(pl_node)
-                pl_node.update_compatibility(active_player, True)
-        return matchable_nodes
+    def _match_with_player(self, node: Node, other_nodes: list[Node]):
+        return [pl_node for pl_node in other_nodes if self._is_nodes_matchable(node, pl_node)]
 
     def _is_nodes_matchable(self, node: Node, other_node: Node):
-        field = node.field_state.field.get_field()
         unique_objs = self._unique_objs_amount.copy()
-        for y in range(len(field)):
-            for x in range(len(field[0])):
+        for y in range(self._size_y):
+            for x in range(self._size_x):
                 if not self._is_cells_matchable(node, other_node, x, y, unique_objs):
                     return False
         return True

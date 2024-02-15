@@ -17,7 +17,7 @@ class BotAI:
                                      init_generator.common_data,
                                      player_name)
             for player_name in players.keys()}
-        self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players)
+        self.leaves_matcher = LeavesMatcher(init_generator.get_unique_obj_amount(), self.players, game_rules)
         self.decision_maker = DecisionMaker(game_rules, self.players)
         self._player_iter = PlayerIterator(self.players)
         self._common_data = init_generator.common_data
