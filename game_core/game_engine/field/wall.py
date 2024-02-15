@@ -14,6 +14,9 @@ class WallEmpty:
     :ivar player_state: player state after interaction with wall
     :type player_state: bool
     """
+
+    __slots__ = 'breakable', 'weapon_collision', 'player_collision', 'player_state'
+
     def __init__(self):
         self.breakable = True
         self.weapon_collision = False

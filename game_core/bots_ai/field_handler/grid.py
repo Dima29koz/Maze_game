@@ -33,6 +33,9 @@ class Grid:
     def get_cell(self, position: Position) -> CELL:
         return self._field[position.y][position.x]
 
+    def get_cell_by_coords(self, x: int, y: int):
+        return self._field[y][x]
+
     def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
         x, y = direction.get_neighbour_cords(position.x, position.y)
         try:
@@ -128,8 +131,6 @@ class Grid:
         if type(river_cell.walls[direction]) not in [wall.WallEmpty, UnknownWall]:
             return False
         neighbour_cell = self.get_neighbour_cell(river_cell.position, direction)
-        if type(neighbour_cell) is cell.NoneCell:
-            return False
 
         # река не может течь в сушу
         if type(neighbour_cell) not in [cell.CellRiver, cell.CellRiverMouth, UnknownCell]:
@@ -162,7 +163,7 @@ class Grid:
                     return True
         return False
 
-    def has_known_input_river(self, position: Position, turn_direction: Directions, ignore_dir=False) -> bool:
+    def has_known_input_river(self, position: Position, turn_direction: Directions | None, ignore_dir=False) -> bool:
         """
 
         :param position: position of cell to be checked
@@ -170,8 +171,9 @@ class Grid:
         :param ignore_dir: if True all directions will be checked
         :return: True if target_cell has known input river
         """
+        neg_direction = -turn_direction if not ignore_dir else None
         for direction in Directions:
-            if not ignore_dir and direction is -turn_direction:
+            if not ignore_dir and direction is neg_direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, direction)
             if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:
