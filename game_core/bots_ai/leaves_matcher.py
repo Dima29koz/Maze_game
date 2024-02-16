@@ -1,7 +1,6 @@
 from typing import Type
 
 from ..game_engine.field import cell
-from ..game_engine.global_env.types import Position
 from .field_handler.field_obj import UnknownCell, PossibleExit
 from .field_handler.field_state import CELL
 from .field_handler.player_state import PlayerState
@@ -34,8 +33,7 @@ class LeavesMatcher:
 
     def match_real_spawn_leaves(self, active_player: str):
         active_player_nodes = self._get_player_real_spawn_leaves(active_player)
-        other_players = list(self._players.keys())
-        other_players.remove(active_player)
+        other_players = [player for player in self._players.keys() if player != active_player]
         if not other_players:
             return
 
@@ -44,11 +42,7 @@ class LeavesMatcher:
                 continue
             try:
                 final_nodes: list[Node] = []
-                other_players_nodes = [
-                    (player, self._get_node_compatible_leaves(node, player, active_player))
-                    for player in other_players if node.compatible_with[player] is not None
-                ]
-                self._match_node(node, other_players_nodes, active_player, final_nodes)
+                self._match_node(node, other_players.copy(), active_player, final_nodes)
                 if not final_nodes:
                     node.remove()
                     continue
@@ -65,18 +59,19 @@ class LeavesMatcher:
         return leaves
 
     def _get_node_compatible_leaves(self, node: Node, other_player: str, current_player: str):
-        leaves = self._players.get(other_player).get_subtrees_leaf_nodes(node.compatible_with[other_player])
+        compatible_roots = node.compatible_with[other_player]
+        if compatible_roots is None:
+            return
+        leaves = self._players.get(other_player).get_subtrees_leaf_nodes(compatible_roots)
         if not leaves:
             raise MatchingError
         [leaf.update_compatibility(current_player, False) for leaf in leaves]
         return leaves
 
-    def _match_node(self, node: Node,
-                    other_players: list[tuple[str, list[Node]]],
-                    active_player: str,
-                    final_nodes):
-        player_name, pl_nodes = other_players.pop()
-        merged_nodes = self.merge_node_with_player(node, pl_nodes, active_player, player_name)
+    def _match_node(self, node: Node, other_players: list[str], active_player: str, final_nodes):
+        other_player = other_players.pop()
+        other_player_nodes = self._get_node_compatible_leaves(node, other_player, active_player)
+        merged_nodes = self.merge_node_with_player(node, other_player_nodes, active_player, other_player)
 
         if not other_players:
             final_nodes += merged_nodes
@@ -84,7 +79,7 @@ class LeavesMatcher:
         for merged_node in merged_nodes:
             self._match_node(merged_node, other_players.copy(), active_player, final_nodes)
 
-    def merge_node_with_player(self, node: Node, other_pl_nodes: list[Node],
+    def merge_node_with_player(self, node: Node, other_pl_nodes: list[Node] | None,
                                active_pl_name: str, other_pl_name: str) -> list[Node]:
         """
 
@@ -96,7 +91,7 @@ class LeavesMatcher:
         :raises MatchingError: if node is not matchable with other player nodes
         """
 
-        if node.field_state.players_positions.get(other_pl_name):
+        if other_pl_nodes is None or node.field_state.players_positions.get(other_pl_name):
             return [node]
         # node еще не содержит инфы о player
         matchable_nodes = self._match_with_player(node, other_pl_nodes)
@@ -129,17 +124,16 @@ class LeavesMatcher:
 
     def _is_nodes_matchable(self, node: Node, other_node: Node):
         unique_objs = self._unique_objs_amount.copy()
-        for y in range(self._size_y):
-            for x in range(self._size_x):
-                if not self._is_cells_matchable(node, other_node, x, y, unique_objs):
+        for node_row, other_node_row in zip(node.field_state.field.get_field(),
+                                            other_node.field_state.field.get_field()):
+            for self_cell, other_cell in zip(node_row, other_node_row):
+                if not self._is_cells_matchable(node, other_node, self_cell, other_cell, unique_objs):
                     return False
         return True
 
     @staticmethod
     def _is_cells_matchable(node: Node, other_node: Node,
-                            x: int, y: int, unique_objs: dict[Type[CELL], int]):
-        self_cell = node.field_state.field.get_cell_by_coords(x, y)
-        other_cell = other_node.field_state.field.get_cell_by_coords(x, y)
+                            self_cell, other_cell, unique_objs: dict[Type[CELL], int]):
         self_type = type(self_cell)
         other_type = type(other_cell)
 
