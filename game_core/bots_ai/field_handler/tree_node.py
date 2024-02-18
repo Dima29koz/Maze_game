@@ -49,9 +49,9 @@ class Node:
     def add_next_state(self, field_state: FieldState):
         self.next_states.append(self.copy(field_state=field_state))
 
-    def merge_with(self, other_node: 'Node', other_player: str) -> 'Node':
+    def merge_with(self, other_node: 'Node') -> 'Node':
         merged_node = self.copy()
-        merged_node.field_state.merge_with(other_node.field_state, other_player)
+        merged_node.field_state.merge_with(other_node.field_state)
         return merged_node
 
     def _remove_leaf(self, leaf: 'Node'):

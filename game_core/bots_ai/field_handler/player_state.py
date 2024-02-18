@@ -89,7 +89,7 @@ class PlayerState:
         :return: list of all leaves of a subtrees
         """
         leaves: list[Node] = []
-        for root in roots[::-1]:
+        for root in roots.copy():
             if root.is_deleted():
                 roots.remove(root)
             else:

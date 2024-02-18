@@ -95,19 +95,19 @@ class FieldState:
         return FieldState(
             self.field.copy(),
             self.remaining_obj_amount.copy(),
-            self.players_positions.copy() if not player_position else self.update_player_position(player_position),
+            self.players_positions.copy() if not player_position else self._update_player_position(player_position),
             self.common_data,
             self.treasures_positions.copy(),
             self.current_player)
 
-    def update_player_position(self, player_position: tuple[str, Position]) -> dict[str, Position | None]:
+    def _update_player_position(self, player_position: tuple[str, Position]) -> dict[str, Position | None]:
         pl_positions = self.players_positions.copy()
         pl_positions[player_position[0]] = player_position[1]
         return pl_positions
 
-    def merge_with(self, other_state: 'FieldState', other_player: str):
+    def merge_with(self, other_state: 'FieldState'):
         self.field.merge_with(other_state.field, self.remaining_obj_amount)
-        self.players_positions[other_player] = other_state.get_player_pos(other_player)
+        self._merge_players_positions(other_state.players_positions)
         self._merge_treasures(other_state.treasures_positions)
         return self
 
@@ -489,6 +489,13 @@ class FieldState:
         if len(merged_treasures_pos) + self.common_data.players_with_treasures > self.common_data.treasures_amount:
             raise MergingError()
         self.treasures_positions = merged_treasures_pos
+
+    def _merge_players_positions(self, other_state_positions: dict[str, Position | None]):
+        for player, position in self.players_positions.items():
+            if position is None and other_state_positions[player]:
+                self.players_positions[player] = other_state_positions[player]
+            if position and other_state_positions[player] and position != other_state_positions[player]:
+                raise MergingError
 
     def _check_treasures_amount(self, cell_treasures_amount: int, position: Position):
         tr_pos_amount = len([pos for pos in self.treasures_positions if pos == position])

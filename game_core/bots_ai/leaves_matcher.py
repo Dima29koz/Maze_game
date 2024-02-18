@@ -40,15 +40,7 @@ class LeavesMatcher:
         for node in active_player_nodes[::-1]:
             if all(node.field_state.players_positions.values()):
                 continue
-            try:
-                final_nodes: list[Node] = []
-                self._match_node(node, other_players.copy(), active_player, final_nodes)
-                if not final_nodes:
-                    node.remove()
-                    continue
-                node.set_next_states(final_nodes)
-            except MatchingError:
-                node.remove()
+            self._match_node(node, other_players.copy(), active_player)
 
     def _get_player_real_spawn_leaves(self, player_name: str) -> list[Node]:
         return self._players.get(player_name).get_real_spawn_leaves()
@@ -58,65 +50,66 @@ class LeavesMatcher:
         [leaf.update_compatibility(target_player, False) for leaf in leaves]
         return leaves
 
-    def _get_node_compatible_leaves(self, node: Node, other_player: str, current_player: str):
+    def _get_node_compatible_leaves(self, node: Node, other_player: str, current_player: str) -> list[Node]:
         compatible_roots = node.compatible_with[other_player]
-        if compatible_roots is None:
-            return
+        # todo get_subtrees_leaf_nodes не проверяет совместимость, проверить бывает ли так что лист не совместим
         leaves = self._players.get(other_player).get_subtrees_leaf_nodes(compatible_roots)
         if not leaves:
             raise MatchingError
         [leaf.update_compatibility(current_player, False) for leaf in leaves]
         return leaves
 
-    def _match_node(self, node: Node, other_players: list[str], active_player: str, final_nodes):
+    def _match_node(self, node: Node, other_players: list[str], active_player: str):
         other_player = other_players.pop()
-        other_player_nodes = self._get_node_compatible_leaves(node, other_player, active_player)
-        merged_nodes = self.merge_node_with_player(node, other_player_nodes, active_player, other_player)
+
+        merged_nodes = [node]
+        # если в листе не известно положение противника
+        if not node.field_state.players_positions[other_player]:
+            try:
+                merged_nodes = self.merge_node_with_player(node, active_player, other_player)
+            except MatchingError:
+                node.remove()
+                return
 
         if not other_players:
-            final_nodes += merged_nodes
             return
         for merged_node in merged_nodes:
-            self._match_node(merged_node, other_players.copy(), active_player, final_nodes)
+            self._match_node(merged_node, other_players.copy(), active_player)
 
-    def merge_node_with_player(self, node: Node, other_pl_nodes: list[Node] | None,
-                               active_pl_name: str, other_pl_name: str) -> list[Node]:
+    def merge_node_with_player(self, node: Node, active_pl_name: str, other_pl_name: str) -> list[Node]:
         """
 
         :param node: node to be merged
-        :param other_pl_nodes: nodes for merging
         :param active_pl_name:
         :param other_pl_name:
         :return: list of merged nodes
         :raises MatchingError: if node is not matchable with other player nodes
         """
 
-        if other_pl_nodes is None or node.field_state.players_positions.get(other_pl_name):
-            return [node]
-        # node еще не содержит инфы о player
+        other_pl_nodes = self._get_node_compatible_leaves(node, other_pl_name, active_pl_name)
         matchable_nodes = self._match_with_player(node, other_pl_nodes)
         node.compatible_with[other_pl_name] = matchable_nodes
+
         if not matchable_nodes:
-            # todo raise MatchingError but did not work with it
-            return []
+            raise MatchingError
         if len(matchable_nodes) > MAX_MATCHABLE_NODES:
-            # print('len of matched nodes is:', len(matchable_nodes))
             [other_node.update_compatibility(active_pl_name, True) for other_node in matchable_nodes]
             return [node]
 
         merged_nodes: list[Node] = []
         for matchable_node in matchable_nodes:
             try:
-                merged_node = node.merge_with(matchable_node, other_pl_name)
-                if merged_node:
-                    merged_node.compatible_with[other_pl_name] = None
-                    merged_nodes.append(merged_node)
+                merged_node = node.merge_with(matchable_node)
+                for player in merged_node.compatible_with.keys():
+                    player_position = merged_node.field_state.players_positions[player]
+                    if player_position:
+                        merged_node.compatible_with[player] = None
+                merged_nodes.append(merged_node)
             except MergingError:
-                # matchable_node.update_compatibility(active_pl_name, False)
-                # todo bug here можно представить в виде списка листов с которыми матчится
                 pass
         if not merged_nodes:
-            return []
+            raise MatchingError
+        node.set_next_states(merged_nodes)
         return merged_nodes
 
     def _match_with_player(self, node: Node, other_nodes: list[Node]):

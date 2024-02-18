@@ -1,4 +1,5 @@
 from ..bots_ai.core import BotAI
+from ..bots_ai.field_handler.tree_node import Node
 
 
 class BotAISpectator:
@@ -25,9 +26,9 @@ class BotAISpectator:
         leaves = self.bot.players.get(other_player).get_compatible_leaves(player_name)
         return leaves[:limit], len(leaves)
 
-    def get_node_compatible_leaves(self, player_name: str, node):
+    def get_node_compatible_leaves(self, player_name: str, node: Node):
         try:
             leaves = self.bot.players.get(player_name).get_subtrees_leaf_nodes(node.compatible_with[player_name])
-        except TypeError:
+        except (TypeError, AttributeError):
             leaves = []
         return leaves[:self.limit], len(leaves)
