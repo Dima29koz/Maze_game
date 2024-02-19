@@ -37,6 +37,10 @@ class LeavesMatcher:
         if not other_players:
             return
 
+        for player in other_players:
+            for leaf in self._players.get(player).get_leaf_nodes():
+                leaf.update_compatibility(active_player, False)
+
         for node in active_player_nodes[::-1]:
             if all(node.field_state.players_positions.values()):
                 continue
@@ -50,13 +54,11 @@ class LeavesMatcher:
         [leaf.update_compatibility(target_player, False) for leaf in leaves]
         return leaves
 
-    def _get_node_compatible_leaves(self, node: Node, other_player: str, current_player: str) -> list[Node]:
+    def _get_node_compatible_leaves(self, node: Node, other_player: str) -> list[Node]:
         compatible_roots = node.compatible_with[other_player]
-        # todo get_subtrees_leaf_nodes не проверяет совместимость, проверить бывает ли так что лист не совместим
         leaves = self._players.get(other_player).get_subtrees_leaf_nodes(compatible_roots)
         if not leaves:
             raise MatchingError
-        [leaf.update_compatibility(current_player, False) for leaf in leaves]
         return leaves
 
     def _match_node(self, node: Node, other_players: list[str], active_player: str):
@@ -86,7 +88,7 @@ class LeavesMatcher:
         :raises MatchingError: if node is not matchable with other player nodes
         """
 
-        other_pl_nodes = self._get_node_compatible_leaves(node, other_pl_name, active_pl_name)
+        other_pl_nodes = self._get_node_compatible_leaves(node, other_pl_name)
         matchable_nodes = self._match_with_player(node, other_pl_nodes)
         node.compatible_with[other_pl_name] = matchable_nodes
 
