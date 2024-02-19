@@ -187,7 +187,6 @@ def main(
 
 if __name__ == "__main__":
     _seed = 0.5380936623177652
-    # _seed = 0.18378379396666744  # slow
     # _seed = 0.41856783943105225  # too slow
     # _seed = random.random()
     _num_players = 4

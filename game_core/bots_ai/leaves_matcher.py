@@ -118,6 +118,11 @@ class LeavesMatcher:
         return [pl_node for pl_node in other_nodes if self._is_nodes_matchable(node, pl_node)]
 
     def _is_nodes_matchable(self, node: Node, other_node: Node):
+        for player, position in node.field_state.players_positions.items():
+            other_node_player_pos = other_node.field_state.players_positions[player]
+            if position and other_node_player_pos and position != other_node_player_pos:
+                return False
+
         unique_objs = self._unique_objs_amount.copy()
         for node_row, other_node_row in zip(node.field_state.field.get_field(),
                                             other_node.field_state.field.get_field()):
