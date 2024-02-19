@@ -1,12 +1,9 @@
 """runs game local for testing game_engine"""
 import random
-import threading
 import time
-import json
 from typing import Generator
 import requests
 
-from game_core.GUI import SpectatorGUI
 from game_core.game_engine import Game, base_rules as ru
 from game_core.game_engine import Actions, Directions, Position, LevelPosition
 
@@ -24,7 +21,6 @@ class LocalGame:
         self.is_replay = False
         self.turn_number = 0
         self.save_replay = save_replay
-        # self.replay_file = open('replay.txt', 'w')
         self.players = []
         self.turns: list | Generator = []
         self.rules = {}
@@ -100,9 +96,11 @@ class LocalGame:
         self.bot = BotAIDebug(self.rules, players_)
         self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
 
-    def run(self, auto=False):
+    def run(self, auto=False, skip_turns=0):
         print('seed:', self.rules['generator_rules']['seed'])
         field = self.game.field
+
+        from game_core.GUI import SpectatorGUI
         gui = SpectatorGUI(field, self.bot)
 
         state = Actions.move
@@ -111,7 +109,6 @@ class LocalGame:
             act = (Actions.info, None) if not self.is_replay else next(self.turns)
             is_running, _ = self.process_turn(*act)
 
-        skip_turns = 0
         while is_running:
             act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
             act, state = gui.get_action(act_pl_abilities, state)
@@ -142,15 +139,16 @@ class LocalGame:
         while is_running:
             current_player = self.game.get_current_player()
             act_pl_abilities = self.game.get_allowed_abilities(current_player)
+
             time_start = time.time()
             act = self.bot.make_decision(current_player.name, act_pl_abilities)
+            is_running, response = self.process_turn(*act, verbose=verbose)
+            time_end = time.time() - time_start
 
             if tr_step == 0 and act[0] is Actions.swap_treasure:
                 tr_step = step
             if act[0] is Actions.shoot_bow:
                 num_shot += 1
-            is_running, response = self.process_turn(*act, verbose=verbose)
-            time_end = time.time() - time_start
             [leaves[player].append(len(state.get_leaf_nodes())) for player, state in self.bot.players.items()]
             if response.get_raw_info().get('response').get('hit'):
                 shot_success += 1
@@ -171,65 +169,26 @@ class LocalGame:
 
 
 def draw_graph(grid: Grid, player_cell=None, player_abilities=None):
-    gb = test_graph(grid, player_cell, player_abilities)
-    # while True:
-    #     try:
-    #         p1 = Position(*[int(i) for i in input('p1: (x, y):').split(',')])
-    #         p2 = Position(*[int(i) for i in input('p2: (x, y):').split(',')])
-    #         gb.get_path(grid.get_cell(p1), grid.get_cell(p2))
-    #     except Exception:
-    #         print('stopped')
-    #         break
+    test_graph(grid, player_cell, player_abilities)
 
 
 def main(
         num_players: int = 2, spawn_points: tuple = None, seed: float = None,
-        room_id: int = None, server_url: str = '', with_bot: bool = True
+        room_id: int = None, server_url: str = '', with_bot: bool = True, show_graph=False, skip_turns=0
 ):
     game = LocalGame(num_players, spawn_points, seed, room_id, server_url, with_bot)
     start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
     current_player = game.game.get_current_player()
     current_player_abilities = game.game.get_allowed_abilities(current_player)
-    game.run(auto=True)
-    # tr1 = threading.Thread(target=game.run, kwargs={'auto': True})
-    # tr2 = threading.Thread(target=draw_graph, args=(start_map, current_player.cell, current_player_abilities))
-    # tr1.start()
-    # tr2.start()
-
-    # tr1.join()
-    # tr2.join()
-
-
-def performance_test(num_players=2, iters=10, seeds=None, verbose=False):
-    if seeds is None:
-        seeds = [random.random() for _ in range(iters)]
-    all_times = []
-    all_steps = []
-    all_steps_tr = []
-    shots, shoots_s = 0, 0
-    all_leaves = []
-    for i in range(iters):
-        game = LocalGame(num_players=num_players, seed=seeds[i], with_bot=True)
-        times, steps, tr_steps, sh, sh_s, leaves = game.run_performance_test(verbose)
-        all_steps.append(steps)
-        all_steps_tr.append(tr_steps)
-        all_times.append(times)
-        shots += sh
-        shoots_s += sh_s
-        all_leaves.append(leaves)
-    return {
-        'steps': all_steps,
-        'tr_steps': all_steps_tr,
-        'times': all_times,
-        'shooting res': (shots, shoots_s),
-        'leaves': all_leaves
-    }
+    if show_graph:
+        draw_graph(start_map, current_player.cell, current_player_abilities)
+    game.run(auto=True, skip_turns=skip_turns)
 
 
 if __name__ == "__main__":
-    r_id = 43
-    s_url = '192.168.1.118:5000'
     _seed = 0.5380936623177652
+    # _seed = 0.18378379396666744  # slow
+    # _seed = 0.41856783943105225  # too slow
     # _seed = random.random()
     _num_players = 4
     _spawn_points = (
@@ -238,11 +197,5 @@ if __name__ == "__main__":
         {'x': 2, 'y': 1},
         {'x': 3, 'y': 2},
     )
-    # main(room_id=r_id, server_url=s_url, with_bot=True)
-    main(num_players=_num_players, spawn_points=None, seed=_seed)
+    main(num_players=_num_players, spawn_points=None, seed=_seed, skip_turns=1000)
     # main(num_players=_num_players, spawn_points=_spawn_points[:_num_players], seed=_seed)
-
-    # res = performance_test(num_players=_num_players, iters=1, seeds=[_seed], verbose=False)
-    # with open(f'performance_res_{time.strftime("%m-%d-%Y_%H-%M-%S", time.localtime())}.json', 'w') as f:
-    #     json.dump(res, f)
-    # print(res)
