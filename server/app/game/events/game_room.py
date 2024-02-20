@@ -16,8 +16,8 @@ class GameRoomNamespace(Namespace):
         join_room(room_id)
         room = get_room_by_id(room_id)
         emit('join', room.get_info(), room=room_id)
-        emit('get_spawn', {'field': room.game.get_field_pattern_list(),
-                           'spawn_info': room.game.get_spawn_point(current_user.user_name)})
+        emit('get_spawn', {'field': room.game_state.state.get_field_pattern_list(),
+                           'spawn_info': room.game_state.state.get_spawn_point(current_user.user_name)})
 
     @staticmethod
     def on_set_spawn(data: dict):
@@ -28,7 +28,7 @@ class GameRoomNamespace(Namespace):
         room_id = data.get('room_id')
         room = get_room_by_id(room_id)
         turn = room.players.index(current_user) + 1
-        if room.game.field.spawn_player(data.get('spawn'), current_user.user_name, turn):
+        if room.game_state.state.field.spawn_player(data.get('spawn'), current_user.user_name, turn):
             room.save()
             emit('join', room.get_info(), room=room_id)
 

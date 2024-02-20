@@ -12,11 +12,15 @@ from ..game.models import get_room_by_id, get_user_won_games_amount
 def get_game_data(room_id):
     """returns json with game_data"""
     room = get_room_by_id(room_id)
+    try:
+        game = room.game_state.state
+    except AttributeError:
+        game = None
     return jsonify(
         turns=room.get_turns(),
         is_ended=room.is_ended,
         winner_name=room.winner.user_name if room.winner_id else 'Bot',
-        next_player=room.game.get_current_player().name
+        next_player=game.get_current_player().name if game else None
     )
 
 
@@ -26,7 +30,7 @@ def get_room_data(room_id):
     room = get_room_by_id(room_id)
     return jsonify(
         turns=room.get_turns(),
-        spawn_points=room.game.get_spawn_points(),
+        spawn_points=room.game_state.state.get_spawn_points(),
         rules=room.rules,
     )
 
@@ -36,7 +40,11 @@ def get_room_data(room_id):
 def get_players_stat(room_id):
     """returns json with players_stat data"""
     room = get_room_by_id(room_id)
-    return jsonify(room.game.get_players_data())
+    try:
+        game = room.game_state.state
+    except AttributeError:
+        game = None
+    return jsonify(game.get_players_data() if game else None)
 
 
 @api.route('/api/game_field/<room_id>')

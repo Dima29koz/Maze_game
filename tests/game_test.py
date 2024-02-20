@@ -35,8 +35,8 @@ class TestCase(unittest.TestCase):
         rules_form.bots_amount.data = 1
         room = models.GameRoom(rules_form, u1)
         room.add_player(u2)
-        room.game.field.spawn_player({'x': 1, 'y': 1}, u1.user_name, 1)
-        room.game.field.spawn_player({'x': 1, 'y': 1}, u2.user_name, 1)
+        room.game_state.state.field.spawn_player({'x': 1, 'y': 1}, u1.user_name, 1)
+        room.game_state.state.field.spawn_player({'x': 1, 'y': 1}, u2.user_name, 1)
         room.save()
         room.on_start()
 

@@ -43,13 +43,12 @@ class GameRoom(db.Model):
     :type date: DateTime
     :cvar creator_id: id of room creator
     :type creator_id: int
-    :cvar game: game object
-    :type game: Game
     :cvar is_running: running state
     :type is_running: bool
     :cvar is_ended: ended state
     :type is_ended: bool
     """
+
     def __init__(self, rules_form, creator: User):
         self.name = rules_form.room_name.data
         self.pwd = generate_password_hash(rules_form.pwd.data)
@@ -70,7 +69,7 @@ class GameRoom(db.Model):
     pwd = db.Column(db.String(256), nullable=False)
     rules = db.Column(db.PickleType)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-    game = db.Column(db.PickleType)
+    game_state_id = db.Column(db.Integer, db.ForeignKey('game_state.id'), default=None)
     is_running = db.Column(db.Boolean, default=False)
     is_ended = db.Column(db.Boolean, default=False)
     creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -79,6 +78,7 @@ class GameRoom(db.Model):
 
     creator = db.relationship("User", foreign_keys=[creator_id])
     winner = db.relationship("User", foreign_keys=[winner_id])
+    game_state = db.relationship("GameState", foreign_keys=[game_state_id])
     bot_state = db.relationship("BotState", foreign_keys=[bot_state_id])
     players: list[User] = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
     turns = db.relationship('TurnInfo', backref='turns', lazy=True)
@@ -130,9 +130,7 @@ class GameRoom(db.Model):
             return False
 
         self.players.remove(user)
-        for player in self.game.field.players:
-            if player.name == user.user_name and not player.is_bot:
-                self.game.field.players.remove(player)
+        self.game_state.remove_player(user.user_name)
 
         if user.id == self.creator_id:
             try:
@@ -151,13 +149,12 @@ class GameRoom(db.Model):
 
     def add_game(self):
         """creates Game() and add it to DB"""
-        self.game = Game(self.rules)
+        self.game_state = GameState(self.rules)
         db.session.commit()
 
     def save(self):
         """updates game object state in DB"""
-        self.game = copy(self.game)  # fixme это затычка
-        db.session.commit()
+        self.game_state.save()
 
     def get_info(self) -> dict:
         """
@@ -166,7 +163,7 @@ class GameRoom(db.Model):
         :return: room data dict
         :rtype: dict
         """
-        field = self.game.field
+        field = self.game_state.state.field
         is_all_players_joined = len(self.players) == self.rules.get('players_amount')
         is_all_players_spawned = len(field.players) == self.rules.get('bots_amount') + self.rules.get('players_amount')
         return {
@@ -176,23 +173,23 @@ class GameRoom(db.Model):
             "is_ready": is_all_players_joined and is_all_players_spawned,
             "players": [{
                 'name': player.user_name,
-                'is_spawned': player.user_name in [player.name for player in self.game.field.players
+                'is_spawned': player.user_name in [player.name for player in self.game_state.state.field.players
                                                    if not player.is_bot],
             } for player in self.players],
             "bots": [{
                 'name': bot.name,
                 'is_spawned': True,
-            } for bot in self.game.field.players if bot.is_bot],
+            } for bot in self.game_state.state.field.players if bot.is_bot],
         }
 
     def on_start(self):
         """Update room state to `running`, make initial turn for each player"""
-        self.game.field.sort_players()
-        self.game = copy(self.game)
+        self.game_state.state.field.sort_players()
+        self.save()
         if self.rules.get('bots_amount', 0):
-            self.bot_state = BotState(self.rules, self.game.get_players_pos())
+            self.bot_state = BotState(self.rules, self.game_state.state.get_players_pos())
         self.is_running = True
-        for player in self.game.field.players:
+        for player in self.game_state.state.field.players:
             self.on_turn(player, 'info')
         db.session.commit()
 
@@ -204,8 +201,8 @@ class GameRoom(db.Model):
         :returns: next player name, turn_data, win_data[Optional]
         :rtype: (Player, dict, dict | None)
         """
-        turn_resp, next_player = self.game.make_turn(action, direction)
-        is_win_condition = self.game.is_win_condition(self.rules)
+        turn_resp, next_player = self.game_state.state.make_turn(action, direction)
+        is_win_condition = self.game_state.state.is_win_condition(self.rules)
         self.save()
         turn_data = {}
         win_data = {}
@@ -224,11 +221,11 @@ class GameRoom(db.Model):
     def on_get_field(self) -> dict:
         """returns field data"""
         return {
-            'field': self.game.get_field_list(),
-            'treasures': self.game.get_treasures_list(),
-            'players': self.game.get_players_positions(),
+            'field': self.game_state.state.get_field_list(),
+            'treasures': self.game_state.state.get_treasures_list(),
+            'players': self.game_state.state.get_players_positions(),
             'rules': self.rules,
-            'spawn_points': self.game.get_spawn_points()
+            'spawn_points': self.game_state.state.get_spawn_points()
         }
 
     def _on_win(self, winner: Player) -> dict:
@@ -301,6 +298,24 @@ class TurnInfo(db.Model):
             'direction': self.direction,
             'response': self.turn_response,
         }
+
+
+class GameState(db.Model):
+    def __init__(self, rules: dict):
+        self.state = Game(rules)
+
+    __tablename__ = 'game_state'
+    id = db.Column(db.Integer, primary_key=True)
+    state = db.Column(db.PickleType)
+
+    def save(self):
+        self.state = copy(self.state)  # fixme это затычка
+        db.session.commit()
+
+    def remove_player(self, player_name: str):
+        for player in self.state.field.players:
+            if player.name == player_name and not player.is_bot:
+                self.state.field.players.remove(player)
 
 
 class BotState(db.Model):

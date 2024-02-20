@@ -233,6 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function drawPlayersStat(players_data) {
         const div = document.getElementById('player-stats');
         div.innerHTML = '';
+        if (players_data == null) {
+            div.innerHTML = 'Game data is not available'
+            return;
+        }
         for (let player_data of players_data) {
             div.append(drawPlayerStat(player_data));
         }
