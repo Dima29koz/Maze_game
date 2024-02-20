@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game_core.game_engine.entities package &mdash; Maze Game  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="game_core.game_engine.field package" href="game_core.game_engine.field.html" />
+    <link rel="prev" title="game_core.game_engine package" href="game_core.game_engine.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Maze Game
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="game_core.html">game_core package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="game_core.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="game_core.bots_ai.html">game_core.bots_ai package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="game_core.game_engine.html">game_core.game_engine package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="game_core.game_engine.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_core.game_engine.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_core.game_engine.html#module-game_core.game_engine.bot_names">game_core.game_engine.bot_names module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_core.game_engine.html#module-game_core.game_engine.game">game_core.game_engine.game module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_core.game_engine.html#module-game_core.game_engine.rules">game_core.game_engine.rules module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="game_core.game_engine.html#module-game_core.game_engine">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.html#module-game_core.app">game_core.app module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.html#module-game_core">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">server package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Maze Game</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="game_core.html">game_core package</a></li>
+          <li class="breadcrumb-item"><a href="game_core.game_engine.html">game_core.game_engine package</a></li>
+      <li class="breadcrumb-item active">game_core.game_engine.entities package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/game_core.game_engine.entities.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-core-game-engine-entities-package">
+<h1>game_core.game_engine.entities package<a class="headerlink" href="#game-core-game-engine-entities-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-game_core.game_engine.entities.player">
+<span id="game-core-game-engine-entities-player-module"></span><h2>game_core.game_engine.entities.player module<a class="headerlink" href="#module-game_core.game_engine.entities.player" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.game_engine.entities.player.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_bot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">turn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a player object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – players name</p></li>
+<li><p><strong>cell</strong> (<a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><em>Cell</em></a>) – players location cell</p></li>
+<li><p><strong>is_bot</strong> (<em>bool</em>) – describe is player bot</p></li>
+<li><p><strong>turn</strong> (<em>int</em>) – players turn number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>health_max</strong> – players max health</p></li>
+<li><p><strong>health</strong> – players current health</p></li>
+<li><p><strong>bombs_max</strong> – players max bombs</p></li>
+<li><p><strong>bombs</strong> – players current bombs</p></li>
+<li><p><strong>arrows_max</strong> – players max arrows</p></li>
+<li><p><strong>arrows</strong> – players current arrows</p></li>
+<li><p><strong>treasure</strong> – players treasure</p></li>
+<li><p><strong>is_alive</strong> – describe is player alive</p></li>
+<li><p><strong>is_active</strong> – describe is player active</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.can_take_treasure">
+<span class="sig-name descname"><span class="pre">can_take_treasure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.can_take_treasure" title="Link to this definition"></a></dt>
+<dd><p>return players ability to take treasure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.drop_treasure">
+<span class="sig-name descname"><span class="pre">drop_treasure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#game_core.game_engine.entities.treasure.Treasure" title="game_core.game_engine.entities.treasure.Treasure"><span class="pre">Treasure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.drop_treasure" title="Link to this definition"></a></dt>
+<dd><p>remove player`s Treasure</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.get_allowed_abilities">
+<span class="sig-name descname"><span class="pre">get_allowed_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_tr_under</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.Actions" title="game_core.game_engine.global_env.enums.Actions"><span class="pre">Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.get_allowed_abilities" title="Link to this definition"></a></dt>
+<dd><p>returns dict of players abilities</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.heal">
+<span class="sig-name descname"><span class="pre">heal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.heal" title="Link to this definition"></a></dt>
+<dd><p>set player health to max</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.move">
+<span class="sig-name descname"><span class="pre">move</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.move" title="Link to this definition"></a></dt>
+<dd><p>change player cell parameter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.on_turn_end">
+<span class="sig-name descname"><span class="pre">on_turn_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.on_turn_end" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.pick_up_treasure">
+<span class="sig-name descname"><span class="pre">pick_up_treasure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">treasure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#game_core.game_engine.entities.treasure.Treasure" title="game_core.game_engine.entities.treasure.Treasure"><span class="pre">Treasure</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.pick_up_treasure" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.restore_armory">
+<span class="sig-name descname"><span class="pre">restore_armory</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.restore_armory" title="Link to this definition"></a></dt>
+<dd><p>set player arrows and bombs to max</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.restore_arrows">
+<span class="sig-name descname"><span class="pre">restore_arrows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.restore_arrows" title="Link to this definition"></a></dt>
+<dd><p>set player arrows to max</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.restore_bombs">
+<span class="sig-name descname"><span class="pre">restore_bombs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.restore_bombs" title="Link to this definition"></a></dt>
+<dd><p>set player bombs to max</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.shoot_bow">
+<span class="sig-name descname"><span class="pre">shoot_bow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.shoot_bow" title="Link to this definition"></a></dt>
+<dd><p>reduce player arrows. return true if player has an arrow</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.take_damage">
+<span class="sig-name descname"><span class="pre">take_damage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#game_core.game_engine.entities.treasure.Treasure" title="game_core.game_engine.entities.treasure.Treasure"><span class="pre">Treasure</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.take_damage" title="Link to this definition"></a></dt>
+<dd><p>damage player and drop treasure if exists</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.throw_bomb">
+<span class="sig-name descname"><span class="pre">throw_bomb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.throw_bomb" title="Link to this definition"></a></dt>
+<dd><p>reduce player bombs. return true if player has bomb</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.player.Player.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#game_core.game_engine.entities.player.Player.to_dict" title="Link to this definition"></a></dt>
+<dd><p>convert player object to dict</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-game_core.game_engine.entities.treasure">
+<span id="game-core-game-engine-entities-treasure-module"></span><h2>game_core.game_engine.entities.treasure module<a class="headerlink" href="#module-game_core.game_engine.entities.treasure" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.treasure.Treasure">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.game_engine.entities.treasure.</span></span><span class="sig-name descname"><span class="pre">Treasure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.TreasureTypes" title="game_core.game_engine.global_env.enums.TreasureTypes"><span class="pre">TreasureTypes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.types.Position" title="game_core.game_engine.global_env.types.Position"><span class="pre">Position</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.treasure.Treasure" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is a treasure object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t_type</strong> (<a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.TreasureTypes" title="game_core.game_engine.global_env.enums.TreasureTypes"><em>TreasureTypes</em></a>) – describe treasure type</p></li>
+<li><p><strong>position</strong> (<a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.types.Position" title="game_core.game_engine.global_env.types.Position"><em>Position</em></a><em> | </em><em>None</em>) – treasure location</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.treasure.Treasure.drop">
+<span class="sig-name descname"><span class="pre">drop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.types.Position" title="game_core.game_engine.global_env.types.Position"><span class="pre">Position</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.treasure.Treasure.drop" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.treasure.Treasure.pick_up">
+<span class="sig-name descname"><span class="pre">pick_up</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.treasure.Treasure.pick_up" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.game_engine.entities.treasure.Treasure.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.game_engine.entities.treasure.Treasure.to_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-game_core.game_engine.entities">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-game_core.game_engine.entities" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game_core.game_engine.html" class="btn btn-neutral float-left" title="game_core.game_engine package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_core.game_engine.field.html" class="btn btn-neutral float-right" title="game_core.game_engine.field package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Skipper.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

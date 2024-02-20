@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>server.app package &mdash; Event helper  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>server.app package &mdash; Maze Game  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="server.app.main module" href="server.app.main.html" />
+    <link rel="next" title="server.app.api package" href="server.app.api.html" />
     <link rel="prev" title="server package" href="server.html" /> 
 </head>
 
@@ -32,7 +34,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            Event helper
+            Maze Game
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,12 +46,15 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="game_core.html">game_core package</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="server.html">server package</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">server.app package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="server.app.main.html">server.app.main module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="server.app.models.html">server.app.models module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="server.app.user_account.html">server.app.user_account module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="server.app.event_management.html">server.app.event_management package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="server.app.api.html">server.app.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.app.game.html">server.app.game package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.app.main.html">server.app.main package</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-server.app">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#server.app.create_app"><code class="docutils literal notranslate"><span class="pre">create_app()</span></code></a></li>
 </ul>
@@ -57,9 +62,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="server.html#module-server.config">server.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#module-server">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="endpoints.html">endpoints</a></li>
 </ul>
 
         </div>
@@ -68,7 +73,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Event helper</a>
+          <a href="index.html">Maze Game</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -88,58 +93,39 @@
            <div itemprop="articleBody">
              
   <section id="server-app-package">
-<h1>server.app package<a class="headerlink" href="#server-app-package" title="Permalink to this heading"></a></h1>
+<h1>server.app package<a class="headerlink" href="#server-app-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="server.app.main.html">server.app.main module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#server.app.main.routes.doc"><code class="docutils literal notranslate"><span class="pre">doc()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#server.app.main.routes.handle_preflight"><code class="docutils literal notranslate"><span class="pre">handle_preflight()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#server.app.main.routes.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#server.app.main.routes.refresh_expiring_jwts"><code class="docutils literal notranslate"><span class="pre">refresh_expiring_jwts()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.app.api.html">server.app.api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.app.api.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.api.html#module-server.app.api.routes">server.app.api.routes module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="server.app.models.html">server.app.models module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.BaseProduct"><code class="docutils literal notranslate"><span class="pre">BaseProduct</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.Event"><code class="docutils literal notranslate"><span class="pre">Event</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.EventLocation"><code class="docutils literal notranslate"><span class="pre">EventLocation</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.EventMember"><code class="docutils literal notranslate"><span class="pre">EventMember</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.Location"><code class="docutils literal notranslate"><span class="pre">Location</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.Product"><code class="docutils literal notranslate"><span class="pre">Product</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.ProductCategory"><code class="docutils literal notranslate"><span class="pre">ProductCategory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.ProductType"><code class="docutils literal notranslate"><span class="pre">ProductType</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.ProductUnit"><code class="docutils literal notranslate"><span class="pre">ProductUnit</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.models.html#server.app.models.models.User"><code class="docutils literal notranslate"><span class="pre">User</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.app.game.html">server.app.game package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game.forms">server.app.game.forms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game.models">server.app.game.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.game.html#module-server.app.game.routes">server.app.game.routes module</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="server.app.user_account.html">server.app.user_account module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.confirm_email"><code class="docutils literal notranslate"><span class="pre">confirm_email()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.create_location"><code class="docutils literal notranslate"><span class="pre">create_location()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.edit_email"><code class="docutils literal notranslate"><span class="pre">edit_email()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.edit_password"><code class="docutils literal notranslate"><span class="pre">edit_password()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.edit_profile"><code class="docutils literal notranslate"><span class="pre">edit_profile()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.get_locations"><code class="docutils literal notranslate"><span class="pre">get_locations()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.login"><code class="docutils literal notranslate"><span class="pre">login()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.logout"><code class="docutils literal notranslate"><span class="pre">logout()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.modify_location"><code class="docutils literal notranslate"><span class="pre">modify_location()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.profile_settings"><code class="docutils literal notranslate"><span class="pre">profile_settings()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.refresh"><code class="docutils literal notranslate"><span class="pre">refresh()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.registration"><code class="docutils literal notranslate"><span class="pre">registration()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.reset_password"><code class="docutils literal notranslate"><span class="pre">reset_password()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.user_account.html#server.app.user_account.routes.reset_password_request"><code class="docutils literal notranslate"><span class="pre">reset_password_request()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="server.app.event_management.html">server.app.event_management package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="server.app.event_management.events.html">server.app.event_management.events package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="server.app.event_management.html#module-server.app.event_management.routes">server.app.event_management.routes module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.app.main.html">server.app.main package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main.forms">server.app.main.forms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main.models">server.app.main.models module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.app.main.html#module-server.app.main.routes">server.app.main.routes module</a></li>
 </ul>
 </li>
 </ul>
 </div>
+</section>
 <section id="module-server.app">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-server.app" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-server.app" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="server.app.create_app">
-<span class="sig-prename descclassname"><span class="pre">server.app.</span></span><span class="sig-name descname"><span class="pre">create_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="server.html#server.config.BaseConfig" title="server.config.BaseConfig"><span class="pre">BaseConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Flask</span></span></span><a class="headerlink" href="#server.app.create_app" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">server.app.</span></span><span class="sig-name descname"><span class="pre">create_app</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Flask</span></span></span><a class="headerlink" href="#server.app.create_app" title="Link to this definition"></a></dt>
 <dd><p>Creates app and register Blueprints</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -159,13 +145,13 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="server.html" class="btn btn-neutral float-left" title="server package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="server.app.main.html" class="btn btn-neutral float-right" title="server.app.main module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="server.app.api.html" class="btn btn-neutral float-right" title="server.app.api package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Skipper.</p>
+    <p>&#169; Copyright 2022, Skipper.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

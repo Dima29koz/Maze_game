@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game_core.bots_ai package &mdash; Maze Game  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="game_core.bots_ai.decision_making package" href="game_core.bots_ai.decision_making.html" />
+    <link rel="prev" title="game_core package" href="game_core.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Maze Game
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="game_core.html">game_core package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="game_core.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">game_core.bots_ai package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai.core">game_core.bots_ai.core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai.exceptions">game_core.bots_ai.exceptions module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai.initial_generator">game_core.bots_ai.initial_generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai.leaves_matcher">game_core.bots_ai.leaves_matcher module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai.player_iterator">game_core.bots_ai.player_iterator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai.utils">game_core.bots_ai.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-game_core.bots_ai">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="game_core.game_engine.html">game_core.game_engine package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.html#module-game_core.app">game_core.app module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.html#module-game_core">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">server package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Maze Game</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="game_core.html">game_core package</a></li>
+      <li class="breadcrumb-item active">game_core.bots_ai package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/game_core.bots_ai.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-core-bots-ai-package">
+<h1>game_core.bots_ai package<a class="headerlink" href="#game-core-bots-ai-package" title="Link to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game_core.bots_ai.decision_making.html">game_core.bots_ai.decision_making package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#module-game_core.bots_ai.decision_making.decision_maker">game_core.bots_ai.decision_making.decision_maker module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#module-game_core.bots_ai.decision_making.draw_graph_utils">game_core.bots_ai.decision_making.draw_graph_utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#module-game_core.bots_ai.decision_making.graph_builder">game_core.bots_ai.decision_making.graph_builder module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#module-game_core.bots_ai.decision_making.target_calculator">game_core.bots_ai.decision_making.target_calculator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#module-game_core.bots_ai.decision_making.test_graph">game_core.bots_ai.decision_making.test_graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.decision_making.html#module-game_core.bots_ai.decision_making">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="game_core.bots_ai.field_handler.html">game_core.bots_ai.field_handler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.common_data">game_core.bots_ai.field_handler.common_data module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.field_obj">game_core.bots_ai.field_handler.field_obj module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.field_state">game_core.bots_ai.field_handler.field_state module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.grid">game_core.bots_ai.field_handler.grid module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.player_state">game_core.bots_ai.field_handler.player_state module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.player_stats">game_core.bots_ai.field_handler.player_stats module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler.tree_node">game_core.bots_ai.field_handler.tree_node module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="game_core.bots_ai.field_handler.html#module-game_core.bots_ai.field_handler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-game_core.bots_ai.core">
+<span id="game-core-bots-ai-core-module"></span><h2>game_core.bots_ai.core module<a class="headerlink" href="#module-game_core.bots_ai.core" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.core.</span></span><span class="sig-name descname"><span class="pre">BotAI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.types.Position" title="game_core.game_engine.global_env.types.Position"><span class="pre">Position</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAI" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAI.make_decision">
+<span class="sig-name descname"><span class="pre">make_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_abilities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.Actions" title="game_core.game_engine.global_env.enums.Actions"><span class="pre">Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.Actions" title="game_core.game_engine.global_env.enums.Actions"><span class="pre">Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.Directions" title="game_core.game_engine.global_env.enums.Directions"><span class="pre">Directions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#game_core.bots_ai.core.BotAI.make_decision" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAI.process_turn_resp">
+<span class="sig-name descname"><span class="pre">process_turn_resp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAI.process_turn_resp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAI.turn_prepare">
+<span class="sig-name descname"><span class="pre">turn_prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_abilities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.Actions" title="game_core.game_engine.global_env.enums.Actions"><span class="pre">Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAI.turn_prepare" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAIDebug">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.core.</span></span><span class="sig-name descname"><span class="pre">BotAIDebug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.types.Position" title="game_core.game_engine.global_env.types.Position"><span class="pre">Position</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAIDebug" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#game_core.bots_ai.core.BotAI" title="game_core.bots_ai.core.BotAI"><code class="xref py py-class docutils literal notranslate"><span class="pre">BotAI</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAIDebug.has_real_field">
+<span class="sig-name descname"><span class="pre">has_real_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAIDebug.has_real_field" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAIDebug.process_turn_resp">
+<span class="sig-name descname"><span class="pre">process_turn_resp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAIDebug.process_turn_resp" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.core.BotAIDebug.turn_prepare">
+<span class="sig-name descname"><span class="pre">turn_prepare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_abilities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.enums.Actions" title="game_core.game_engine.global_env.enums.Actions"><span class="pre">Actions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.core.BotAIDebug.turn_prepare" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-game_core.bots_ai.exceptions">
+<span id="game-core-bots-ai-exceptions-module"></span><h2>game_core.bots_ai.exceptions module<a class="headerlink" href="#module-game_core.bots_ai.exceptions" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="game_core.bots_ai.exceptions.IncompatibleState">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.exceptions.</span></span><span class="sig-name descname"><span class="pre">IncompatibleState</span></span><a class="headerlink" href="#game_core.bots_ai.exceptions.IncompatibleState" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="game_core.bots_ai.exceptions.MatchingError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.exceptions.</span></span><span class="sig-name descname"><span class="pre">MatchingError</span></span><a class="headerlink" href="#game_core.bots_ai.exceptions.MatchingError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="game_core.bots_ai.exceptions.MergingError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.exceptions.</span></span><span class="sig-name descname"><span class="pre">MergingError</span></span><a class="headerlink" href="#game_core.bots_ai.exceptions.MergingError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="game_core.bots_ai.exceptions.OnlyAllowedDir">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.exceptions.</span></span><span class="sig-name descname"><span class="pre">OnlyAllowedDir</span></span><a class="headerlink" href="#game_core.bots_ai.exceptions.OnlyAllowedDir" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="game_core.bots_ai.exceptions.UnreachableState">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.exceptions.</span></span><span class="sig-name descname"><span class="pre">UnreachableState</span></span><a class="headerlink" href="#game_core.bots_ai.exceptions.UnreachableState" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-game_core.bots_ai.initial_generator">
+<span id="game-core-bots-ai-initial-generator-module"></span><h2>game_core.bots_ai.initial_generator module<a class="headerlink" href="#module-game_core.bots_ai.initial_generator" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.bots_ai.initial_generator.InitGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.initial_generator.</span></span><span class="sig-name descname"><span class="pre">InitGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">game_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.global_env.html#game_core.game_engine.global_env.types.Position" title="game_core.game_engine.global_env.types.Position"><span class="pre">Position</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.initial_generator.InitGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.initial_generator.InitGenerator.get_start_state">
+<span class="sig-name descname"><span class="pre">get_start_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="game_core.bots_ai.field_handler.html#game_core.bots_ai.field_handler.tree_node.Node" title="game_core.bots_ai.field_handler.tree_node.Node"><span class="pre">Node</span></a></span></span><a class="headerlink" href="#game_core.bots_ai.initial_generator.InitGenerator.get_start_state" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.initial_generator.InitGenerator.get_unique_obj_amount">
+<span class="sig-name descname"><span class="pre">get_unique_obj_amount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#game_core.bots_ai.initial_generator.InitGenerator.get_unique_obj_amount" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="game_core.bots_ai.initial_generator.make_example_grid">
+<span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.initial_generator.</span></span><span class="sig-name descname"><span class="pre">make_example_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.initial_generator.make_example_grid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-game_core.bots_ai.leaves_matcher">
+<span id="game-core-bots-ai-leaves-matcher-module"></span><h2>game_core.bots_ai.leaves_matcher module<a class="headerlink" href="#module-game_core.bots_ai.leaves_matcher" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.bots_ai.leaves_matcher.LeavesMatcher">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.leaves_matcher.</span></span><span class="sig-name descname"><span class="pre">LeavesMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unique_objs_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="game_core.bots_ai.field_handler.html#game_core.bots_ai.field_handler.player_state.PlayerState" title="game_core.bots_ai.field_handler.player_state.PlayerState"><span class="pre">PlayerState</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">game_rules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.leaves_matcher.LeavesMatcher" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.leaves_matcher.LeavesMatcher.match_real_spawn_leaves">
+<span class="sig-name descname"><span class="pre">match_real_spawn_leaves</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">active_player</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.leaves_matcher.LeavesMatcher.match_real_spawn_leaves" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.leaves_matcher.LeavesMatcher.merge_node_with_player">
+<span class="sig-name descname"><span class="pre">merge_node_with_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.bots_ai.field_handler.html#game_core.bots_ai.field_handler.tree_node.Node" title="game_core.bots_ai.field_handler.tree_node.Node"><span class="pre">Node</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_pl_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other_pl_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.bots_ai.field_handler.html#game_core.bots_ai.field_handler.tree_node.Node" title="game_core.bots_ai.field_handler.tree_node.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#game_core.bots_ai.leaves_matcher.LeavesMatcher.merge_node_with_player" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>node</strong> – node to be merged</p></li>
+<li><p><strong>active_pl_name</strong> – </p></li>
+<li><p><strong>other_pl_name</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of merged nodes</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#game_core.bots_ai.exceptions.MatchingError" title="game_core.bots_ai.exceptions.MatchingError"><strong>MatchingError</strong></a> – if node is not matchable with other player nodes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-game_core.bots_ai.player_iterator">
+<span id="game-core-bots-ai-player-iterator-module"></span><h2>game_core.bots_ai.player_iterator module<a class="headerlink" href="#module-game_core.bots_ai.player_iterator" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="game_core.bots_ai.player_iterator.PlayerIterator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.player_iterator.</span></span><span class="sig-name descname"><span class="pre">PlayerIterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">players</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="game_core.bots_ai.field_handler.html#game_core.bots_ai.field_handler.player_state.PlayerState" title="game_core.bots_ai.field_handler.player_state.PlayerState"><span class="pre">PlayerState</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_player_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.player_iterator.PlayerIterator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="game_core.bots_ai.player_iterator.PlayerIterator.get_current">
+<span class="sig-name descname"><span class="pre">get_current</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.player_iterator.PlayerIterator.get_current" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-game_core.bots_ai.utils">
+<span id="game-core-bots-ai-utils-module"></span><h2>game_core.bots_ai.utils module<a class="headerlink" href="#module-game_core.bots_ai.utils" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="game_core.bots_ai.utils.is_node_is_real">
+<span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.utils.</span></span><span class="sig-name descname"><span class="pre">is_node_is_real</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellRiver" title="game_core.game_engine.field.cell.CellRiver"><span class="pre">CellRiver</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">real_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellRiver" title="game_core.game_engine.field.cell.CellRiver"><span class="pre">CellRiver</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unique_objects_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.NoneCell" title="game_core.game_engine.field.cell.NoneCell"><span class="pre">NoneCell</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.Cell" title="game_core.game_engine.field.cell.Cell"><span class="pre">Cell</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellRiver" title="game_core.game_engine.field.cell.CellRiver"><span class="pre">CellRiver</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellRiverMouth" title="game_core.game_engine.field.cell.CellRiverMouth"><span class="pre">CellRiverMouth</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellRiverBridge" title="game_core.game_engine.field.cell.CellRiverBridge"><span class="pre">CellRiverBridge</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellExit" title="game_core.game_engine.field.cell.CellExit"><span class="pre">CellExit</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellClinic" title="game_core.game_engine.field.cell.CellClinic"><span class="pre">CellClinic</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellArmory" title="game_core.game_engine.field.cell.CellArmory"><span class="pre">CellArmory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellArmoryExplosive" title="game_core.game_engine.field.cell.CellArmoryExplosive"><span class="pre">CellArmoryExplosive</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="game_core.game_engine.field.html#game_core.game_engine.field.cell.CellArmoryWeapon" title="game_core.game_engine.field.cell.CellArmoryWeapon"><span class="pre">CellArmoryWeapon</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.utils.is_node_is_real" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="game_core.bots_ai.utils.is_node_is_valid">
+<span class="sig-prename descclassname"><span class="pre">game_core.bots_ai.utils.</span></span><span class="sig-name descname"><span class="pre">is_node_is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="game_core.bots_ai.field_handler.html#game_core.bots_ai.field_handler.field_state.FieldState" title="game_core.bots_ai.field_handler.field_state.FieldState"><span class="pre">FieldState</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#game_core.bots_ai.utils.is_node_is_valid" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-game_core.bots_ai">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-game_core.bots_ai" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="game_core.html" class="btn btn-neutral float-left" title="game_core package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game_core.bots_ai.decision_making.html" class="btn btn-neutral float-right" title="game_core.bots_ai.decision_making package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Skipper.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

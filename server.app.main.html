@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>server.app.main module &mdash; Event helper  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>server.app.main package &mdash; Maze Game  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="server.app.models module" href="server.app.models.html" />
-    <link rel="prev" title="server.app package" href="server.app.html" /> 
+    <link rel="prev" title="server.app.game.events package" href="server.app.game.events.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +33,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            Event helper
+            Maze Game
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,25 +45,22 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="game_core.html">game_core package</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="server.html">server package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="server.app.html">server.app package</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">server.app.main module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#server.app.main.routes.doc"><code class="docutils literal notranslate"><span class="pre">doc()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#server.app.main.routes.handle_preflight"><code class="docutils literal notranslate"><span class="pre">handle_preflight()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#server.app.main.routes.index"><code class="docutils literal notranslate"><span class="pre">index()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#server.app.main.routes.refresh_expiring_jwts"><code class="docutils literal notranslate"><span class="pre">refresh_expiring_jwts()</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="server.app.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="server.app.api.html">server.app.api package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="server.app.game.html">server.app.game package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">server.app.main package</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="server.app.models.html">server.app.models module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="server.app.user_account.html">server.app.user_account module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="server.app.event_management.html">server.app.event_management package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="server.app.html#module-server.app">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="server.html#module-server.config">server.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#module-server">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="endpoints.html">endpoints</a></li>
 </ul>
 
         </div>
@@ -71,7 +69,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Event helper</a>
+          <a href="index.html">Maze Game</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -81,7 +79,7 @@
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="server.html">server package</a></li>
           <li class="breadcrumb-item"><a href="server.app.html">server.app package</a></li>
-      <li class="breadcrumb-item active">server.app.main module</li>
+      <li class="breadcrumb-item active">server.app.main package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/server.app.main.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -91,43 +89,262 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-server.app.main.routes">
-<span id="server-app-main-module"></span><h1>server.app.main module<a class="headerlink" href="#module-server.app.main.routes" title="Permalink to this heading"></a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.doc">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">doc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'index.html'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.doc" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+  <section id="server-app-main-package">
+<h1>server.app.main package<a class="headerlink" href="#server-app-main-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-server.app.main.forms">
+<span id="server-app-main-forms-module"></span><h2>server.app.main.forms module<a class="headerlink" href="#module-server.app.main.forms" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.forms.ChangeEmailForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">ChangeEmailForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangeEmailForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+</dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.handle_preflight">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">handle_preflight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.handle_preflight" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.forms.ChangeNameForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">ChangeNameForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangeNameForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="server.app.main.forms.ChangeNameForm.validate_username">
+<span class="sig-name descname"><span class="pre">validate_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StringField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangeNameForm.validate_username" title="Link to this definition"></a></dt>
+<dd><p>username validator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_name</strong> (<em>StringField</em>) – user nickname</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValidationError</strong> – if nickname is already taken</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.index">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.index" title="Permalink to this definition"></a></dt>
-<dd><p>Index page view</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.forms.ChangePwdForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">ChangePwdForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ChangePwdForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.forms.LoginForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">LoginForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.LoginForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>Login form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – user nickname</p></li>
+<li><p><strong>pwd</strong> – user password</p></li>
+<li><p><strong>remember</strong> – remembers users for the duration of the session</p></li>
+<li><p><strong>submit</strong> – submit field</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">RegistrationForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.RegistrationForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>Registration form</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>username</strong> – user nickname</p></li>
+<li><p><strong>pwd</strong> – user password</p></li>
+<li><p><strong>pwd2</strong> – user password repeat</p></li>
+<li><p><strong>submit</strong> – submit field</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="server.app.main.forms.RegistrationForm.validate_username">
+<span class="sig-name descname"><span class="pre">validate_username</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">username</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">StringField</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.RegistrationForm.validate_username" title="Link to this definition"></a></dt>
+<dd><p>username validator</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>username</strong> (<em>StringField</em>) – user nickname</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValidationError</strong> – if nickname is already taken</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.forms.ResetPasswordRequestForm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.forms.</span></span><span class="sig-name descname"><span class="pre">ResetPasswordRequestForm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.forms.ResetPasswordRequestForm" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+</dd></dl>
+
+</section>
+<section id="module-server.app.main.models">
+<span id="server-app-main-models-module"></span><h2>server.app.main.models module<a class="headerlink" href="#module-server.app.main.models" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="server.app.main.models.User">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">User</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pwd</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskSQLAlchemyBase</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UserMixin</span></code></p>
+<p>This is a User Model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>user_name</strong> (<em>str</em>) – users nickname</p></li>
+<li><p><strong>pwd</strong> (<em>str</em>) – users password</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>date</strong> – date of account creation</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="server.app.main.models.User.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User.add" title="Link to this definition"></a></dt>
+<dd><p>added user to DB</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="server.app.main.models.User.check_password">
+<span class="sig-name descname"><span class="pre">check_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.models.User.check_password" title="Link to this definition"></a></dt>
+<dd><p>Verified users password.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>password</strong> (<em>str</em>) – user password</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>result of verification</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="server.app.main.routes.refresh_expiring_jwts">
-<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">refresh_expiring_jwts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.refresh_expiring_jwts" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="server.app.main.models.get_user_by_id">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_user_by_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">User</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_user_by_id" title="Link to this definition"></a></dt>
+<dd><p>returns user by id if user exists</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.models.get_user_by_name">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.models.</span></span><span class="sig-name descname"><span class="pre">get_user_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#server.app.main.models.User" title="server.app.main.models.User"><span class="pre">User</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#server.app.main.models.get_user_by_name" title="Link to this definition"></a></dt>
+<dd><p>returns user by user_name if user exists</p>
+</dd></dl>
+
+</section>
+<section id="module-server.app.main.routes">
+<span id="server-app-main-routes-module"></span><h2>server.app.main.routes module<a class="headerlink" href="#module-server.app.main.routes" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.confirm_email">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">confirm_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.confirm_email" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.handle_404">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">handle_404</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">err</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.handle_404" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>404</cite> page</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.index">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.index" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>game</cite> page</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.login">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.login" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>login</cite> page
+available methods: POST, GET</p>
+<p>render login form
+logs in user after verification</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.logout">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">logout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.logout" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>logout</cite> page
+logs out user</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.play">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.play" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>play</cite> page</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.profile">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">profile</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>profile</cite> page</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.profile_settings">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">profile_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile_settings" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>profile</cite> page</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.profile_settings_email">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">profile_settings_email</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile_settings_email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.profile_settings_name">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">profile_settings_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile_settings_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.profile_settings_pwd">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">profile_settings_pwd</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.profile_settings_pwd" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.registration">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">registration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.registration" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>registration</cite> page
+available methods: POST, GET
+creates User after validation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.reset_password">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">reset_password</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.reset_password" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.reset_password_request">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">reset_password_request</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.reset_password_request" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="server.app.main.routes.rules">
+<span class="sig-prename descclassname"><span class="pre">server.app.main.routes.</span></span><span class="sig-name descname"><span class="pre">rules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#server.app.main.routes.rules" title="Link to this definition"></a></dt>
+<dd><p>view of <cite>rules</cite> page</p>
+</dd></dl>
+
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="server.app.html" class="btn btn-neutral float-left" title="server.app package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="server.app.models.html" class="btn btn-neutral float-right" title="server.app.models module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="server.app.game.events.html" class="btn btn-neutral float-left" title="server.app.game.events package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Skipper.</p>
+    <p>&#169; Copyright 2022, Skipper.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
