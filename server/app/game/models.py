@@ -40,13 +40,20 @@ class GameRoom(db.Model):
     :cvar rules: rules for a room
     :type rules: dict
     :cvar date: date of room creation
-    :type date: DateTime
-    :cvar creator_id: id of room creator
-    :type creator_id: int
+    :type date: datetime
+    :cvar game_state_id: FK of GameState
+    :type game_state_id: int | None
     :cvar is_running: running state
     :type is_running: bool
     :cvar is_ended: ended state
     :type is_ended: bool
+    :cvar creator_id: id of room creator
+    :type creator_id: int
+    :cvar winner_id: id of game winner
+    :type winner_id: int | None
+    :cvar bot_state_id: FK of BotState
+    :type bot_state_id: int
+    :type players: list[User]
     """
 
     def __init__(self, rules_form, creator: User):
@@ -80,7 +87,7 @@ class GameRoom(db.Model):
     winner = db.relationship("User", foreign_keys=[winner_id])
     game_state = db.relationship("GameState", foreign_keys=[game_state_id])
     bot_state = db.relationship("BotState", foreign_keys=[bot_state_id])
-    players: list[User] = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
+    players = db.relationship("User", secondary=user_room, backref=db.backref('games', lazy=True))
     turns = db.relationship('TurnInfo', backref='turns', lazy=True)
 
     def check_password(self, password: str):

@@ -10,7 +10,7 @@ Welcome to Maze Game's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   game_engine
+   game_core
    server
 
 Indices and tables

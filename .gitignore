@@ -2,9 +2,13 @@
 /venv/
 /.idea/
 /.vs/
+
+/docs/build/
+/test_results/
+
 .env
+
 tmp
 tmp.txt
 tmp.py
 local_app.py
-/test_results/

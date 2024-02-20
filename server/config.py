@@ -28,7 +28,7 @@ class DevelopmentConfig(BaseConfig):
     """
     DEBUG = True
     LOGGER = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///' + os.path.join(app_dir, 'maze.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DEVELOPMENT_DATABASE_URI') or 'sqlite:///maze.db'
 
 
 class TestConfig(BaseConfig):
@@ -38,10 +38,13 @@ class TestConfig(BaseConfig):
     TESTING = True
     CSRF_ENABLED = False
     WTF_CSRF_ENABLED = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'test.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI')
 
 
 class ProductionConfig(BaseConfig):
+    """
+    Production flask-app config object
+    """
     MANAGE_SESSION = False
     LOGGER = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(app_dir, 'maze.db')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('PRODUCTION_DATABASE_URI')

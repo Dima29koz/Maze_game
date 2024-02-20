@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_socketio import SocketIO
 from sqlalchemy import MetaData
+from sqlalchemy.orm import DeclarativeBase
 
 convention = {
     "ix": 'ix_%(column_0_label)s',
@@ -14,8 +15,13 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
+
+class Base(DeclarativeBase):
+    pass
+
+
 metadata = MetaData(naming_convention=convention)
-db = SQLAlchemy(metadata=metadata)
+db = SQLAlchemy(metadata=metadata, model_class=Base)
 login_manager = LoginManager()
 sio = SocketIO()
 migrate = Migrate()

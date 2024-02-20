@@ -19,11 +19,3 @@ server.app.game.events.game\_room module
    :members:
    :undoc-members:
    :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: server.app.game.events
-   :members:
-   :undoc-members:
-   :show-inheritance:

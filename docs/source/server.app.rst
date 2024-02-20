@@ -5,7 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    server.app.api
    server.app.game
@@ -15,6 +15,6 @@ Module contents
 ---------------
 
 .. automodule:: server.app
+   :exclude-members: Base
    :members:
-   :undoc-members:
    :show-inheritance:

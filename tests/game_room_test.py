@@ -1,7 +1,11 @@
 import unittest
 
+from dotenv import load_dotenv
+
 from server.app import create_app, sio, db
 from server.app.game.forms import RulesForm
+
+load_dotenv()
 from server.config import TestConfig
 from server.app.game.models import Game, GameRoom, get_room_by_id
 from server.app.main.models import User, get_user_by_id

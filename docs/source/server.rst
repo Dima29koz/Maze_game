@@ -1,16 +1,12 @@
 server package
 ==============
 
-Subpackages
------------
 
 .. toctree::
    :maxdepth: 4
 
    server.app
 
-Submodules
-----------
 
 server.config module
 --------------------
@@ -19,6 +15,7 @@ server.config module
    :members:
    :undoc-members:
    :show-inheritance:
+
 
 Module contents
 ---------------
