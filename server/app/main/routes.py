@@ -57,7 +57,7 @@ def reset_password_request():
     if form.validate_on_submit():
         user = get_user_by_name(form.username.data)
         if user:
-            send_password_reset_email(user)
+            send_password_reset_email(user, request.host_url)
         flash('Проверьте вашу почту и следуйте инструкциям для сброса пароля', 'info')
         return redirect(url_for('main.login'))
     return render_template('profile/reset_password_request.html', form=form)
@@ -73,6 +73,7 @@ def registration():
     form = RegistrationForm()
     if form.validate_on_submit():
         u = User(form.username.data, form.user_email.data, form.pwd.data)
+        send_email_confirmation_mail(u, request.host_url)
         flash('Проверьте вашу почту и следуйте инструкциям для её подтверждения', 'info')
         return redirect(url_for('main.login'))
     return render_template('profile/registration.html', form=form)
@@ -114,7 +115,7 @@ def profile_settings_email():
 
     if email_form.validate_on_submit():
         current_user.set_email(email_form.new_email.data)
-        send_email_confirmation_mail(current_user)
+        send_email_confirmation_mail(current_user, request.host_url)
         success = True
         msg = 'email'
 

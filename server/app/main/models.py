@@ -1,5 +1,5 @@
-from datetime import datetime
-from time import time
+from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 import jwt
 from flask import current_app
@@ -75,9 +75,9 @@ class User(db.Model, UserMixin):
         self.is_email_verified = True
         db.session.commit()
 
-    def get_token(self, token_type: str, expires_in=600):
+    def get_token(self, token_type: str, expires_in=3600):
         return jwt.encode(
-            {token_type: self.id, 'exp': time() + expires_in},
+            {token_type: self.id, 'exp': datetime.now(tz=timezone.utc) + timedelta(seconds=expires_in)},
             current_app.config['SECRET_KEY'], algorithm='HS256')
 
     @staticmethod
@@ -87,6 +87,14 @@ class User(db.Model, UserMixin):
         except Exception as _:
             return
         return get_user_by_id(user_id)
+
+    @classmethod
+    def create(cls, user_data: dict) -> Optional['User']:
+        """creates User if username is available"""
+        if get_user_by_name(user_data.get('username')):
+            return
+        user = User(user_data.get('username'), user_data.get('email'), user_data.get('pwd'))
+        return user
 
 
 def get_user_by_id(user_id: int) -> User | None:
