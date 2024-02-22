@@ -5,21 +5,12 @@ from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from game_core.bots_ai.core import BotAI
-from .. import db, login_manager
+from .. import db
 
 from game_core.game_engine.game import Game
 from game_core.game_engine.rules import rules as default_rules
 from game_core.game_engine.entities.player import Player
-from ..main.models import User, get_user_by_id, get_user_by_name
-
-login_manager.login_view = 'main.login'
-login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
-login_manager.login_message_category = "error"
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return get_user_by_id(user_id)
+from ..main.models import User, get_user_by_name
 
 
 user_room = db.Table(

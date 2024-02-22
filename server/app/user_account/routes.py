@@ -3,9 +3,19 @@ from flask_login import login_user, login_required, current_user, logout_user
 
 from . import user_account
 from .. import login_manager
-from ..main.models import get_user_by_name, User
+from ..game.models import get_user_won_games_amount
+from ..main.models import get_user_by_name, User, get_user_by_id
 from ..utils.hider import get_hidden_email
 from ..utils.mail_utils import send_password_reset_email, send_email_confirmation_mail
+
+login_manager.login_view = 'main.login'
+login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
+login_manager.login_message_category = "error"
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return get_user_by_id(user_id)
 
 
 @login_manager.unauthorized_handler
@@ -32,6 +42,42 @@ def login():
 @user_account.route('/profile_settings')
 @login_required
 def profile_settings():
+    return jsonify(
+        id=current_user.id,
+        username=current_user.user_name,
+        email=get_hidden_email(current_user.user_email),
+        is_email_verified=current_user.is_email_verified,
+    )
+
+
+@user_account.route('/edit_profile/email', methods=['POST'])
+@login_required
+def edit_email():
+    request_data = request.get_json()
+    current_user.set_email(request_data.get('email'))
+
+    send_email_confirmation_mail(current_user, request.headers.get('X-ORIGIN'))
+    return jsonify(
+        id=current_user.id,
+        username=current_user.user_name,
+        email=get_hidden_email(current_user.user_email),
+        is_email_verified=current_user.is_email_verified,
+    )
+
+
+@user_account.route('/edit_profile/password', methods=['POST'])
+@login_required
+def edit_password():
+    request_data = request.get_json()
+
+    if not current_user.check_password(request_data.get('current_pwd')):
+        return jsonify(msg='Wrong username or password'), 401
+
+    new_pwd = request_data.get('pwd')
+    new_pwd_repeat = request_data.get('pwd_repeat')
+    if new_pwd == new_pwd_repeat:
+        current_user.set_pwd(new_pwd)
+
     return jsonify(
         id=current_user.id,
         username=current_user.user_name,
@@ -95,3 +141,21 @@ def confirm_email():
 def logout():
     logout_user()
     return jsonify(msg='logout successful')
+
+
+@user_account.route('/user_games')
+@login_required
+def get_user_games():
+    user_games = current_user.games
+    return jsonify({
+        'games_won': get_user_won_games_amount(current_user.id),
+        'games_total': len(user_games),  # todo remove running games from result
+        'games': [{
+            'id': game.id,
+            'name': game.name,
+            'status': 'ended' if game.is_ended else 'running' if game.is_running else 'created',
+            'winner': game.winner.user_name if game.is_ended and game.winner_id else 'Bot'
+            if game.is_ended and not game.winner_id else '-',
+            'details': 'details',
+        } for game in user_games]
+    })
