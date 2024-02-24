@@ -56,12 +56,14 @@ def create_app(config) -> Flask:
     from .main import main as main_blueprint
     from .game import game as game_blueprint
     from .api import api as api_blueprint
-    from .user_account import user_account as user_account_blueprint
+    from .api_user_account import user_account as user_account_blueprint
+    from .api_game import game as game_api_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(game_blueprint)
     app.register_blueprint(api_blueprint)
     app.register_blueprint(user_account_blueprint)
+    app.register_blueprint(game_api_blueprint)
 
     sio.init_app(app, logger=config.LOGGER, manage_session=config.MANAGE_SESSION)
 

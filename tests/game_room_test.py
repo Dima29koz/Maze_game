@@ -38,7 +38,7 @@ class TestCase(unittest.TestCase):
         rules_form.pwd.data = '1'
         rules_form.players_amount.data = 2
         rules_form.bots_amount.data = 1
-        GameRoom(rules_form, u1)
+        GameRoom.create_from_form(rules_form, u1)
 
 
 class TestGameRoom(TestCase):

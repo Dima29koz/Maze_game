@@ -12,7 +12,6 @@ from game_core.game_engine.rules import rules as default_rules
 from game_core.game_engine.entities.player import Player
 from ..main.models import User, get_user_by_name
 
-
 user_room = db.Table(
     'user_room',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -47,16 +46,10 @@ class GameRoom(db.Model):
     :type players: list[User]
     """
 
-    def __init__(self, rules_form, creator: User):
-        self.name = rules_form.room_name.data
-        self.pwd = generate_password_hash(rules_form.pwd.data)
-        self.rules = default_rules
-        self.rules['players_amount'] = rules_form.players_amount.data
-        self.rules['bots_amount'] = rules_form.bots_amount.data
-        self.rules['generator_rules']['is_not_rect'] = rules_form.is_not_rect.data
-        self.rules['generator_rules']['seed'] = random.random()
-        self.rules['generator_rules']['is_separated_armory'] = rules_form.is_separated_armory.data
-        self.rules['gameplay_rules']['diff_outer_concrete_walls'] = rules_form.is_same_wall_outer_concrete.data
+    def __init__(self, name: str, password: str, rules: dict, creator: User):
+        self.name = name
+        self.pwd = generate_password_hash(password)
+        self.rules = rules
         self.set_creator(creator)
         self.add()
         self.add_game()
@@ -91,6 +84,37 @@ class GameRoom(db.Model):
         :rtype: bool
         """
         return check_password_hash(self.pwd, password)
+
+    @classmethod
+    def create_from_form(cls, rules_form, creator: User):
+        rules = default_rules.copy()
+
+        room_name = rules_form.room_name.data
+        room_pwd = rules_form.pwd.data
+
+        rules['players_amount'] = rules_form.players_amount.data
+        rules['bots_amount'] = rules_form.bots_amount.data
+        rules['generator_rules']['is_not_rect'] = rules_form.is_not_rect.data
+        rules['generator_rules']['seed'] = random.random()
+        rules['generator_rules']['is_separated_armory'] = rules_form.is_separated_armory.data
+        rules['gameplay_rules']['diff_outer_concrete_walls'] = rules_form.is_same_wall_outer_concrete.data
+
+        game_room = GameRoom(room_name, room_pwd, rules, creator)
+        return game_room
+
+    @classmethod
+    def create(cls, room_name: str, room_pwd: str, selected_rules: dict, creator: User):
+        rules = default_rules.copy()
+
+        rules['players_amount'] = selected_rules.get('players_amount')
+        rules['bots_amount'] = selected_rules.get('bots_amount')
+        rules['generator_rules']['is_not_rect'] = selected_rules.get('is_not_rect')
+        rules['generator_rules']['seed'] = random.random()
+        rules['generator_rules']['is_separated_armory'] = selected_rules.get('is_separated_armory')
+        rules['gameplay_rules']['diff_outer_concrete_walls'] = selected_rules.get('is_diff_outer_concrete_walls')
+
+        game_room = GameRoom(room_name, room_pwd, rules, creator)
+        return game_room
 
     def add(self):
         """add room to DB"""
@@ -179,6 +203,14 @@ class GameRoom(db.Model):
                 'is_spawned': True,
             } for bot in self.game_state.state.field.players if bot.is_bot],
         }
+
+    def get_winner_name(self) -> str | None:
+        if not self.is_ended:
+            return None
+        if self.winner_id:
+            return self.winner.username
+        else:
+            return self.turns[-1].player_name
 
     def on_start(self):
         """Update room state to `running`, make initial turn for each player"""
