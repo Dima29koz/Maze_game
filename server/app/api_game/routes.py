@@ -31,4 +31,7 @@ def room_join():
     if not room.add_player(current_user):
         return jsonify(msg='There are no empty slots in the room'), 401
 
-    return jsonify(name=room.name, id=room.id)
+    return jsonify(
+        name=room.name,
+        id=room.id,
+        state='ended' if room.is_ended else 'running' if room.is_running else 'created')

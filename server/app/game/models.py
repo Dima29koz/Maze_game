@@ -104,10 +104,11 @@ class GameRoom(db.Model):
 
     @classmethod
     def create(cls, room_name: str, room_pwd: str, selected_rules: dict, creator: User):
+
         rules = default_rules.copy()
 
-        rules['players_amount'] = selected_rules.get('players_amount')
-        rules['bots_amount'] = selected_rules.get('bots_amount')
+        rules['players_amount'] = selected_rules.get('num_players')
+        rules['bots_amount'] = selected_rules.get('num_bots')
         rules['generator_rules']['is_not_rect'] = selected_rules.get('is_not_rect')
         rules['generator_rules']['seed'] = random.random()
         rules['generator_rules']['is_separated_armory'] = selected_rules.get('is_separated_armory')
@@ -208,7 +209,7 @@ class GameRoom(db.Model):
         if not self.is_ended:
             return None
         if self.winner_id:
-            return self.winner.username
+            return self.winner.user_name
         else:
             return self.turns[-1].player_name
 
