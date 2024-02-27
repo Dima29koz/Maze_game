@@ -2,7 +2,7 @@ from flask import render_template
 from flask_mail import Message
 
 from server.app import mail
-from server.app.main.models import User
+from server.app.api_user_account.models import User
 
 
 def send_email(subject: str, recipients, text_body, html_body):

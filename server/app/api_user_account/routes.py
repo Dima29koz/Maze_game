@@ -1,10 +1,12 @@
-from flask import request, jsonify, redirect, url_for, flash
+import os
+
+from flask import request, jsonify, redirect, url_for, flash, send_file
 from flask_login import login_user, login_required, current_user, logout_user
 
 from . import user_account
 from .. import login_manager
-from ..game.models import get_user_won_games_amount
-from ..main.models import get_user_by_name, User, get_user_by_id
+from ..api_game.models import get_user_won_games_amount
+from .models import get_user_by_name, User, get_user_by_id
 from ..utils.hider import get_hidden_email
 from ..utils.mail_utils import send_password_reset_email, send_email_confirmation_mail
 
@@ -119,6 +121,8 @@ def reset_password():
 @user_account.route('/registration', methods=["POST"])
 def registration():
     request_data = request.get_json()
+    if request_data.get('pwd') != request_data.get('pwd_repeat'):
+        return jsonify(msg='passwords must match'), 400
     user = User.create(request_data)
     if not user:
         return jsonify(msg='username is not allowed'), 400
@@ -159,3 +163,12 @@ def get_user_games():
             'details': 'details',
         } for game in user_games]
     })
+
+
+@user_account.route('/img/<user_name>')
+@login_required
+def get_user_avatar(user_name):
+    """API for getting user ave image"""
+    filename = 'default_avatar.jpg'
+    file_path = os.path.join(os.path.split(user_account.root_path)[0], 'static', 'images', filename)
+    return send_file(file_path, mimetype='image/jpg')

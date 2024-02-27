@@ -10,7 +10,7 @@
         function updateMap(){
             let room_id = document.querySelector('#room-id-input').value;
             let current_user = 'Admin';
-            let response = fetch(`../api/game_field/${room_id}`)
+            let response = fetch(`../game_field/${room_id}`)
             .then(response => response.json())
             .then(response_json => {
                 drawMap(response_json.field, response_json.treasures,

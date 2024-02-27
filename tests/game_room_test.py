@@ -1,14 +1,13 @@
+import json
 import unittest
 
 from dotenv import load_dotenv
 
-from server.app import create_app, sio, db
-from server.app.game.forms import RulesForm
-
 load_dotenv()
+from server.app import create_app, sio, db
 from server.config import TestConfig
-from server.app.game.models import Game, GameRoom, get_room_by_id
-from server.app.main.models import User, get_user_by_id
+from server.app.api_user_account.models import User, get_user_by_id
+from server.app.api_game.models import GameRoom, get_room_by_id
 
 
 class TestCase(unittest.TestCase):
@@ -33,12 +32,17 @@ class TestCase(unittest.TestCase):
         u1 = User('Tester1', 't1@t.t', '1')
         u2 = User('Tester2', 't2@t.t', '1')
         u3 = User('Tester3', 't3@t.t', '1')
-        rules_form = RulesForm()
-        rules_form.room_name.data = 'test_room'
-        rules_form.pwd.data = '1'
-        rules_form.players_amount.data = 2
-        rules_form.bots_amount.data = 1
-        GameRoom.create_from_form(rules_form, u1)
+        room_name = 'test_room'
+        room_pwd = '1'
+        room_rules = {
+            'num_players': 2,
+            'num_bots': 1,
+            'is_not_rect': False,
+            'is_separated_armory': True,
+            'is_diff_outer_concrete_walls': True,
+        }
+
+        GameRoom.create(room_name, room_pwd, room_rules, u1)
 
 
 class TestGameRoom(TestCase):
@@ -46,7 +50,8 @@ class TestGameRoom(TestCase):
     def test_users_join(self):
         c1 = self.app.test_client()
         c2 = self.app.test_client()
-        c1.post('/login', data={'name': 'Tester1', 'pwd': '1'}, follow_redirects=True)
+        u1 = {'username': 'Tester1', 'pwd': '1', 'remember': True}
+        c1.post('/user_account/login', data=json.dumps(u1), content_type='application/json')
         client = sio.test_client(self.app, flask_test_client=c1)
         client.connect(namespace='/game_room')
         self.assertTrue(client.is_connected())
@@ -54,8 +59,9 @@ class TestGameRoom(TestCase):
         client.emit('join', {'room_id': 1}, namespace='/game_room')
         r1 = client.get_received(namespace='/game_room')
 
-        c2.post('/login', data={'name': 'Tester2', 'pwd': '1'}, follow_redirects=True)
-        c2.post('/join', data={'name': 'test_room', 'pwd': '1'}, follow_redirects=True)
+        u2 = {'username': 'Tester2', 'pwd': '1', 'remember': True}
+        c2.post('/user_account/login', data=json.dumps(u2), content_type='application/json')
+        c2.post('/game/join', data=json.dumps({'name': 'test_room', 'pwd': '1'}), content_type='application/json')
         client2 = sio.test_client(self.app, flask_test_client=c2)
         client2.connect(namespace='/game_room')
         self.assertTrue(client2.is_connected())

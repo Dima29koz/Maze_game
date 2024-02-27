@@ -10,7 +10,7 @@ from .. import db
 from game_core.game_engine.game import Game
 from game_core.game_engine.rules import rules as default_rules
 from game_core.game_engine.entities.player import Player
-from ..main.models import User, get_user_by_name
+from ..api_user_account.models import User, get_user_by_name
 
 user_room = db.Table(
     'user_room',
@@ -116,6 +116,17 @@ class GameRoom(db.Model):
 
         game_room = GameRoom(room_name, room_pwd, rules, creator)
         return game_room
+
+    @classmethod
+    def validate_rules(cls, selected_rules: dict) -> str | None:
+        num_players = selected_rules.get('num_players')
+        if num_players < 1 or num_players > 10:
+            return 'players amount must be from 1 to 10'
+        num_bots = selected_rules.get('num_bots')
+        if num_bots < 0 or num_bots > 10:
+            return 'bots amount must be from 0 to 10'
+        if num_players + num_bots > 10:
+            return 'total amount of players and bots must be less than 10'
 
     def add(self):
         """add room to DB"""

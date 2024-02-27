@@ -46,22 +46,9 @@ def create_app(config) -> Flask:
     with app.test_request_context():
         db.create_all()
 
-    if app.debug:
-        try:
-            from flask_debugtoolbar import DebugToolbarExtension
-            toolbar = DebugToolbarExtension(app)
-        except Exception as e:
-            print(e)
-
-    from .main import main as main_blueprint
-    from .game import game as game_blueprint
-    from .api import api as api_blueprint
     from .api_user_account import user_account as user_account_blueprint
     from .api_game import game as game_api_blueprint
 
-    app.register_blueprint(main_blueprint)
-    app.register_blueprint(game_blueprint)
-    app.register_blueprint(api_blueprint)
     app.register_blueprint(user_account_blueprint)
     app.register_blueprint(game_api_blueprint)
 

@@ -79,7 +79,7 @@ class LocalGame:
     @staticmethod
     def _get_game_data(room_id: int, server_url: str) -> dict | None:
         try:
-            response = requests.get(f'http://{server_url}/api/room_data/{room_id}')
+            response = requests.get(f'http://{server_url}/game/room_data/{room_id}')
             return response.json()
         except Exception as ex:
             print(ex)

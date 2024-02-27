@@ -1,10 +1,13 @@
+import json
 import unittest
 
-import server.app.main.models
+from dotenv import load_dotenv
+
+load_dotenv()
+import server.app.api_user_account.models
 from server.app import create_app, sio, db
-from server.app.game.forms import RulesForm
 from server.config import TestConfig
-from server.app.game import models
+from server.app.api_game import models
 
 
 class TestCase(unittest.TestCase):
@@ -26,14 +29,19 @@ class TestCase(unittest.TestCase):
 
     @classmethod
     def setUpData(cls):
-        u1 = server.app.main.models.User('Tester1', 't1@t.t', '1')
-        u2 = server.app.main.models.User('Tester2', 't1@t.t', '1')
-        rules_form = RulesForm()
-        rules_form.room_name.data = 'test_room'
-        rules_form.pwd.data = '1'
-        rules_form.players_amount.data = 2
-        rules_form.bots_amount.data = 1
-        room = models.GameRoom.create_from_form(rules_form, u1)
+        u1 = server.app.api_user_account.models.User('Tester1', 't1@t.t', '1')
+        u2 = server.app.api_user_account.models.User('Tester2', 't1@t.t', '1')
+
+        room_name = 'test_room'
+        room_pwd = '1'
+        room_rules = {
+            'num_players': 2,
+            'num_bots': 1,
+            'is_not_rect': False,
+            'is_separated_armory': True,
+            'is_diff_outer_concrete_walls': True,
+        }
+        room = models.GameRoom.create(room_name, room_pwd, room_rules, u1)
         room.add_player(u2)
         room.game_state.state.field.spawn_player({'x': 1, 'y': 1}, u1.user_name, 1)
         room.game_state.state.field.spawn_player({'x': 1, 'y': 1}, u2.user_name, 1)
@@ -43,14 +51,14 @@ class TestCase(unittest.TestCase):
     def setUpClients(self):
         c1 = self.app.test_client()
         c2 = self.app.test_client()
-        with c1.session_transaction() as sess1:
-            sess1['room_id'] = 1
-            sess1['_user_id'] = 1
-        with c2.session_transaction() as sess2:
-            sess2['room_id'] = 1
-            sess2['_user_id'] = 2
         client1 = sio.test_client(self.app, flask_test_client=c1)
         client2 = sio.test_client(self.app, flask_test_client=c2)
+
+        u1 = dict(username='Tester1', pwd='1', remember=True)
+        u2 = dict(username='Tester2', pwd='1', remember=True)
+        c1.post('/user_account/login', data=json.dumps(u1), content_type='application/json')
+        c2.post('/user_account/login', data=json.dumps(u2), content_type='application/json')
+
         client1.connect(namespace='/game')
         client2.connect(namespace='/game')
         client1.emit('join', {'room_id': 1}, namespace='/game')
@@ -89,8 +97,9 @@ class TestGame(TestCase):
 
     def test_get_allowed_abilities(self):
         self.client1.emit('get_allowed_abilities', {'room_id': 1}, namespace='/game')
-        self.client2.emit('get_allowed_abilities', {'room_id': 1}, namespace='/game')
         rv1 = self.client1.get_received(namespace='/game')[-1]
+        self.client2.emit('get_allowed_abilities', {'room_id': 1}, namespace='/game')
+
         rv2 = self.client2.get_received(namespace='/game')[-1]
         self.assertEqual(rv1.get('args')[0].get('is_active'), True)
         self.assertEqual(rv2.get('args')[0].get('is_active'), False)
