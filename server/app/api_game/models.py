@@ -1,7 +1,10 @@
 import random
 from copy import copy
 from datetime import datetime
+from typing import Optional
 
+import jwt
+from flask import current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from game_core.bots_ai.core import BotAI
@@ -85,25 +88,37 @@ class GameRoom(db.Model):
         """
         return check_password_hash(self.pwd, password)
 
+    @property
+    def game(self):
+        try:
+            game = self.game_state.state
+        except AttributeError:
+            game = None
+        return game
+
+    @property
+    def next_player_name(self) -> str | None:
+        game = self.game
+        if not game or self.is_ended:
+            return None
+        return game.get_current_player().name
+
+    @property
+    def current_player_allowed_abilities(self) -> dict[str, bool] | None:
+        game = self.game
+        if not game or self.is_ended:
+            return None
+        return game.get_allowed_abilities_str(game.get_current_player())
+
+    @property
+    def players_stats(self) -> list[dict] | None:
+        game = self.game
+        if not game:
+            return None
+        return game.get_players_data()
+
     @classmethod
-    def create_from_form(cls, rules_form, creator: User):
-        rules = default_rules.copy()
-
-        room_name = rules_form.room_name.data
-        room_pwd = rules_form.pwd.data
-
-        rules['players_amount'] = rules_form.players_amount.data
-        rules['bots_amount'] = rules_form.bots_amount.data
-        rules['generator_rules']['is_not_rect'] = rules_form.is_not_rect.data
-        rules['generator_rules']['seed'] = random.random()
-        rules['generator_rules']['is_separated_armory'] = rules_form.is_separated_armory.data
-        rules['gameplay_rules']['diff_outer_concrete_walls'] = rules_form.is_same_wall_outer_concrete.data
-
-        game_room = GameRoom(room_name, room_pwd, rules, creator)
-        return game_room
-
-    @classmethod
-    def create(cls, room_name: str, room_pwd: str, selected_rules: dict, creator: User):
+    def create(cls, room_name: str, room_pwd: str, selected_rules: dict, creator: User) -> 'GameRoom':
 
         rules = default_rules.copy()
 
@@ -116,6 +131,21 @@ class GameRoom(db.Model):
 
         game_room = GameRoom(room_name, room_pwd, rules, creator)
         return game_room
+
+    def gen_token(self, current_user: User) -> str:
+        return jwt.encode(
+            {'user_id': current_user.id, 'game_id': self.id},
+            current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_token(token: str, current_user: User) -> Optional['GameRoom']:
+        try:
+            payload = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+            if payload.get('user_id') != current_user.id:
+                return
+        except Exception as _:
+            return
+        return get_room_by_id(payload.get('game_id'))
 
     @classmethod
     def validate_rules(cls, selected_rules: dict) -> str | None:
@@ -240,14 +270,14 @@ class GameRoom(db.Model):
         calculates turn feedback;
         append turn info to DB
 
-        :returns: next player name, turn_data, win_data[Optional]
-        :rtype: (Player, dict, dict | None)
+        :returns: next player obj, turn_data, winner_name[Optional]
+        :rtype: (Player, dict, str | None)
         """
         turn_resp, next_player = self.game_state.state.make_turn(action, direction)
         is_win_condition = self.game_state.state.is_win_condition(self.rules)
         self.save()
         turn_data = {}
-        win_data = {}
+        winner_name = None
         if turn_resp:
             if self.bot_state:
                 self.bot_state.process_turn(turn_resp.get_raw_info())
@@ -256,9 +286,9 @@ class GameRoom(db.Model):
             turn_data = turn_info.to_dict()
 
             if is_win_condition:
-                win_data = self._on_win(player)
+                winner_name = self._on_win(player)
 
-        return next_player, turn_data, win_data
+        return next_player, turn_data, winner_name
 
     def on_get_field(self) -> dict:
         """returns field data"""
@@ -270,7 +300,7 @@ class GameRoom(db.Model):
             'spawn_points': self.game_state.state.get_spawn_points()
         }
 
-    def _on_win(self, winner: Player) -> dict:
+    def _on_win(self, winner: Player) -> str:
         """
         Switch game state to ended;
         set winner id
@@ -283,10 +313,7 @@ class GameRoom(db.Model):
         else:
             self.winner_id = None
         self.save()
-        win_data = {
-            'winner_name': winner.name,
-        }
-        return win_data
+        return winner.name
 
     def get_turns(self) -> list[dict]:
         """returns list of game turns"""

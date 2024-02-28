@@ -5,6 +5,15 @@ from . import game
 from ..api_game.models import GameRoom, get_not_ended_room_by_name, get_room_by_id
 
 
+@game.route('/get_token/<int:room_id>')
+@login_required
+def get_token(room_id: int):
+    room = get_room_by_id(room_id)
+    if current_user not in room.players:
+        return jsonify('Access denied'), 401
+    return jsonify(room.gen_token(current_user))
+
+
 @game.route('/create', methods=["POST"])
 @login_required
 def room_create():
@@ -21,7 +30,7 @@ def room_create():
         request_data.get('pwd'),
         request_data.get('rules'),
         current_user)
-    return jsonify(name=room.name, id=room.id)
+    return jsonify(name=room.name, id=room.id, token=room.gen_token(current_user))
 
 
 @game.route('/join', methods=["POST"])
@@ -38,24 +47,8 @@ def room_join():
     return jsonify(
         name=room.name,
         id=room.id,
-        state='ended' if room.is_ended else 'running' if room.is_running else 'created')
-
-
-@game.route('/game_data/<room_id>')
-@login_required
-def get_game_data(room_id):
-    """returns json with game_data"""
-    room = get_room_by_id(room_id)
-    try:
-        game_state = room.game_state.state
-    except AttributeError:
-        game_state = None
-    return jsonify(
-        turns=room.get_turns(),
-        is_ended=room.is_ended,
-        winner_name=room.get_winner_name(),
-        next_player=game_state.get_current_player().name if game_state and not room.is_ended else None
-    )
+        state='ended' if room.is_ended else 'running' if room.is_running else 'created',
+        token=room.gen_token(current_user))
 
 
 # todo remove this
@@ -89,18 +82,6 @@ def get_game_field(room_id):
             print(e)
             return {'field': 'Error - old engine version'}
     return {'field': 'Error - id'}
-
-
-@game.route('/players_stats/<room_id>')
-@login_required
-def get_players_stats(room_id):
-    """returns json with players_stats data"""
-    room = get_room_by_id(room_id)
-    try:
-        game_state = room.game_state.state
-    except AttributeError:
-        game_state = None
-    return jsonify(game_state.get_players_data() if game_state else None)
 
 
 # todo remove this

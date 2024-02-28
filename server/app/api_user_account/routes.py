@@ -1,6 +1,6 @@
 import os
 
-from flask import request, jsonify, redirect, url_for, flash, send_file
+from flask import request, jsonify, send_file
 from flask_login import login_user, login_required, current_user, logout_user
 
 from . import user_account
@@ -10,10 +10,6 @@ from .models import get_user_by_name, User, get_user_by_id
 from ..utils.hider import get_hidden_email
 from ..utils.mail_utils import send_password_reset_email, send_email_confirmation_mail
 
-login_manager.login_view = 'main.login'
-login_manager.login_message = "Авторизуйтесь для доступа к закрытым страницам"
-login_manager.login_message_category = "error"
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -22,11 +18,7 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    if request.blueprint == 'user_account':
-        return jsonify('login required'), 401
-    else:
-        flash(login_manager.login_message, login_manager.login_message_category)
-        return redirect(url_for(login_manager.login_view))
+    return jsonify('login required'), 401
 
 
 @user_account.route('/login', methods=["POST"])
