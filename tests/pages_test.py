@@ -105,7 +105,9 @@ class TestGameRoomJoinCreate(TestCase):
             self.assertIn(
                 server.app.api_user_account.models.get_user_by_name('Tester'),
                 models.get_not_ended_room_by_name('test_room').players)
-            self.assertDictEqual({'id': 1, 'name': 'test_room'}, rv.get_json())
+            self.assertEqual(1, rv.get_json().get('id'))
+            self.assertEqual('test_room', rv.get_json().get('name'))
+            self.assertIn('token', rv.get_json())
 
     def test_room_creation_failure_bots_amount(self):
         with self.client:
@@ -148,7 +150,10 @@ class TestGameRoomJoinCreate(TestCase):
             self.login('Tester2', '1')
             rv = self.join_room('test_room', '1')
 
-            self.assertDictEqual({'id': 1, 'name': 'test_room', 'state': 'created'}, rv.get_json())
+            self.assertEqual(1, rv.get_json().get('id'))
+            self.assertEqual('test_room', rv.get_json().get('name'))
+            self.assertEqual('created', rv.get_json().get('state'))
+            self.assertIn('token', rv.get_json())
             self.assertIn(
                 server.app.api_user_account.models.get_user_by_name('Tester2'),
                 models.get_not_ended_room_by_name('test_room').players)

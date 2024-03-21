@@ -14,18 +14,20 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = create_app(config=TestConfig)
-        self.client = self.app.test_client()
         self.ctx = self.app.test_request_context()
         self.ctx.push()
-        self.sio_client = sio.test_client(self.app, flask_test_client=self.client)
         db.drop_all()
         db.create_all()
         self.setUpData()
+        with self.app.test_request_context():
+            self.c1 = self.app.test_client()
+        with self.app.test_request_context():
+            self.c2 = self.app.test_client()
+        self.loginUsers()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.ctx.pop()
 
     @classmethod
     def setUpData(cls):
@@ -44,30 +46,46 @@ class TestCase(unittest.TestCase):
 
         GameRoom.create(room_name, room_pwd, room_rules, u1)
 
+    def loginUsers(self):
+        u1 = {'username': 'Tester1', 'pwd': '1', 'remember': True}
+        with self.c1 as c1:
+            c1.post('/user_account/login', data=json.dumps(u1), content_type='application/json')
+        u2 = {'username': 'Tester2', 'pwd': '1', 'remember': True}
+        with self.c2 as c2:
+            c2.post('/user_account/login', data=json.dumps(u2), content_type='application/json')
+
 
 class TestGameRoom(TestCase):
 
     def test_users_join(self):
-        c1 = self.app.test_client()
-        c2 = self.app.test_client()
-        u1 = {'username': 'Tester1', 'pwd': '1', 'remember': True}
-        c1.post('/user_account/login', data=json.dumps(u1), content_type='application/json')
-        client = sio.test_client(self.app, flask_test_client=c1)
-        client.connect(namespace='/game_room')
-        self.assertTrue(client.is_connected())
-        client.get_received(namespace='/game_room')
-        client.emit('join', {'room_id': 1}, namespace='/game_room')
-        r1 = client.get_received(namespace='/game_room')
+        resp1 = self.c1.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token1 = resp1.get_json().get('token')
 
-        u2 = {'username': 'Tester2', 'pwd': '1', 'remember': True}
-        c2.post('/user_account/login', data=json.dumps(u2), content_type='application/json')
-        c2.post('/game/join', data=json.dumps({'name': 'test_room', 'pwd': '1'}), content_type='application/json')
-        client2 = sio.test_client(self.app, flask_test_client=c2)
-        client2.connect(namespace='/game_room')
-        self.assertTrue(client2.is_connected())
-        self.assertNotEqual(client.eio_sid, client2.eio_sid)
-        client2.get_received(namespace='/game_room')
-        client2.emit('join', {'room_id': 1}, namespace='/game_room')
+        client1 = sio.test_client(
+            self.app,
+            namespace='/game_room',
+            auth={'token': token1},
+            flask_test_client=self.c1)
+
+        self.assertTrue(client1.is_connected('/game_room'))
+        r1 = client1.get_received(namespace='/game_room')
+
+        resp2 = self.c2.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token2 = resp2.get_json().get('token')
+        client2 = sio.test_client(
+            self.app,
+            namespace='/game_room',
+            auth={'token': token2},
+            flask_test_client=self.c2)
+
+        self.assertTrue(client2.is_connected('/game_room'))
+        self.assertNotEqual(client1.eio_sid, client2.eio_sid)
         r2 = client2.get_received(namespace='/game_room')
 
         self.assertEqual(r1[0].get('name'), 'join')
@@ -80,7 +98,7 @@ class TestGameRoom(TestCase):
         self.assertEqual(r2[1].get('name'), 'get_spawn')
         self.assertEqual(r2[1].get('args')[0].get('spawn_info'), None)
 
-        r11 = client.get_received(namespace='/game_room')
+        r11 = client1.get_received(namespace='/game_room')
         r22 = client2.get_received(namespace='/game_room')
         self.assertEqual(len(r11[0].get('args')[0].get('players')), 2)
         self.assertFalse(r22)
@@ -89,33 +107,33 @@ class TestGameRoom(TestCase):
         room = get_room_by_id(1)
         room.add_player(get_user_by_id(2))
 
-        c1 = self.app.test_client()
-        c2 = self.app.test_client()
-        with c1.session_transaction() as sess1:
-            sess1['room_id'] = 1
-            sess1['_user_id'] = 1
-        with c2.session_transaction() as sess2:
-            sess2['room_id'] = 1
-            sess2['_user_id'] = 2
+        resp1 = self.c1.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token1 = resp1.get_json().get('token')
+        client1 = sio.test_client(self.app, namespace='/game_room', auth={'token': token1}, flask_test_client=self.c1)
 
-        client = sio.test_client(self.app, flask_test_client=c1)
-        client2 = sio.test_client(self.app, flask_test_client=c2)
-        client.connect(namespace='/game_room')
-        client2.connect(namespace='/game_room')
-        self.assertTrue(client.is_connected())
-        self.assertTrue(client2.is_connected())
-        self.assertNotEqual(client.eio_sid, client2.eio_sid)
-        client.emit('join', {'room_id': 1}, namespace='/game_room')
-        client2.emit('join', {'room_id': 1}, namespace='/game_room')
-        client.get_received(namespace='/game_room')
+        resp2 = self.c2.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token2 = resp2.get_json().get('token')
+        client2 = sio.test_client(self.app, namespace='/game_room', auth={'token': token2}, flask_test_client=self.c2)
+
+        self.assertTrue(client1.is_connected('/game_room'))
+        self.assertTrue(client2.is_connected('/game_room'))
+        self.assertNotEqual(client1.eio_sid, client2.eio_sid)
+
+        client1.get_received(namespace='/game_room')
         client2.get_received(namespace='/game_room')
 
-        client.emit('set_spawn', {'room_id': 1, 'spawn': {'x': 1, 'y': 1}}, namespace='/game_room')
-        r1 = client.get_received(namespace='/game_room')
+        client1.emit('set_spawn', {'spawn': {'x': 1, 'y': 1}}, namespace='/game_room')
+        r1 = client1.get_received(namespace='/game_room')
 
-        client2.emit('set_spawn', {'room_id': 1, 'spawn': {'x': 2, 'y': 2}}, namespace='/game_room')
+        client2.emit('set_spawn', {'spawn': {'x': 2, 'y': 2}}, namespace='/game_room')
         r2 = client2.get_received(namespace='/game_room')
-        r11 = client.get_received(namespace='/game_room')
+        r11 = client1.get_received(namespace='/game_room')
         r22 = client2.get_received(namespace='/game_room')
 
         self.assertEqual(r1[0].get('name'), 'join')
@@ -145,19 +163,28 @@ class TestGameRoom(TestCase):
         with c2.session_transaction() as sess2:
             sess2['room_id'] = 1
             sess2['_user_id'] = 2
-        client = sio.test_client(self.app, flask_test_client=c1)
-        client2 = sio.test_client(self.app, flask_test_client=c2)
-        client.connect(namespace='/game_room')
-        client2.connect(namespace='/game_room')
-        client.emit('join', {'room_id': 1}, namespace='/game_room')
-        client2.emit('join', {'room_id': 1}, namespace='/game_room')
-        client.emit('set_spawn', {'room_id': 1, 'spawn': {'x': 1, 'y': 1}}, namespace='/game_room')
-        client2.emit('set_spawn', {'room_id': 1, 'spawn': {'x': 2, 'y': 2}}, namespace='/game_room')
-        r1 = client.get_received(namespace='/game_room')
+
+        resp1 = self.c1.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token1 = resp1.get_json().get('token')
+        client1 = sio.test_client(self.app, namespace='/game_room', auth={'token': token1}, flask_test_client=self.c1)
+
+        resp2 = self.c2.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token2 = resp2.get_json().get('token')
+        client2 = sio.test_client(self.app, namespace='/game_room', auth={'token': token2}, flask_test_client=self.c2)
+
+        client1.emit('set_spawn', {'spawn': {'x': 1, 'y': 1}}, namespace='/game_room')
+        client2.emit('set_spawn', {'spawn': {'x': 2, 'y': 2}}, namespace='/game_room')
+        r1 = client1.get_received(namespace='/game_room')
         client2.get_received(namespace='/game_room')
         self.assertEqual(r1[-1].get('args')[0].get('is_ready'), True)
-        client.emit('start', {'room_id': 1}, namespace='/game_room')
-        self.assertEqual(client.get_received(namespace='/game_room')[0].get('name'), 'start')
+        client1.emit('start', {'room_id': 1}, namespace='/game_room')
+        self.assertEqual(client1.get_received(namespace='/game_room')[0].get('name'), 'start')
         self.assertEqual(client2.get_received(namespace='/game_room')[0].get('name'), 'start')
         room = get_room_by_id(1)
         self.assertEqual(room.is_running, True)
@@ -174,19 +201,27 @@ class TestGameRoom(TestCase):
         with c2.session_transaction() as sess2:
             sess2['room_id'] = 1
             sess2['_user_id'] = 2
-        client = sio.test_client(self.app, flask_test_client=c1)
-        client2 = sio.test_client(self.app, flask_test_client=c2)
-        client.connect(namespace='/game_room')
-        client2.connect(namespace='/game_room')
-        client.emit('join', {'room_id': 1}, namespace='/game_room')
-        client2.emit('join', {'room_id': 1}, namespace='/game_room')
 
-        client.emit('leave', {'room_id': 1}, namespace='/game_room')
+        resp1 = self.c1.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token1 = resp1.get_json().get('token')
+        client1 = sio.test_client(self.app, namespace='/game_room', auth={'token': token1}, flask_test_client=self.c1)
+
+        resp2 = self.c2.post(
+            '/game/join',
+            data=json.dumps(dict(name='test_room', pwd='1')),
+            content_type='application/json')
+        token2 = resp2.get_json().get('token')
+        client2 = sio.test_client(self.app, namespace='/game_room', auth={'token': token2}, flask_test_client=self.c2)
+
+        client1.emit('leave', namespace='/game_room')
 
         r2 = client2.get_received(namespace='/game_room')
         self.assertEqual(len(r2[-1].get('args')[0].get('players')), 1)
         room = get_room_by_id(1)
         self.assertEqual(room.creator.user_name, 'Tester2')
-        client2.emit('leave', {'room_id': 1}, namespace='/game_room')
+        client2.emit('leave', namespace='/game_room')
         room = get_room_by_id(1)
         self.assertIsNone(room)

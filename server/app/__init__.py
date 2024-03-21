@@ -17,11 +17,10 @@ convention = {
 
 
 class Base(DeclarativeBase):
-    pass
+    metadata = MetaData(naming_convention=convention)
 
 
-metadata = MetaData(naming_convention=convention)
-db = SQLAlchemy(metadata=metadata, model_class=Base)
+db = SQLAlchemy(model_class=Base)
 login_manager = LoginManager()
 sio = SocketIO()
 migrate = Migrate()
