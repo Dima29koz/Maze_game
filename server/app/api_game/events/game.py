@@ -9,19 +9,20 @@ class GameNamespace(Namespace):
     """Handle events on game page"""
 
     @staticmethod
-    def on_connect(auth: dict):
+    def on_connect(auth: dict | None):
         """
         added user to socketIO room;
         emits `join`
         """
-        room = GameRoom.verify_token(auth.get('token'), current_user)
+        if not auth:
+            raise ConnectionRefusedError('unauthorized!')
+        room = GameRoom.verify_token(auth.get('token', ''), current_user)
         if not room or (not room.is_running and not room.is_ended):
             raise ConnectionRefusedError('unauthorized!')
 
         session['room_id'] = room.id
         join_room(room.id)
         emit('join', {
-            'room_id': room.id,
             'room_name': room.name,
             'rules': room.rules,
             'game_data': dict(

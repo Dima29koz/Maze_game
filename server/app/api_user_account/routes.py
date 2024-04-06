@@ -150,8 +150,7 @@ def get_user_games():
             'id': game.id,
             'name': game.name,
             'status': 'ended' if game.is_ended else 'running' if game.is_running else 'created',
-            'winner': game.winner.user_name if game.is_ended and game.winner_id else 'Bot'
-            if game.is_ended and not game.winner_id else '-',
+            'winner': game.get_winner_name(),
             'details': 'details',
         } for game in user_games]
     })

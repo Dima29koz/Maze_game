@@ -4,6 +4,7 @@
 /.vs/
 
 /docs/build/
+/client/dist/
 /test_results/
 
 .env

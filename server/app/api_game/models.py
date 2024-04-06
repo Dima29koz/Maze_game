@@ -227,14 +227,11 @@ class GameRoom(db.Model):
         :return: room data dict
         :rtype: dict
         """
-        field = self.game_state.state.field
-        is_all_players_joined = len(self.players) == self.rules.get('players_amount')
-        is_all_players_spawned = len(field.players) == self.rules.get('bots_amount') + self.rules.get('players_amount')
         return {
             "players_amount": self.rules.get('players_amount'),
             "bots_amount": self.rules.get('bots_amount'),
             "creator": self.creator.user_name,
-            "is_ready": is_all_players_joined and is_all_players_spawned,
+            "is_ready": self.is_ready_to_start(),
             "players": [{
                 'name': player.user_name,
                 'is_spawned': player.user_name in [player.name for player in self.game_state.state.field.players
@@ -245,6 +242,12 @@ class GameRoom(db.Model):
                 'is_spawned': True,
             } for bot in self.game_state.state.field.players if bot.is_bot],
         }
+
+    def is_ready_to_start(self):
+        field = self.game_state.state.field
+        is_all_players_joined = len(self.players) == self.rules.get('players_amount')
+        is_all_players_spawned = len(field.players) == self.rules.get('bots_amount') + self.rules.get('players_amount')
+        return is_all_players_joined and is_all_players_spawned
 
     def get_winner_name(self) -> str | None:
         if not self.is_ended:
