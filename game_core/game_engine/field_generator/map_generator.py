@@ -54,11 +54,10 @@ class MapGenerator:
 
     def _generate_level(self, level_pattern: LevelPattern):
         level_generator = FieldGenerator(self.generator_rules, level_pattern)
-        levels = level_generator.get_fields()
 
         for cell in level_generator.get_exit_cells():
             self.exit_cells.append(cell)
         for treasure in level_generator.get_treasures():
             self.treasures.append(treasure)
-        for level in levels:
+        for level in level_generator.get_fields():
             self.game_map.game_map.append(level)

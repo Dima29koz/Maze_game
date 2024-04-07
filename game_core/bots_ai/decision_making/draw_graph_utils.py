@@ -12,7 +12,7 @@ from .graph_builder import GraphBuilder
 from ...game_engine.game import Game
 
 
-def test_graph(grid, player_cell=None, player_abilities=None):
+def test_graph(grid: Grid, player_cell=None, player_abilities=None):
     for row in grid.get_field():
         print(row)
     print('\n')

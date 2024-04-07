@@ -6,7 +6,7 @@ from ..entities.treasure import Treasure, TreasureTypes
 from .level_pattern import LevelPattern
 from .river_generator import RiverGenerator
 from ..field.cell import (
-    Cell, CellRiver, CellExit, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CellClinic, NoneCell)
+    Cell, CellRiver, CellExit, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CellClinic, NoneCell, CELL)
 from ..field.wall import *
 from ..global_env.types import Position
 
@@ -32,11 +32,11 @@ class FieldGenerator:
     def get_fields(self) -> list[GameLevel]:
         return self.levels
 
-    def get_treasures(self):
+    def get_treasures(self) -> list[Treasure]:
         """returns generated treasures"""
         return self.treasures
 
-    def get_exit_cells(self):
+    def get_exit_cells(self) -> list[CellExit]:
         """returns generated exit-cells"""
         return self.exit_cells
 
@@ -99,14 +99,14 @@ class FieldGenerator:
         if not wall_rules.get('has_walls'):
             self._river_dir_fix()
             return
-        cells = []
+        cells: list[CELL] = []
         for row in self.levels[0].field:
             for cell in row:
                 if type(cell) is not NoneCell:
                     cells.append(cell)
         cells_walls = sample(cells, int(len(cells) * 0.6))
         for cell in cells_walls:
-            directions = sample(list(Directions), randint(1, 2))
+            directions: list[Directions] = sample(list(Directions), randint(1, 2))
             for direction in directions:
                 if not isinstance(cell.walls[direction], WallOuter):
                     cell.add_wall(direction, WallConcrete())
@@ -138,7 +138,7 @@ class FieldGenerator:
 
         return outer_cells
 
-    def _is_cell_outer(self, cell: Cell):
+    def _is_cell_outer(self, cell: Cell) -> bool:
         if type(cell) is NoneCell:
             return False
         is_outer = False
@@ -148,7 +148,7 @@ class FieldGenerator:
                 is_outer = True
         return is_outer
 
-    def _create_exit(self, outer_cells: list[Cell], amount: int):
+    def _create_exit(self, outer_cells: list[Cell], amount: int) -> list[CellExit]:
         exit_cells = []
         cells = sample(outer_cells, min(amount, len(outer_cells)))
         for cell in cells:
@@ -164,7 +164,7 @@ class FieldGenerator:
             self.levels[0].set_cell(exit_cell.position, exit_cell)
         return exit_cells
 
-    def _spawn_treasures(self, treasures_rules: list[int]):
+    def _spawn_treasures(self, treasures_rules: list[int]) -> list[Treasure]:
         treasures = []
 
         treasure_cells = sample(self.ground_cells, sum(treasures_rules))

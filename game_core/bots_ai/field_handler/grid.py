@@ -24,7 +24,7 @@ class Grid:
     def get_field(self) -> list[list[CELL]]:
         return self._field
 
-    def get_cells(self):
+    def get_cells(self) -> list[CELL]:
         cells = []
         for row in self._field:
             cells += row
@@ -209,7 +209,8 @@ class Grid:
                 start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
-    def is_washed(self, current_cell: cell.CellRiver, prev_cell: CELL, turn_direction: Directions):
+    @staticmethod
+    def is_washed(current_cell: cell.CellRiver, prev_cell: CELL, turn_direction: Directions) -> bool:
         if current_cell is prev_cell:
             return True
         if current_cell.direction is -turn_direction:
