@@ -168,7 +168,7 @@ class FieldState:
         if not next_states:
             self._check_treasures_amount(cell_treasures_amount, self.get_player_cell().position)
             self._merge_treasures([self.get_player_cell().position for _ in range(cell_treasures_amount)])
-            return next_states
+            return [self]
 
         for state in next_states[::-1]:
             try:
@@ -234,12 +234,16 @@ class FieldState:
         if is_destroyed:
             if not current_cell.walls[direction].breakable:
                 raise UnreachableState()
-            self.field.add_wall(current_cell.position, direction, wall.WallEmpty)
+            new_state = self.copy()
+            if new_state.field.add_wall(current_cell.position, direction, wall.WallEmpty):
+                return new_state._pass_processor(response)
         else:
             if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
                 raise UnreachableState()
             if type(current_cell.walls[direction]) is UnknownWall:
-                self.field.add_wall(current_cell.position, direction, UnbreakableWall)
+                new_state = self.copy()
+                if new_state.field.add_wall(current_cell.position, direction, UnbreakableWall):
+                    return new_state._pass_processor(response)
 
         return self._pass_processor(response)
 
@@ -317,10 +321,8 @@ class FieldState:
         if type_cell_turn_end is not cell.CellRiver:
             self._update_cell_type(type_cell_turn_end, self.players_positions.get(self.current_player))
         else:
-            player_cell = self.get_player_cell()
-            possible_directions = self.field.get_possible_river_directions(player_cell)
-            for dir_ in possible_directions:
-                next_states.append(self._get_modified_copy(player_cell.position, type_cell_turn_end, dir_))
+            next_states = self._calc_possible_river_trajectories(
+                self.get_player_cell(), type_cell_turn_end, type_cell_turn_end, False, None)
 
         return self._treasure_info_processor(response, next_states)
 
@@ -371,7 +373,8 @@ class FieldState:
             self, current_cell: UnknownCell | cell.CellRiver,
             type_cell_after_wall_check: Type[cell.CellRiver | cell.CellRiverMouth],
             type_cell_turn_end: Type[cell.CellRiver | cell.CellRiverMouth],
-            is_diff_cells: bool, turn_direction: Directions):
+            is_diff_cells: bool,
+            turn_direction: Directions | None) -> list['FieldState']:
         # река-река: type_cell_after_wall_check == river, type_cell_turn_end == river, is_diff_cells = True
         # река-устье: type_cell_after_wall_check == river, type_cell_turn_end == mouth, is_diff_cells = True
         # река: type_cell_after_wall_check == river, type_cell_turn_end == river, is_diff_cells = False

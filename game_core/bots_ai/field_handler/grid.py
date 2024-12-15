@@ -55,20 +55,23 @@ class Grid:
         self._field[position.y][position.x].walls = walls
 
     def add_wall(self, position: Position, direction: Directions, wall_type: Type[WALL],
-                 neighbour_wall_type: Type[WALL] = None):
-        self.update_wall(position, direction, wall_type)
+                 neighbour_wall_type: Type[WALL] = None) -> bool:
+        cur = self.update_wall(position, direction, wall_type)
+        other = False
         neighbour = self.get_neighbour_cell(position, direction)
         if neighbour and type(neighbour) is not cell.NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
-            self.update_wall(neighbour.position, -direction, neighbour_wall_type)
+            other = self.update_wall(neighbour.position, -direction, neighbour_wall_type)
+        return cur or other
 
-    def update_wall(self, position: Position, direction: Directions, wall_type: Type[WALL]):
+    def update_wall(self, position: Position, direction: Directions, wall_type: Type[WALL]) -> bool:
         if type(self.get_cell(position).walls[direction]) is wall_type:
-            return
+            return False
         self.set_cell(copy(self.get_cell(position)), position)
         self.set_walls(position, self.get_cell(position).walls.copy())
         self.get_cell(position).add_wall(direction, wall_type())
+        return True
 
     def create_exit(self, direction: Directions, position: Position) -> None:
         """

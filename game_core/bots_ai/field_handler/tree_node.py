@@ -47,7 +47,8 @@ class Node:
                 self.next_states.append(state)
 
     def add_next_state(self, field_state: FieldState):
-        self.next_states.append(self.copy(field_state=field_state))
+        if field_state is not self.field_state:
+            self.next_states.append(self.copy(field_state=field_state))
 
     def merge_with(self, other_node: 'Node') -> 'Node':
         merged_node = self.copy()
