@@ -4,7 +4,7 @@ import time
 from typing import Generator
 import requests
 
-from game_core.game_engine import Game, base_rules as ru
+from game_core.game_engine import Game, get_rules
 from game_core.game_engine import Actions, Directions, Position, LevelPosition
 
 from game_core.bots_ai.core import BotAI, BotAIDebug
@@ -37,7 +37,7 @@ class LocalGame:
             self._init_bot()
 
     def setup_game_local(self, num_players: int, spawn_points: tuple | None, seed: float = None):
-        self.rules = ru
+        self.rules = get_rules()
         # self.rules['generator_rules']['river_rules']['has_river'] = False
         # self.rules['generator_rules']['walls']['has_walls'] = False
         # self.rules['generator_rules']['exits_amount'] = 20

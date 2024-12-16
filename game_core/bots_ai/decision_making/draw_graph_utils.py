@@ -7,7 +7,7 @@ from ..field_handler.grid import Grid
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
-from ...game_engine.rules import rules as ru
+from ...game_engine.rules import get_rules
 from .graph_builder import GraphBuilder
 from ...game_engine.game import Game
 
@@ -40,7 +40,7 @@ def draw(graph):
 
 
 def get_real_grid():
-    rules = ru
+    rules = get_rules()
     rules['generator_rules']['seed'] = 5
     f = Game(rules).field.game_map.get_level(LevelPosition(0, 0, 0)).field
     return Grid(f)

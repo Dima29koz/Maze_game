@@ -11,7 +11,7 @@ from game_core.bots_ai.core import BotAI
 from .. import db
 
 from game_core.game_engine.game import Game
-from game_core.game_engine.rules import rules as default_rules
+from game_core.game_engine.rules import get_rules
 from game_core.game_engine.entities.player import Player
 from ..api_user_account.models import User, get_user_by_name
 
@@ -119,8 +119,8 @@ class GameRoom(db.Model):
 
     @classmethod
     def create(cls, room_name: str, room_pwd: str, selected_rules: dict, creator: User) -> 'GameRoom':
-
-        rules = default_rules.copy()
+        base_rules = get_rules()
+        rules = base_rules.copy()
 
         rules['players_amount'] = selected_rules.get('num_players')
         rules['bots_amount'] = selected_rules.get('num_bots')

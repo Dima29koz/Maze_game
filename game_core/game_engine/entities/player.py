@@ -4,7 +4,7 @@ from .treasure import Treasure
 from ..field.cell import Cell
 from ..global_env.enums import Actions
 
-from ..rules import rules  # fixme rules should be atr of Player instance
+from ..rules import get_rules  # fixme rules should be atr of Player instance
 
 
 class Player:
@@ -39,6 +39,7 @@ class Player:
     :type turn: int
     """
     def __init__(self, cell: Cell, name: str, is_bot: bool = False, turn: int = 0):
+        rules = get_rules()
         self.name = name
         self.cell = cell
         self.spawn_point = deepcopy(self.cell.position)
