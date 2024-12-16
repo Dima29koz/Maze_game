@@ -5,7 +5,7 @@
 
 /docs/build/
 /client/dist/
-/test_results/
+/tests/game_core/test_results/
 
 .env
 
