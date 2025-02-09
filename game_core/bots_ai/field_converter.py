@@ -23,7 +23,7 @@ def convert_cell_from_engine(engine_cell: cell.CELL) -> field_obj.NoneCell:
     return bot_cell
 
 
-def convert_cell_type_from_engine(type_engine_cell: Type[cell.CELL]) -> Type[field_obj.BOT_CELL]:
+def convert_cell_type_from_engine(type_engine_cell: Type[cell.CELL]) -> Type[field_obj.CELL]:
     match type_engine_cell:
         case cell.NoneCell:
             return field_obj.NoneCell

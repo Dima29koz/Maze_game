@@ -43,15 +43,15 @@ class NoneCell:
         """return wall attributes"""
         return self.walls[direction].handler()
 
-    def idle(self, previous_cell) -> 'BOT_CELL':
+    def idle(self, previous_cell) -> 'CELL':
         """idle handler"""
         raise NotImplementedError
 
-    def active(self, previous_cell) -> 'BOT_CELL':
+    def active(self, previous_cell) -> 'CELL':
         """active handler"""
         raise NotImplementedError
 
-    def treasure_movement(self) -> 'BOT_CELL':
+    def treasure_movement(self) -> 'CELL':
         """treasure movement handler"""
         raise NotImplementedError
 
@@ -62,7 +62,7 @@ class NoneCell:
             'walls': {direction.name: wall_.__class__.__name__ for direction, wall_ in self.walls.items()}
         }
 
-    def __sub__(self, other: 'BOT_CELL') -> Directions | None:
+    def __sub__(self, other: 'CELL') -> Directions | None:
         """
         :return: direction between adjacent cells
         """
@@ -286,7 +286,7 @@ class PossibleExit(CellExit):
         return '?E'
 
 
-BOT_CELL = Union[
+CELL = Union[
     NoneCell, Cell,
     CellRiver, CellRiverMouth, CellRiverBridge,
     CellExit, CellClinic, CellArmory,

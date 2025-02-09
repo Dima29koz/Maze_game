@@ -3,8 +3,8 @@ from typing import Type
 from .field_obj import (
     UnknownCell, PossibleExit, NoneCell,
     Cell, CellRiver, CellRiverMouth,
-    CellClinic, CellArmory, CellArmoryWeapon, CellArmoryExplosive, CellExit)
-from .grid import CELL
+    CellClinic, CellArmory, CellArmoryWeapon,
+    CellArmoryExplosive, CellExit, CELL)
 from .player_stats import PlayerStats
 
 

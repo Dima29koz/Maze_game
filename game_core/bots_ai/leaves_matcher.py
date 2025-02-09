@@ -2,10 +2,9 @@ from typing import Type
 
 from .exceptions import MatchingError, MergingError
 from .field_handler.field_obj import (
-    UnknownCell, PossibleExit, NoneCell,
+    CELL, UnknownCell, PossibleExit, NoneCell,
     CellRiver, CellExit
 )
-from .field_handler.field_state import CELL
 from .field_handler.player_state import PlayerState
 from .field_handler.tree_node import Node
 

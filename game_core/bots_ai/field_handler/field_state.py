@@ -5,9 +5,9 @@ from .common_data import CommonData
 from .field_obj import (
     UnknownCell, UnknownWall, UnbreakableWall,
     PossibleExit, CellRiver, NoneCell,
-    CellRiverMouth, CellExit, BOT_CELL
+    CellRiverMouth, CellExit, CELL
 )
-from .grid import Grid, CELL, WALL
+from .grid import Grid, WALL
 from ..exceptions import UnreachableState, MergingError
 from ...game_engine.field import wall
 from ...game_engine.global_env.enums import Directions, Actions, TreasureTypes
@@ -251,7 +251,7 @@ class FieldState:
         return self._pass_processor(response)
 
     def _pass_processor(self, response: dict) -> list['FieldState']:
-        type_cell_turn_end: Type[BOT_CELL] = response.get('type_cell_at_end_of_turn')
+        type_cell_turn_end: Type[CELL] = response.get('type_cell_at_end_of_turn')
 
         if not self.get_player_pos():
             return []
@@ -278,8 +278,8 @@ class FieldState:
 
     def _movement_processor(self, turn_direction: Directions, response: dict) -> list['FieldState']:
         is_diff_cells: bool = response.get('diff_cells')
-        type_cell_turn_end: Type[BOT_CELL] = response.get('type_cell_at_end_of_turn')
-        type_cell_after_wall_check: Type[BOT_CELL] = response.get('type_cell_after_wall_check')
+        type_cell_turn_end: Type[CELL] = response.get('type_cell_at_end_of_turn')
+        type_cell_after_wall_check: Type[CELL] = response.get('type_cell_after_wall_check')
         is_wall_passed: bool = response.get('wall_passed')
         wall_type: Type[WALL] | None = response.get('wall_type')
         # todo учесть что это не обязательно настоящий тип стены
@@ -315,7 +315,7 @@ class FieldState:
         return self._treasure_info_processor(response, next_states)
 
     def _info_processor(self, response: dict) -> list['FieldState']:
-        type_cell_turn_end: Type[BOT_CELL] = response.get('type_cell_at_end_of_turn')
+        type_cell_turn_end: Type[CELL] = response.get('type_cell_at_end_of_turn')
 
         if not self.get_player_pos():
             return []

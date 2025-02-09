@@ -1,7 +1,7 @@
 import networkx as nx
 
-from ..field_handler.field_obj import NoneCell, CellRiver
-from ..field_handler.grid import Grid, CELL
+from ..field_handler.field_obj import NoneCell, CellRiver, CELL
+from ..field_handler.grid import Grid
 from ...game_engine.global_env.enums import Directions, Actions
 
 

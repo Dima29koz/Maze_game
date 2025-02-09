@@ -1,10 +1,9 @@
 from .graph_builder import GraphBuilder
 from ..field_handler.field_obj import (
     CellClinic, CellArmoryWeapon, CellArmoryExplosive,
-    CellArmory, CellExit, UnknownCell, PossibleExit
+    CellArmory, CellExit, UnknownCell, PossibleExit, CELL
 )
 from ..field_handler.field_state import FieldState
-from ..field_handler.grid import CELL
 from ..field_handler.player_stats import PlayerStats
 from ...game_engine.global_env.enums import Actions
 

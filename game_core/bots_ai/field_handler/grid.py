@@ -1,14 +1,14 @@
 from copy import copy
 from typing import Union, Type
 
-from .field_obj import BOT_CELL, UnknownCell, UnbreakableWall, UnknownWall, PossibleExit, NoneCell, CellExit, CellRiver, \
-    CellRiverMouth
+from .field_obj import (
+    CELL, UnknownCell, UnbreakableWall,
+    UnknownWall, PossibleExit, NoneCell,
+    CellExit, CellRiver, CellRiverMouth)
 from ..exceptions import MergingError, OnlyAllowedDir
 from ...game_engine.field import wall
 from ...game_engine.global_env.enums import Directions
 from ...game_engine.global_env.types import Position
-
-CELL = BOT_CELL  # fixme replace everywhere
 
 R_WALL = Union[
     wall.WallEmpty, wall.WallExit, wall.WallOuter,

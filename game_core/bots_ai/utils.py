@@ -1,12 +1,12 @@
 from typing import Type
 
-from .field_handler.field_obj import BOT_CELL, UnknownCell, CellRiver, NoneCell, CellExit, PossibleExit
+from .field_handler.field_obj import CELL, UnknownCell, CellRiver, NoneCell, CellExit, PossibleExit
 
 
 def is_node_is_real(
-        node_field: list[list[BOT_CELL]],
-        real_field: list[list[BOT_CELL]],
-        unique_objects_amount: dict[Type[BOT_CELL], int]
+        node_field: list[list[CELL]],
+        real_field: list[list[CELL]],
+        unique_objects_amount: dict[Type[CELL], int]
 ):
     for y, row in enumerate(real_field):
         for x, real_cell in enumerate(row):
