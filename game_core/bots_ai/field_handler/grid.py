@@ -1,13 +1,14 @@
 from copy import copy
 from typing import Union, Type
 
-from ...game_engine.field import cell, wall
+from .field_obj import BOT_CELL, UnknownCell, UnbreakableWall, UnknownWall, PossibleExit, NoneCell, CellExit, CellRiver, \
+    CellRiverMouth
+from ..exceptions import MergingError, OnlyAllowedDir
+from ...game_engine.field import wall
 from ...game_engine.global_env.enums import Directions
 from ...game_engine.global_env.types import Position
-from ..exceptions import MergingError, OnlyAllowedDir
-from .field_obj import UnknownCell, UnbreakableWall, UnknownWall, PossibleExit
 
-CELL = Union[cell.CELL, UnknownCell, PossibleExit]
+CELL = BOT_CELL  # fixme replace everywhere
 
 R_WALL = Union[
     wall.WallEmpty, wall.WallExit, wall.WallOuter,
@@ -59,7 +60,7 @@ class Grid:
         cur = self.update_wall(position, direction, wall_type)
         other = False
         neighbour = self.get_neighbour_cell(position, direction)
-        if neighbour and type(neighbour) is not cell.NoneCell:
+        if neighbour and type(neighbour) is not NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
             other = self.update_wall(neighbour.position, -direction, neighbour_wall_type)
@@ -79,26 +80,26 @@ class Grid:
         :param direction: direction of entrance wall
         :param position: position of exit cell
         """
-        cell_exit = cell.CellExit(position, direction)
+        cell_exit = CellExit(position, direction)
         for dir_ in Directions:
             if dir_ is direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, dir_)
-            if neighbour_cell and type(neighbour_cell) is not cell.NoneCell:
-                if type(neighbour_cell) is cell.CellExit:
+            if neighbour_cell and type(neighbour_cell) is not NoneCell:
+                if type(neighbour_cell) is CellExit:
                     continue
                 self.update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
         self.get_neighbour_cell(position, direction).add_wall(-direction, wall.WallExit())
         self.set_cell(cell_exit, cell_exit.position)
 
     def get_possible_river_directions(self,
-                                      river_cell: UnknownCell | cell.CellRiver,
+                                      river_cell: UnknownCell | CellRiver,
                                       turn_direction: Directions = None,
                                       washed: bool = False) -> list[Directions]:
         if not washed and turn_direction:
             prev_cell = self.get_neighbour_cell(river_cell.position, -turn_direction)
-            if type(prev_cell) is cell.CellRiverMouth or (
-                    type(prev_cell) is cell.CellRiver and prev_cell.direction is not turn_direction):
+            if type(prev_cell) is CellRiverMouth or (
+                    type(prev_cell) is CellRiver and prev_cell.direction is not turn_direction):
                 if not self.has_known_input_river(prev_cell.position, -turn_direction):
                     if self.is_river_is_looped(river_cell.position, prev_cell):
                         return []
@@ -120,7 +121,7 @@ class Grid:
 
         return dirs
 
-    def is_river_direction_available(self, river_cell: UnknownCell | cell.CellRiver, direction: Directions,
+    def is_river_direction_available(self, river_cell: UnknownCell | CellRiver, direction: Directions,
                                      no_raise: bool = False):
         """
 
@@ -136,18 +137,18 @@ class Grid:
         neighbour_cell = self.get_neighbour_cell(river_cell.position, direction)
 
         # река не может течь в сушу
-        if type(neighbour_cell) not in [cell.CellRiver, cell.CellRiverMouth, UnknownCell]:
+        if type(neighbour_cell) not in [CellRiver, CellRiverMouth, UnknownCell]:
             return False
 
         # реки не могут течь друг в друга
-        if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:
+        if type(neighbour_cell) is CellRiver and neighbour_cell.direction is -direction:
             return False
 
         # река не имеет развилок
         if self.has_known_input_river(neighbour_cell.position, direction):
             return False
 
-        if type(neighbour_cell) is cell.CellRiverMouth and \
+        if type(neighbour_cell) is CellRiverMouth and \
                 self._is_the_only_allowed_dir(neighbour_cell.position, direction):
             if no_raise:
                 return True
@@ -161,7 +162,7 @@ class Grid:
     def is_cause_of_isolated_mouth(self, position: Position) -> bool:
         for direction in Directions:
             neighbour_cell = self.get_neighbour_cell(position, direction)
-            if neighbour_cell and type(neighbour_cell) is cell.CellRiverMouth:
+            if neighbour_cell and type(neighbour_cell) is CellRiverMouth:
                 if self._is_the_only_allowed_dir(neighbour_cell.position, direction):
                     return True
         return False
@@ -179,7 +180,7 @@ class Grid:
             if not ignore_dir and direction is neg_direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, direction)
-            if type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction:
+            if type(neighbour_cell) is CellRiver and neighbour_cell.direction is -direction:
                 return True
 
     def _is_the_only_allowed_dir(self, position: Position, turn_direction: Directions) -> bool:
@@ -193,7 +194,7 @@ class Grid:
             if direction is -turn_direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, direction)
-            if (type(neighbour_cell) is cell.CellRiver and neighbour_cell.direction is -direction) or \
+            if (type(neighbour_cell) is CellRiver and neighbour_cell.direction is -direction) or \
                     type(neighbour_cell) is UnknownCell:
                 return False
         return True
@@ -207,37 +208,37 @@ class Grid:
         """
         if start_position == previous_cell.position:
             return True
-        if type(previous_cell) is cell.CellRiver:
+        if type(previous_cell) is CellRiver:
             return self.is_river_is_looped(
                 start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
     @staticmethod
-    def is_washed(current_cell: cell.CellRiver, prev_cell: CELL, turn_direction: Directions) -> bool:
+    def is_washed(current_cell: CellRiver, prev_cell: CELL, turn_direction: Directions) -> bool:
         if current_cell is prev_cell:
             return True
         if current_cell.direction is -turn_direction:
             return False
-        if type(prev_cell) is cell.CellRiver and prev_cell.direction is turn_direction:
+        if type(prev_cell) is CellRiver and prev_cell.direction is turn_direction:
             return False
         return True
 
     def merge_with(self,
                    other_field: 'Grid',
-                   remaining_obj_amount: dict[Type[cell.CELL], int]):
+                   remaining_obj_amount: dict[Type[CELL], int]):
         is_changed = False
         for y, row in enumerate(self._field):
             for x, self_cell in enumerate(row):
                 other_cell = other_field._field[y][x]
-                if type(self_cell) is cell.NoneCell and type(other_cell) is cell.NoneCell:
+                if type(self_cell) is NoneCell and type(other_cell) is NoneCell:
                     continue
-                if type(self_cell) is PossibleExit and type(other_cell) in [cell.CellExit, cell.NoneCell]:
+                if type(self_cell) is PossibleExit and type(other_cell) in [CellExit, NoneCell]:
                     is_changed = True
                     self.merge_cells(other_cell, x, y, no_walls=True)
-                if type(self_cell) is cell.CellExit and type(other_cell) is PossibleExit:
+                if type(self_cell) is CellExit and type(other_cell) is PossibleExit:
                     continue
                 if type(self_cell) is UnknownCell and type(other_cell) is not UnknownCell:
-                    if type(other_cell) is cell.CellRiver:
+                    if type(other_cell) is CellRiver:
                         if not self.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
                             raise MergingError()
                     is_changed = True

@@ -1,10 +1,10 @@
 from typing import Type
 
-from ...game_engine.field import cell
-from ...game_engine.global_env.enums import Actions, Directions
-from ..exceptions import UnreachableState, IncompatibleState, MergingError
-from .tree_node import Node
 from .common_data import CommonData
+from .field_obj import CellClinic, CellArmory, CellArmoryExplosive, CellArmoryWeapon, BOT_CELL
+from .tree_node import Node
+from ..exceptions import UnreachableState, IncompatibleState, MergingError
+from ...game_engine.global_env.enums import Actions, Directions
 
 
 class PlayerState:
@@ -42,7 +42,7 @@ class PlayerState:
 
     def _handle_stats_changes(self, player_name: str, action: Actions, response: dict):
         if player_name == self.name:
-            type_cell_turn_end: Type[cell.CELL] | None = response.get('type_cell_at_end_of_turn')
+            type_cell_turn_end: Type[BOT_CELL] | None = response.get('type_cell_at_end_of_turn')
 
             if response.get('type_out_treasure'):
                 self.stats.has_treasure = False
@@ -57,17 +57,14 @@ class PlayerState:
                 case _:
                     pass
 
-            match type_cell_turn_end:
-                case cell.CellClinic:
-                    self.stats.restore_heal()
-                case cell.CellArmory:
-                    self.stats.restore_weapon()
-                case cell.CellArmoryExplosive:
-                    self.stats.restore_bombs()
-                case cell.CellArmoryWeapon:
-                    self.stats.restore_arrows()
-                case _:
-                    pass
+            if type_cell_turn_end is CellClinic:
+                self.stats.restore_heal()
+            elif type_cell_turn_end is CellArmory:
+                self.stats.restore_weapon()
+            elif type_cell_turn_end is CellArmoryExplosive:
+                self.stats.restore_bombs()
+            elif type_cell_turn_end is CellArmoryWeapon:
+                self.stats.restore_arrows()
 
         if response.get('hit'):
             dmg_pls: list[str] = response.get('dmg_pls')

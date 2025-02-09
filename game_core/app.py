@@ -2,14 +2,15 @@
 import random
 import time
 from typing import Generator
+
 import requests
 
-from game_core.game_engine import Game, get_rules
-from game_core.game_engine import Actions, Directions, Position, LevelPosition
-
 from game_core.bots_ai.core import BotAI, BotAIDebug
-from game_core.bots_ai.field_handler.grid import Grid
 from game_core.bots_ai.decision_making.draw_graph_utils import test_graph
+from game_core.bots_ai.field_converter import convert_field_from_engine
+from game_core.bots_ai.field_handler.grid import Grid
+from game_core.game_engine import Actions, Directions, Position, LevelPosition
+from game_core.game_engine import Game, get_rules
 
 
 class LocalGame:
@@ -93,8 +94,9 @@ class LocalGame:
     def _init_bot(self):
         players_: dict[str, Position] = {
             player_name: Position(pl_pos.get('x'), pl_pos.get('y')) for pl_pos, player_name in self.players}
-        self.bot = BotAIDebug(self.rules, players_)
-        self.bot.real_field = self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field  # todo only for testing
+        converted_real_field = convert_field_from_engine(
+            self.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
+        self.bot = BotAIDebug(self.rules, players_, converted_real_field)
 
     def run(self, auto=False, skip_turns=0):
         print('seed:', self.rules['generator_rules']['seed'])
@@ -191,10 +193,10 @@ if __name__ == "__main__":
     # _seed = random.random()
     _num_players = 4
     _spawn_points = (
-        {'x': 5, 'y': 3},
+        {'x': 5, 'y': 1},
         {'x': 2, 'y': 4},
         {'x': 2, 'y': 1},
         {'x': 3, 'y': 2},
     )
-    main(num_players=_num_players, spawn_points=None, seed=_seed, skip_turns=1000)
-    # main(num_players=_num_players, spawn_points=_spawn_points[:_num_players], seed=_seed)
+    # main(num_players=_num_players, spawn_points=None, seed=_seed, skip_turns=1000)
+    main(num_players=_num_players, spawn_points=_spawn_points[:_num_players], seed=_seed, skip_turns=1000)

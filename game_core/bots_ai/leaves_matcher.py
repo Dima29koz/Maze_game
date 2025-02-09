@@ -1,10 +1,12 @@
 from typing import Type
 
-from ..game_engine.field import cell
-from .field_handler.field_obj import UnknownCell, PossibleExit
+from .exceptions import MatchingError, MergingError
+from .field_handler.field_obj import (
+    UnknownCell, PossibleExit, NoneCell,
+    CellRiver, CellExit
+)
 from .field_handler.field_state import CELL
 from .field_handler.player_state import PlayerState
-from .exceptions import MatchingError, MergingError
 from .field_handler.tree_node import Node
 
 MAX_MATCHABLE_NODES = 8
@@ -12,7 +14,7 @@ MAX_MATCHABLE_NODES = 8
 
 class LeavesMatcher:
     def __init__(self,
-                 unique_objs_amount: dict[Type[cell.Cell], int],
+                 unique_objs_amount: dict[Type[NoneCell], int],
                  players: dict[str, PlayerState],
                  game_rules: dict):
         self._unique_objs_amount = unique_objs_amount
@@ -137,11 +139,11 @@ class LeavesMatcher:
         self_type = type(self_cell)
         other_type = type(other_cell)
 
-        if self_type is cell.NoneCell and other_type in [cell.NoneCell, PossibleExit]:
+        if self_type is NoneCell and other_type in [NoneCell, PossibleExit]:
             return True
-        if self_type is cell.CellExit and other_type in [cell.CellExit, PossibleExit]:
+        if self_type is CellExit and other_type in [CellExit, PossibleExit]:
             return True
-        if self_type is PossibleExit and other_type in [cell.CellExit, cell.NoneCell, PossibleExit]:
+        if self_type is PossibleExit and other_type in [CellExit, NoneCell, PossibleExit]:
             return True
         if self_type is UnknownCell:
             if other_type is UnknownCell:
@@ -151,7 +153,7 @@ class LeavesMatcher:
                     unique_objs[other_type] -= 1
                 else:
                     return False
-            if other_type is cell.CellRiver:
+            if other_type is CellRiver:
                 if not node.field_state.field.is_river_direction_available(self_cell, other_cell.direction,
                                                                            no_raise=True):
                     return False
@@ -163,7 +165,7 @@ class LeavesMatcher:
                     unique_objs[self_type] -= 1
                 else:
                     return False
-            if self_type is cell.CellRiver:
+            if self_type is CellRiver:
                 if not other_node.field_state.field.is_river_direction_available(other_cell, self_cell.direction,
                                                                                  no_raise=True):
                     return False
@@ -175,7 +177,7 @@ class LeavesMatcher:
                     unique_objs[self_type] -= 1
                 else:
                     return False
-            if other_type is cell.CellRiver:
+            if other_type is CellRiver:
                 if other_cell.direction is not self_cell.direction:
                     return False
             return True

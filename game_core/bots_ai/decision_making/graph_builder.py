@@ -1,8 +1,8 @@
 import networkx as nx
 
-from ...game_engine.field import cell
-from ...game_engine.global_env.enums import Directions, Actions
+from ..field_handler.field_obj import NoneCell, CellRiver
 from ..field_handler.grid import Grid, CELL
+from ...game_engine.global_env.enums import Directions, Actions
 
 
 class GraphBuilder:
@@ -42,7 +42,7 @@ class GraphBuilder:
         return args.get('action'), args.get('direction')
 
     def _add_related_cells(self, tile: CELL):
-        if type(tile) is cell.NoneCell:
+        if type(tile) is NoneCell:
             return
         for direction in Directions:
             self._calc_relation_wall_collision(tile, direction)
@@ -55,11 +55,11 @@ class GraphBuilder:
         else:
             new_cell = self.game_map.get_neighbour_cell(tile.position, direction)
 
-        if type(new_cell) is cell.CellRiver:
+        if type(new_cell) is CellRiver:
             if self.game_map.is_washed(new_cell, tile, direction):
                 for _ in range(2):
                     new_cell = self.game_map.get_neighbour_cell(new_cell.position, new_cell.direction)
-                    if type(new_cell) is not cell.CellRiver:
+                    if type(new_cell) is not CellRiver:
                         break
 
         self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.move, weight=1)
@@ -75,12 +75,12 @@ class GraphBuilder:
         if not new_cell:
             return
 
-        if type(new_cell) is cell.CellRiver:
+        if type(new_cell) is CellRiver:
             if self.game_map.is_washed(new_cell, tile, direction):
                 for _ in range(2):
                     new_cell = self.game_map.get_neighbour_cell(new_cell.position, new_cell.direction)
-                    if type(new_cell) is not cell.CellRiver:
+                    if type(new_cell) is not CellRiver:
                         break
 
         self.graph.add_edge(tile, new_cell, direction=direction, action=Actions.throw_bomb,
-                            weight=1 + (1 if type(tile) is not cell.CellRiver else 2))
+                            weight=1 + (1 if type(tile) is not CellRiver else 2))
