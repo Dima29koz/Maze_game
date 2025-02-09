@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Union
 
 from ...game_engine.field import wall
 from ...game_engine.global_env.enums import Directions
@@ -39,29 +39,6 @@ class NoneCell:
         """add wall by direction"""
         self.walls[direction] = new_wall
 
-    def check_wall(self, direction: Directions) -> tuple[bool, bool, Type[wall.WallEmpty]]:
-        """return wall attributes"""
-        return self.walls[direction].handler()
-
-    def idle(self, previous_cell) -> 'CELL':
-        """idle handler"""
-        raise NotImplementedError
-
-    def active(self, previous_cell) -> 'CELL':
-        """active handler"""
-        raise NotImplementedError
-
-    def treasure_movement(self) -> 'CELL':
-        """treasure movement handler"""
-        raise NotImplementedError
-
-    def to_dict(self) -> dict:
-        """converts cell to dict"""
-        return self.position.to_dict() | {
-            'type': self.__class__.__name__,
-            'walls': {direction.name: wall_.__class__.__name__ for direction, wall_ in self.walls.items()}
-        }
-
     def __sub__(self, other: 'CELL') -> Directions | None:
         """
         :return: direction between adjacent cells
@@ -80,15 +57,6 @@ class Cell(NoneCell):
     def __init__(self, position: Position):
         super().__init__(position)
 
-    def idle(self, previous_cell):
-        return self
-
-    def active(self, previous_cell):
-        return self.idle(previous_cell)
-
-    def treasure_movement(self):
-        return self
-
     def __repr__(self):
         return 'c'
 
@@ -100,45 +68,6 @@ class CellRiver(Cell):
         super().__init__(position)
         self.river = []
         self.direction = direction
-
-    def idle(self, previous_cell):
-        idx = self.river.index(self)
-        return self.river[idx + 1]
-
-    def active(self, previous_cell):
-        if self._is_same_river(previous_cell):
-            return self
-        else:
-            idx = self.river.index(self)
-            dif = len(self.river) - 1 - idx
-            return self.river[idx + 2] if dif > 2 else self.river[idx + dif]
-
-    def treasure_movement(self):
-        index = self.river.index(self)
-        return self.river[index + 1]
-
-    def _is_same_river(self, previous_cell):
-        if isinstance(previous_cell, CellRiver) and previous_cell is not self:
-            if previous_cell in self.river:
-                if abs(self.river.index(self) - self.river.index(previous_cell)) == 1:
-                    return True
-
-    def add_river_list(self, river):
-        self.river = river
-
-    def to_dict(self):
-        sup = super().to_dict()
-        idx = self.river.index(self)
-        try:
-            next_river_cell = self.river[idx + 1]
-        except IndexError:
-            direction = 'mouth'
-        else:
-            direction = (self - next_river_cell).name
-
-        riv_dict = {'river_dir': direction}
-        sup |= riv_dict
-        return sup
 
     def __repr__(self):
         match self.direction:
@@ -154,28 +83,11 @@ class CellRiver(Cell):
                 return 'r'
 
 
-class CellRiverBridge(CellRiver):
-    def __init__(self, position: Position, direction: Directions = None):
-        super().__init__(position, direction)
-
-    def active(self, previous_cell):
-        return self
-
-
 class CellRiverMouth(CellRiver):
     """River Mouth cell object"""
 
     def __init__(self, position: Position):
         super().__init__(position)
-
-    def idle(self, previous_cell):
-        return self
-
-    def active(self, previous_cell):
-        return self.idle(previous_cell)
-
-    def treasure_movement(self):
-        return self
 
     def __repr__(self):
         return 'y'
@@ -193,12 +105,8 @@ class CellExit(Cell):
             Directions.left: wall.WallOuter()}
         self.walls.update({direction: wall.WallEntrance()})
 
-    def active(self, previous_cell):  # todo есть мнение что афк обработчик должен возвращать на поле
-        # todo есть мнение, что игрок без клада не может выйти
-        return self
-
     def __repr__(self):
-        return 'exit'
+        return '🚪'
 
 
 class CellClinic(Cell):
@@ -206,12 +114,6 @@ class CellClinic(Cell):
 
     def __init__(self, position: Position):
         super().__init__(position)
-
-    def idle(self, previous_cell):
-        return self
-
-    def active(self, previous_cell):
-        return self.idle(previous_cell)
 
     def __repr__(self):
         return 'H'
@@ -223,12 +125,6 @@ class CellArmory(Cell):
     def __init__(self, position: Position):
         super().__init__(position)
 
-    def idle(self, previous_cell):
-        return self
-
-    def active(self, previous_cell):
-        return self.idle(previous_cell)
-
     def __repr__(self):
         return 'A'
 
@@ -239,12 +135,6 @@ class CellArmoryWeapon(CellArmory):
     def __init__(self, position: Position):
         super().__init__(position)
 
-    def idle(self, previous_cell):
-        return self
-
-    def active(self, previous_cell):
-        return self.idle(previous_cell)
-
     def __repr__(self):
         return 'W'
 
@@ -254,12 +144,6 @@ class CellArmoryExplosive(CellArmory):
 
     def __init__(self, position: Position):
         super().__init__(position)
-
-    def idle(self, previous_cell):
-        return self
-
-    def active(self, previous_cell):
-        return self.idle(previous_cell)
 
     def __repr__(self):
         return 'E'
@@ -288,7 +172,7 @@ class PossibleExit(CellExit):
 
 CELL = Union[
     NoneCell, Cell,
-    CellRiver, CellRiverMouth, CellRiverBridge,
+    CellRiver, CellRiverMouth,
     CellExit, CellClinic, CellArmory,
     CellArmoryExplosive, CellArmoryWeapon,
     UnknownCell, PossibleExit
