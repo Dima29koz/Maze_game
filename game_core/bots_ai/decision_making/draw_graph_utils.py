@@ -18,7 +18,7 @@ def test_graph(grid: Grid, player_cell: BotCell = None, player_abilities: dict[A
     for row in grid.get_field():
         print(row)
     print('\n')
-    gb = GraphBuilder(grid, player_cell, player_abilities)
+    gb = GraphBuilder(grid, player_cell, player_abilities or dict())
     gr = gb.graph
     print('nodes\n', gr.nodes)
     # print('edges\n', gr.edges(data=True))

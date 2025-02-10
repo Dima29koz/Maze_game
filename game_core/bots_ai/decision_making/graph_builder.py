@@ -30,7 +30,7 @@ class GraphBuilder:
             print(node, self.graph.get_edge_data(node, path[i + 1]))
 
     def calc_paths(self, source: BotCell) -> dict[BotCell, list[BotCell]]:
-        return nx.shortest_path(self.graph, source, weight='weight')
+        return dict(nx.shortest_path(self.graph, source, target=None, weight='weight'))
 
     def calc_paths_len(self, source: BotCell) -> dict[BotCell, int]:
         return nx.shortest_path_length(self.graph, source, weight='weight')
