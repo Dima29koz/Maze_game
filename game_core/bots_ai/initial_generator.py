@@ -1,12 +1,5 @@
-from typing import Type
-
 from .field_handler.common_data import CommonData
-from .field_handler.field_obj import (
-    UnknownCell, PossibleExit, UnbreakableWall,
-    NoneCell, Cell, CellClinic,
-    CellRiver, CellRiverMouth,
-    CellArmory, CellArmoryExplosive, CellArmoryWeapon
-)
+from .field_handler.field_obj import BotCell, BotCellTypes, UnbreakableWall
 from .field_handler.field_state import FieldState
 from .field_handler.grid import Grid
 from .field_handler.tree_node import Node
@@ -50,21 +43,21 @@ class InitGenerator:
             root_state.next_states.append(next_state)
         return root_state
 
-    def get_unique_obj_amount(self) -> dict[Type[Cell], int]:
+    def get_unique_obj_amount(self) -> dict[BotCellTypes, int]:
         return self._unique_objs.copy()
 
-    def _gen_field_objs_amount(self) -> dict[Type[Cell], int]:
+    def _gen_field_objs_amount(self) -> dict[BotCellTypes, int]:
         obj_amount = {
-            CellClinic: 1,
+            BotCellTypes.CellClinic: 1,
         }
         if self._rules.get('generator_rules').get('is_separated_armory'):
             obj_amount.update({
-                CellArmoryWeapon: 1,
-                CellArmoryExplosive: 1,
+                BotCellTypes.CellArmoryWeapon: 1,
+                BotCellTypes.CellArmoryExplosive: 1,
             })
         else:
             obj_amount.update({
-                CellArmory: 1,
+                BotCellTypes.CellArmory: 1,
             })
         return obj_amount
 
@@ -77,40 +70,45 @@ class InitGenerator:
         none_cols = [0, self._cols - 1]
         none_rows = [0, self._rows - 1]
 
-        field = [[UnknownCell(Position(col, row)) if row not in none_rows and col not in none_cols
-                  else NoneCell(Position(col, row))
-                  for col in range(self._cols)] for row in range(self._rows)]
+        field = [[BotCell(
+            Position(col, row),
+            BotCellTypes.UnknownCell
+            if row not in none_rows and col not in none_cols
+            else BotCellTypes.NoneCell
+        )
+            for col in range(self._cols)] for row in range(self._rows)]
         # self._create_border_walls(field)
         self._create_possible_exits(field)
         return Grid(field)
 
     @staticmethod
-    def _create_possible_exits(field: list[list[UnknownCell | NoneCell]]):
+    def _create_possible_exits(field: list[list[BotCell]]):
         for row in field:
             for cell_obj in row:
-                if type(cell_obj) is NoneCell:
+                if cell_obj.type is BotCellTypes.NoneCell:
                     for direction in Directions:
                         x, y = direction.get_neighbour_cords(cell_obj.position.x, cell_obj.position.y)
                         try:
                             neighbour = field[y][x]
                         except IndexError:
                             neighbour = None
-                        if neighbour and type(neighbour) not in [NoneCell, PossibleExit]:
-                            field[cell_obj.position.y][cell_obj.position.x] = PossibleExit(cell_obj.position, direction)
+                        if neighbour and neighbour.type not in [BotCellTypes.NoneCell, BotCellTypes.PossibleExit]:
+                            field[cell_obj.position.y][cell_obj.position.x] = BotCell(
+                                cell_obj.position, BotCellTypes.PossibleExit, direction)
                             neighbour.add_wall(-direction, wall.WallExit())
 
     @staticmethod
-    def _create_border_walls(field: list[list[UnknownCell | NoneCell]]):
+    def _create_border_walls(field: list[list[BotCell]]):
         for row in field:
             for cell_obj in row:
-                if type(cell_obj) is NoneCell:
+                if cell_obj.type is BotCellTypes.NoneCell:
                     for direction in Directions:
                         x, y = direction.get_neighbour_cords(cell_obj.position.x, cell_obj.position.y)
                         try:
                             neighbour = field[y][x]
                         except IndexError:
                             neighbour = None
-                        if neighbour and type(neighbour) is not NoneCell:
+                        if neighbour and neighbour.type is not BotCellTypes.NoneCell:
                             neighbour.add_wall(-direction, UnbreakableWall())
 
 
@@ -122,23 +120,23 @@ def make_example_grid():
 
     pos = Position(2, 1)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(CellRiver(pos, Directions.right), pos)
+    grid.set_cell(BotCell(pos, BotCellTypes.CellRiver, Directions.right), pos)
     grid.set_walls(pos, walls)
     grid.add_wall(pos, Directions.right, wall.WallEmpty)
 
     pos = Position(3, 1)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(CellRiver(pos, Directions.bottom), pos)
+    grid.set_cell(BotCell(pos, BotCellTypes.CellRiver, Directions.bottom), pos)
     grid.set_walls(pos, walls)
     grid.add_wall(pos, Directions.bottom, wall.WallEmpty)
 
     pos = Position(3, 2)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(CellRiverMouth(pos), pos)
+    grid.set_cell(BotCell(pos, BotCellTypes.CellRiverMouth), pos)
     grid.set_walls(pos, walls)
 
     pos = Position(3, 3)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(Cell(pos), pos)
+    grid.set_cell(BotCell(pos, BotCellTypes.Cell), pos)
     grid.set_walls(pos, walls)
     return grid

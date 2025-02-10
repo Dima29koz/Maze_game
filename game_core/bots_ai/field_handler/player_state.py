@@ -1,7 +1,5 @@
-from typing import Type
-
 from .common_data import CommonData
-from .field_obj import CellClinic, CellArmory, CellArmoryExplosive, CellArmoryWeapon, CELL
+from .field_obj import BotCellTypes
 from .tree_node import Node
 from ..exceptions import UnreachableState, IncompatibleState, MergingError
 from ...game_engine.global_env.enums import Actions, Directions
@@ -42,7 +40,7 @@ class PlayerState:
 
     def _handle_stats_changes(self, player_name: str, action: Actions, response: dict):
         if player_name == self.name:
-            type_cell_turn_end: Type[CELL] | None = response.get('type_cell_at_end_of_turn')
+            type_cell_turn_end: BotCellTypes | None = response.get('type_cell_at_end_of_turn')
 
             if response.get('type_out_treasure'):
                 self.stats.has_treasure = False
@@ -57,13 +55,13 @@ class PlayerState:
                 case _:
                     pass
 
-            if type_cell_turn_end is CellClinic:
+            if type_cell_turn_end is BotCellTypes.CellClinic:
                 self.stats.restore_heal()
-            elif type_cell_turn_end is CellArmory:
+            elif type_cell_turn_end is BotCellTypes.CellArmory:
                 self.stats.restore_weapon()
-            elif type_cell_turn_end is CellArmoryExplosive:
+            elif type_cell_turn_end is BotCellTypes.CellArmoryExplosive:
                 self.stats.restore_bombs()
-            elif type_cell_turn_end is CellArmoryWeapon:
+            elif type_cell_turn_end is BotCellTypes.CellArmoryWeapon:
                 self.stats.restore_arrows()
 
         if response.get('hit'):

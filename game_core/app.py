@@ -171,7 +171,7 @@ class LocalGame:
 
 
 def draw_graph(grid: Grid, player_cell=None, player_abilities=None):
-    test_graph(grid, player_cell, player_abilities)
+    test_graph(grid, grid.get_cell(player_cell.position), player_abilities)
 
 
 def main(
@@ -179,11 +179,13 @@ def main(
         room_id: int = None, server_url: str = '', with_bot: bool = True, show_graph=False, skip_turns=0
 ):
     game = LocalGame(num_players, spawn_points, seed, room_id, server_url, with_bot)
-    start_map = Grid(game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field)
-    current_player = game.game.get_current_player()
-    current_player_abilities = game.game.get_allowed_abilities(current_player)
+
     if show_graph:
-        draw_graph(start_map, current_player.cell, current_player_abilities)
+        current_player = game.game.get_current_player()
+        current_player_abilities = game.game.get_allowed_abilities(current_player)
+        start_map = game.game.field.game_map.get_level(LevelPosition(0, 0, 0)).field
+        draw_graph(Grid(convert_field_from_engine(start_map)), current_player.cell, current_player_abilities)
+
     game.run(auto=True, skip_turns=skip_turns)
 
 

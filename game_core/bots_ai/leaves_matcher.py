@@ -1,10 +1,5 @@
-from typing import Type
-
 from .exceptions import MatchingError, MergingError
-from .field_handler.field_obj import (
-    CELL, UnknownCell, PossibleExit, NoneCell,
-    CellRiver, CellExit
-)
+from .field_handler.field_obj import BotCellTypes, BotCell
 from .field_handler.player_state import PlayerState
 from .field_handler.tree_node import Node
 
@@ -13,7 +8,7 @@ MAX_MATCHABLE_NODES = 8
 
 class LeavesMatcher:
     def __init__(self,
-                 unique_objs_amount: dict[Type[NoneCell], int],
+                 unique_objs_amount: dict[BotCellTypes, int],
                  players: dict[str, PlayerState],
                  game_rules: dict):
         self._unique_objs_amount = unique_objs_amount
@@ -134,37 +129,38 @@ class LeavesMatcher:
 
     @staticmethod
     def _is_cells_matchable(node: Node, other_node: Node,
-                            self_cell, other_cell, unique_objs: dict[Type[CELL], int]):
-        self_type = type(self_cell)
-        other_type = type(other_cell)
+                            self_cell: BotCell, other_cell: BotCell, unique_objs: dict[BotCellTypes, int]):
+        self_type = self_cell.type
+        other_type = other_cell.type
 
-        if self_type is NoneCell and other_type in [NoneCell, PossibleExit]:
+        if self_type is BotCellTypes.NoneCell and other_type in [BotCellTypes.NoneCell, BotCellTypes.PossibleExit]:
             return True
-        if self_type is CellExit and other_type in [CellExit, PossibleExit]:
+        if self_type is BotCellTypes.CellExit and other_type in [BotCellTypes.CellExit, BotCellTypes.PossibleExit]:
             return True
-        if self_type is PossibleExit and other_type in [CellExit, NoneCell, PossibleExit]:
+        if self_type is BotCellTypes.PossibleExit and other_type in [BotCellTypes.CellExit, BotCellTypes.NoneCell,
+                                                                     BotCellTypes.PossibleExit]:
             return True
-        if self_type is UnknownCell:
-            if other_type is UnknownCell:
+        if self_type is BotCellTypes.UnknownCell:
+            if other_type is BotCellTypes.UnknownCell:
                 return True
             if other_type in unique_objs:
                 if unique_objs.get(other_type) > 0:
                     unique_objs[other_type] -= 1
                 else:
                     return False
-            if other_type is CellRiver:
+            if other_type is BotCellTypes.CellRiver:
                 if not node.field_state.field.is_river_direction_available(self_cell, other_cell.direction,
                                                                            no_raise=True):
                     return False
             return True
 
-        if other_type is UnknownCell:
+        if other_type is BotCellTypes.UnknownCell:
             if self_type in unique_objs:
                 if unique_objs.get(self_type) > 0:
                     unique_objs[self_type] -= 1
                 else:
                     return False
-            if self_type is CellRiver:
+            if self_type is BotCellTypes.CellRiver:
                 if not other_node.field_state.field.is_river_direction_available(other_cell, self_cell.direction,
                                                                                  no_raise=True):
                     return False
@@ -176,7 +172,7 @@ class LeavesMatcher:
                     unique_objs[self_type] -= 1
                 else:
                     return False
-            if other_type is CellRiver:
+            if other_type is BotCellTypes.CellRiver:
                 if other_cell.direction is not self_cell.direction:
                     return False
             return True

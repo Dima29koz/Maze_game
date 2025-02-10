@@ -1,10 +1,7 @@
 from copy import copy
 from typing import Union, Type
 
-from .field_obj import (
-    CELL, UnknownCell, UnbreakableWall,
-    UnknownWall, PossibleExit, NoneCell,
-    CellExit, CellRiver, CellRiverMouth)
+from .field_obj import BotCell, BotCellTypes, UnknownWall, UnbreakableWall
 from ..exceptions import MergingError, OnlyAllowedDir
 from ...game_engine.field import wall
 from ...game_engine.global_env.enums import Directions
@@ -19,25 +16,25 @@ WALL = Union[R_WALL, UnbreakableWall, UnknownWall]
 
 
 class Grid:
-    def __init__(self, field: list[list[CELL]]):
+    def __init__(self, field: list[list[BotCell]]):
         self._field = field
 
-    def get_field(self) -> list[list[CELL]]:
+    def get_field(self) -> list[list[BotCell]]:
         return self._field
 
-    def get_cells(self) -> list[CELL]:
+    def get_cells(self) -> list[BotCell]:
         cells = []
         for row in self._field:
             cells += row
         return cells
 
-    def get_cell(self, position: Position) -> CELL:
+    def get_cell(self, position: Position) -> BotCell:
         return self._field[position.y][position.x]
 
     def get_cell_by_coords(self, x: int, y: int):
         return self._field[y][x]
 
-    def get_neighbour_cell(self, position: Position, direction: Directions) -> CELL | None:
+    def get_neighbour_cell(self, position: Position, direction: Directions) -> BotCell | None:
         x, y = direction.get_neighbour_cords(position.x, position.y)
         try:
             if x < 0 or y < 0:
@@ -46,7 +43,7 @@ class Grid:
         except IndexError:
             return None
 
-    def set_cell(self, new_cell: CELL, position: Position):
+    def set_cell(self, new_cell: BotCell, position: Position):
         self._field[position.y][position.x] = new_cell
 
     def copy(self) -> 'Grid':
@@ -60,7 +57,7 @@ class Grid:
         cur = self.update_wall(position, direction, wall_type)
         other = False
         neighbour = self.get_neighbour_cell(position, direction)
-        if neighbour and type(neighbour) is not NoneCell:
+        if neighbour and neighbour.type is not BotCellTypes.NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
             other = self.update_wall(neighbour.position, -direction, neighbour_wall_type)
@@ -80,26 +77,27 @@ class Grid:
         :param direction: direction of entrance wall
         :param position: position of exit cell
         """
-        cell_exit = CellExit(position, direction)
+        cell_exit = BotCell(position, BotCellTypes.CellExit, direction)
         for dir_ in Directions:
             if dir_ is direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, dir_)
-            if neighbour_cell and type(neighbour_cell) is not NoneCell:
-                if type(neighbour_cell) is CellExit:
+            if neighbour_cell and neighbour_cell.type is not BotCellTypes.NoneCell:
+                if neighbour_cell.type is BotCellTypes.CellExit:
                     continue
                 self.update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
         self.get_neighbour_cell(position, direction).add_wall(-direction, wall.WallExit())
         self.set_cell(cell_exit, cell_exit.position)
 
     def get_possible_river_directions(self,
-                                      river_cell: UnknownCell | CellRiver,
+                                      river_cell: BotCell,
+                                      # todo ensure that river_cell.type is UnknownCell | CellRiver,
                                       turn_direction: Directions = None,
                                       washed: bool = False) -> list[Directions]:
         if not washed and turn_direction:
             prev_cell = self.get_neighbour_cell(river_cell.position, -turn_direction)
-            if type(prev_cell) is CellRiverMouth or (
-                    type(prev_cell) is CellRiver and prev_cell.direction is not turn_direction):
+            if prev_cell.type is BotCellTypes.CellRiverMouth or (
+                    prev_cell.type is BotCellTypes.CellRiver and prev_cell.direction is not turn_direction):
                 if not self.has_known_input_river(prev_cell.position, -turn_direction):
                     if self.is_river_is_looped(river_cell.position, prev_cell):
                         return []
@@ -121,7 +119,9 @@ class Grid:
 
         return dirs
 
-    def is_river_direction_available(self, river_cell: UnknownCell | CellRiver, direction: Directions,
+    def is_river_direction_available(self,
+                                     river_cell: BotCell,  # todo ensure that river_cell.type is UnknownCell | CellRiver
+                                     direction: Directions,
                                      no_raise: bool = False):
         """
 
@@ -137,18 +137,18 @@ class Grid:
         neighbour_cell = self.get_neighbour_cell(river_cell.position, direction)
 
         # река не может течь в сушу
-        if type(neighbour_cell) not in [CellRiver, CellRiverMouth, UnknownCell]:
+        if neighbour_cell.type not in [BotCellTypes.CellRiver, BotCellTypes.CellRiverMouth, BotCellTypes.UnknownCell]:
             return False
 
         # реки не могут течь друг в друга
-        if type(neighbour_cell) is CellRiver and neighbour_cell.direction is -direction:
+        if neighbour_cell.type is BotCellTypes.CellRiver and neighbour_cell.direction is -direction:
             return False
 
         # река не имеет развилок
         if self.has_known_input_river(neighbour_cell.position, direction):
             return False
 
-        if type(neighbour_cell) is CellRiverMouth and \
+        if neighbour_cell.type is BotCellTypes.CellRiverMouth and \
                 self._is_the_only_allowed_dir(neighbour_cell.position, direction):
             if no_raise:
                 return True
@@ -162,7 +162,7 @@ class Grid:
     def is_cause_of_isolated_mouth(self, position: Position) -> bool:
         for direction in Directions:
             neighbour_cell = self.get_neighbour_cell(position, direction)
-            if neighbour_cell and type(neighbour_cell) is CellRiverMouth:
+            if neighbour_cell and neighbour_cell.type is BotCellTypes.CellRiverMouth:
                 if self._is_the_only_allowed_dir(neighbour_cell.position, direction):
                     return True
         return False
@@ -180,8 +180,9 @@ class Grid:
             if not ignore_dir and direction is neg_direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, direction)
-            if type(neighbour_cell) is CellRiver and neighbour_cell.direction is -direction:
+            if neighbour_cell and neighbour_cell.type is BotCellTypes.CellRiver and neighbour_cell.direction is -direction:
                 return True
+        return False
 
     def _is_the_only_allowed_dir(self, position: Position, turn_direction: Directions) -> bool:
         """
@@ -194,12 +195,12 @@ class Grid:
             if direction is -turn_direction:
                 continue
             neighbour_cell = self.get_neighbour_cell(position, direction)
-            if (type(neighbour_cell) is CellRiver and neighbour_cell.direction is -direction) or \
-                    type(neighbour_cell) is UnknownCell:
+            if (neighbour_cell.type is BotCellTypes.CellRiver and neighbour_cell.direction is -direction) or \
+                    neighbour_cell.type is BotCellTypes.UnknownCell:
                 return False
         return True
 
-    def is_river_is_looped(self, start_position: Position, previous_cell: CELL) -> bool:
+    def is_river_is_looped(self, start_position: Position, previous_cell: BotCell) -> bool:
         """
 
         :param start_position: position to start checking
@@ -208,43 +209,44 @@ class Grid:
         """
         if start_position == previous_cell.position:
             return True
-        if type(previous_cell) is CellRiver:
+        if previous_cell.type is BotCellTypes.CellRiver:
             return self.is_river_is_looped(
                 start_position, self.get_neighbour_cell(previous_cell.position, previous_cell.direction))
         return False
 
     @staticmethod
-    def is_washed(current_cell: CellRiver, prev_cell: CELL, turn_direction: Directions) -> bool:
+    def is_washed(current_cell: BotCell, prev_cell: BotCell, turn_direction: Directions) -> bool:
         if current_cell is prev_cell:
             return True
         if current_cell.direction is -turn_direction:
             return False
-        if type(prev_cell) is CellRiver and prev_cell.direction is turn_direction:
+        if prev_cell.type is BotCellTypes.CellRiver and prev_cell.direction is turn_direction:
             return False
         return True
 
     def merge_with(self,
                    other_field: 'Grid',
-                   remaining_obj_amount: dict[Type[CELL], int]):
+                   remaining_obj_amount: dict[BotCellTypes, int]):
         is_changed = False
         for y, row in enumerate(self._field):
             for x, self_cell in enumerate(row):
                 other_cell = other_field._field[y][x]
-                if type(self_cell) is NoneCell and type(other_cell) is NoneCell:
+                if self_cell.type is BotCellTypes.NoneCell and other_cell.type is BotCellTypes.NoneCell:
                     continue
-                if type(self_cell) is PossibleExit and type(other_cell) in [CellExit, NoneCell]:
+                if self_cell.type is BotCellTypes.PossibleExit and other_cell.type in [BotCellTypes.CellExit,
+                                                                                       BotCellTypes.NoneCell]:
                     is_changed = True
                     self.merge_cells(other_cell, x, y, no_walls=True)
-                if type(self_cell) is CellExit and type(other_cell) is PossibleExit:
+                if self_cell.type is BotCellTypes.CellExit and other_cell.type is BotCellTypes.PossibleExit:
                     continue
-                if type(self_cell) is UnknownCell and type(other_cell) is not UnknownCell:
-                    if type(other_cell) is CellRiver:
+                if self_cell.type is BotCellTypes.UnknownCell and other_cell.type is not BotCellTypes.UnknownCell:
+                    if other_cell.type is BotCellTypes.CellRiver:
                         if not self.is_river_direction_available(self_cell, other_cell.direction, no_raise=True):
                             raise MergingError()
                     is_changed = True
-                    if type(other_cell) in remaining_obj_amount:
-                        if remaining_obj_amount.get(type(other_cell)) > 0:
-                            remaining_obj_amount[type(other_cell)] -= 1
+                    if other_cell.type in remaining_obj_amount:
+                        if remaining_obj_amount.get(other_cell.type) > 0:
+                            remaining_obj_amount[other_cell.type] -= 1
                         else:
                             raise MergingError()
                     self.merge_cells(other_cell, x, y)
@@ -257,7 +259,7 @@ class Grid:
             return self
         return
 
-    def merge_cells(self, other_cell: CELL, x: int, y: int, no_walls: bool = False):
+    def merge_cells(self, other_cell: BotCell, x: int, y: int, no_walls: bool = False):
         self._field[y][x] = copy(other_cell)
         if not no_walls:
             new_walls = self.merge_walls(self._field[y][x].walls.copy(), other_cell.walls)

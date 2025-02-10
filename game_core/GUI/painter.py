@@ -1,13 +1,14 @@
 import pygame
 
-from .utils import get_cell_color, get_wall_color, get_player_color, get_treasure_color, get_river_dir
-
+from .utils import (
+    get_cell_color, get_wall_color, get_player_color,
+    get_treasure_color, get_river_dir, get_bot_cell_color)
+from ..bots_ai.field_handler.field_obj import BotCell, BotCellTypes
 from ..game_engine.entities.player import Player
 from ..game_engine.entities.treasure import Treasure
 from ..game_engine.field import cell as c
 from ..game_engine.global_env.enums import Directions
 from ..game_engine.global_env.types import Position
-from ..bots_ai.field_handler.field_obj import PossibleExit
 
 
 class Painter:
@@ -17,14 +18,18 @@ class Painter:
         self.start_x = 0
         self.start_y = 0
 
-    def draw(self, grid: list[list[c.CELL]] = None, players=None, treasures: list[Position] | list[Treasure] = None,
+    def draw(self, grid: list[list[c.CELL]] | list[list[BotCell]] = None, players=None,
+             treasures: list[Position] | list[Treasure] = None,
              start_x: int = None, start_y: int = None, tile_size: int = None,
-             gr=True, pl=True, tr=True):
+             gr=True, pl=True, tr=True, is_engine: bool = True):
         dx = start_x if start_x else self.start_x
         dy = start_y if start_y else self.start_y
         ts = tile_size if tile_size else self.tile_size
         if grid and gr:
-            self.draw_field(grid, dx, dy, ts)
+            if is_engine:
+                self.draw_field(grid, dx, dy, ts)
+            else:
+                self.draw_bot_field(grid, dx, dy, ts)
         if players and pl:
             self.draw_players(players, dx, dy, ts)
         if treasures and tr:
@@ -37,7 +42,14 @@ class Painter:
                     self.draw_cell(cell, dx, dy, ts)
                     self.draw_walls(cell, dx, dy, ts)
 
-    def draw_cell(self, cell: c.CELL, dx, dy, ts):
+    def draw_bot_field(self, grid: list[list[BotCell]], dx, dy, ts):
+        for row in grid:
+            for cell in row:
+                if cell.type != BotCellTypes.NoneCell:
+                    self.draw_bot_cell(cell, dx, dy, ts)
+                    self.draw_walls(cell, dx, dy, ts)
+
+    def draw_cell(self, cell: c.CELL, dx: int, dy: int, ts: int):
         x, y = cell.position.x * ts + dx, cell.position.y * ts + dy
         pygame.draw.rect(self.sc, pygame.Color(get_cell_color(cell)),
                          (x + 2, y + 2, ts - 2, ts - 2))
@@ -45,9 +57,20 @@ class Painter:
             self.draw_river_dir(cell, x, y, ts)
         if type(cell) == c.CellClinic:
             self.draw_clinic(x, y, ts)
-        if type(cell) == PossibleExit:
-            self.draw_possible_exit(x, y, ts)
         if isinstance(cell, c.CellArmory):
+            self.draw_armory(cell, x, y, ts)
+
+    def draw_bot_cell(self, cell: BotCell, dx: int, dy: int, ts: int):
+        x, y = cell.position.x * ts + dx, cell.position.y * ts + dy
+        pygame.draw.rect(self.sc, pygame.Color(get_bot_cell_color(cell)),
+                         (x + 2, y + 2, ts - 2, ts - 2))
+        if cell.type in [BotCellTypes.CellRiver, BotCellTypes.CellRiverMouth]:
+            self.draw_bot_river_dir(cell, x, y, ts)
+        if cell.type == BotCellTypes.CellClinic:
+            self.draw_clinic(x, y, ts)
+        if cell.type == BotCellTypes.PossibleExit:
+            self.draw_possible_exit(x, y, ts)
+        if cell.type in [BotCellTypes.CellArmory, BotCellTypes.CellArmoryWeapon, BotCellTypes.CellArmoryExplosive]:
             self.draw_armory(cell, x, y, ts)
 
     def draw_river_dir(self, cell, x, y, ts):
@@ -56,6 +79,16 @@ class Painter:
             s = get_river_dir(cell.direction) if type(cell) is c.CellRiver else 'y'
         except (KeyError, ValueError):
             s = '?' if type(cell) is c.CellRiver else 'y'
+        text = f1.render(s, True, (180, 180, 180))
+        place = text.get_rect(center=(x + ts // 2, y + ts // 2))
+        self.sc.blit(text, place)
+
+    def draw_bot_river_dir(self, cell: BotCell, x, y, ts):
+        f1 = pygame.font.Font(None, ts * 3 // 3)
+        try:
+            s = get_river_dir(cell.direction) if cell.type is BotCellTypes.CellRiver else 'y'
+        except (KeyError, ValueError):
+            s = '?' if cell.type is c.CellRiver else 'y'
         text = f1.render(s, True, (180, 180, 180))
         place = text.get_rect(center=(x + ts // 2, y + ts // 2))
         self.sc.blit(text, place)
@@ -83,7 +116,7 @@ class Painter:
         place = text.get_rect(center=(x + ts // 2, y + ts // 2))
         self.sc.blit(text, place)
 
-    def draw_walls(self, cell: c.Cell, dx, dy, ts):
+    def draw_walls(self, cell: c.Cell | BotCell, dx, dy, ts):
         x, y = cell.position.x * ts + dx, cell.position.y * ts + dy
         pygame.draw.line(self.sc, get_wall_color(cell.walls[Directions.top]),
                          (x, y), (x + ts - 2, y), 2)
@@ -109,7 +142,7 @@ class Painter:
     def draw_treasure(self, treasure_type, x, y, ts):
         pygame.draw.rect(self.sc, get_treasure_color(treasure_type),
                          (x + ts // 3 + 2, y + ts // 3 + 2,
-                         ts // 3 - 2, ts // 3 - 2))
+                          ts // 3 - 2, ts // 3 - 2))
 
     def draw_players(self, players: dict | list, dx, dy, ts):
         if type(players) is list:

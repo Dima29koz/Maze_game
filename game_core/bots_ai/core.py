@@ -1,6 +1,6 @@
 from .decision_making.decision_maker import DecisionMaker
 from .field_converter import convert_cell_type_from_engine
-from .field_handler.field_obj import NoneCell
+from .field_handler.field_obj import BotCell
 from .field_handler.player_state import PlayerState
 from .initial_generator import InitGenerator
 from .leaves_matcher import LeavesMatcher
@@ -69,7 +69,7 @@ class BotAI:
 
 
 class BotAIDebug(BotAI):
-    def __init__(self, game_rules: dict, players: dict[str, Position], real_field: list[list[NoneCell]]):
+    def __init__(self, game_rules: dict, players: dict[str, Position], real_field: list[list[BotCell]]):
         """
         :param real_field: used only for bot logic verification
         """

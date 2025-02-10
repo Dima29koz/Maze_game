@@ -1,10 +1,10 @@
 import pygame
 from pygame.locals import *
 
+from ..bots_ai.field_handler.field_obj import BotCell, BotCellTypes, UnknownWall, UnbreakableWall
 from ..game_engine.field import cell as c
 from ..game_engine.field import wall as w
 from ..game_engine.global_env.enums import Actions, Directions, TreasureTypes
-from ..bots_ai.field_handler.field_obj import UnknownWall, UnknownCell, UnbreakableWall, PossibleExit
 
 
 def convert_keys(key) -> tuple[Actions | None, Directions | None]:
@@ -43,7 +43,7 @@ def convert_keys(key) -> tuple[Actions | None, Directions | None]:
     return None, None
 
 
-def get_key_act(key, allowed_actions, current_state):
+def get_key_act(key: int | None, allowed_actions, current_state):
     if key:
         action, direction = convert_keys(key)
         if (not action) or not allowed_actions[action]:
@@ -51,15 +51,24 @@ def get_key_act(key, allowed_actions, current_state):
         return (action, direction), current_state
 
 
-def get_cell_color(cell):
-    if type(cell) in [c.CellExit, PossibleExit]:
+def get_cell_color(cell: c.CELL):
+    if type(cell) is c.CellExit:
         return 55, 120, 20
     if type(cell) in [c.CellRiver, c.CellRiverMouth]:
         return 62, 105, (len(cell.river) * 30) % 255
-    if type(cell) is UnknownCell:
+
+    return 107, 98, 60
+
+
+def get_bot_cell_color(cell: BotCell):
+    if cell.type in [BotCellTypes.CellExit, BotCellTypes.PossibleExit]:
+        return 55, 120, 20
+    if cell.type in [BotCellTypes.CellRiver, BotCellTypes.CellRiverMouth]:
+        return 62, 105, 75
+    if cell.type is BotCellTypes.UnknownCell:
         return 231, 129, 255
-    else:
-        return 107, 98, 60
+
+    return 107, 98, 60
 
 
 def get_wall_color(wall):

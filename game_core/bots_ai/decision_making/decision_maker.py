@@ -1,12 +1,12 @@
 from collections import Counter
 from random import choice
 
-from ...game_engine.global_env.enums import Actions, Directions
 from .graph_builder import GraphBuilder
 from .target_calculator import TargetCalculator
 from ..field_handler.player_state import PlayerState
 from ..field_handler.player_stats import PlayerStats
 from ..field_handler.tree_node import Node
+from ...game_engine.global_env.enums import Actions, Directions
 
 
 class DecisionMaker:
@@ -58,5 +58,5 @@ class DecisionMaker:
             else:
                 allowed_directions.append(direction)
         if not allowed_directions:
-            return
+            return None
         return choice(allowed_directions)
