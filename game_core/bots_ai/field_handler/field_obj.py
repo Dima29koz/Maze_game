@@ -10,10 +10,10 @@ class BotCellTypes(Enum):
     Cell = auto()
     CellRiver = auto()
 
-    # CellRiverTop = auto()
-    # CellRiverBottom = auto()
-    # CellRiverLeft = auto()
-    # CellRiverRight = auto()
+    CellRiverTop = auto()
+    CellRiverBottom = auto()
+    CellRiverLeft = auto()
+    CellRiverRight = auto()
 
     CellRiverMouth = auto()
     CellExit = auto()

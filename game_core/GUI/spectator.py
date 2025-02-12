@@ -1,10 +1,13 @@
+import time
+
 import pygame
 from pygame.locals import *
 
 from .bot_ai_spectator import BotAISpectator
 from .button import Button
 from .config import GuiConfig, BotAIColors
-from .painter import Painter
+from .painters.painter import Painter
+from .painters.bot_painter import BotPainter
 from .utils import get_key_act
 from ..bots_ai.core import BotAI
 from ..bots_ai.field_handler.tree_node import Node
@@ -35,6 +38,7 @@ class SpectatorGUI:
         self.sc = pygame.Surface(GuiConfig.RES)
         self.clock = pygame.time.Clock()
         self.painter = Painter(self.sc, self.tile_size)
+        self.bot_painter = BotPainter(self.sc, GuiConfig.TILE_LEAF) if bot else None
         self.bot_spectator = BotAISpectator(bot, limit=GuiConfig.LIMIT) if bot else None
 
         up = Button(self.sc, (self.tile_size + GuiConfig.BTN_X, self.tile_size + GuiConfig.BTN_Y), "↑", Directions.top,
@@ -67,6 +71,7 @@ class SpectatorGUI:
         self.buttons_dirs = [up, down, left, right]
 
     def draw(self, allowed_actions: dict[Actions, bool], active_player: str = None):
+        st = time.time()
         self.sc.fill(GuiConfig.BG_COLOR or pygame.Color('darkslategray'))
         self.draw_buttons(allowed_actions)
         self.painter.draw(
@@ -75,6 +80,13 @@ class SpectatorGUI:
             treasures=self.field.treasures)
         if self.bot_spectator:
             self.draw_bot(active_player)
+
+        if GuiConfig.SHOW_FPS:
+            frame_time = time.time() - st
+            f1 = pygame.font.Font(None, 25)
+            text = f1.render(f'FPS: {1 / frame_time}', True, BotAIColors.WHITE)
+            place = text.get_rect(topleft=(0, 0))
+            self.sc.blit(text, place)
 
         self.window.blit(self.sc, self.sc.get_rect())
         pygame.event.pump()
@@ -123,8 +135,8 @@ class SpectatorGUI:
                 node_rect = (x - GuiConfig.DIST // 2, y - GuiConfig.DIST // 2, self.node_size_x, self.node_size_y)
                 pygame.draw.rect(self.sc, BotAIColors.REAL, node_rect)
 
-            self.painter.draw(grid=field, players=players, treasures=treasures,
-                              start_x=x, start_y=y, tile_size=GuiConfig.TILE_LEAF, is_engine=False)
+            self.bot_painter.draw(grid=field, players=players, treasures=treasures,
+                                  start_x=x, start_y=y)
 
             if self.is_node_hovered(x, y):
                 target_node = node

@@ -1,5 +1,6 @@
 class GuiConfig:
-    FPS = 30
+    FPS = 60
+    SHOW_FPS = True
     RES = WIDTH, HEIGHT = 1920, 1080  # window size
     TILE = 50  # tile size for interactive map
     BTN_X = 0  # pos_x bnt block

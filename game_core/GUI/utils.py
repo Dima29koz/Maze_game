@@ -1,7 +1,9 @@
+from typing import Type
+
 import pygame
 from pygame.locals import *
 
-from ..bots_ai.field_handler.field_obj import BotCell, BotCellTypes, UnknownWall, UnbreakableWall
+from ..bots_ai.field_handler.field_obj import BotCellTypes, UnknownWall, UnbreakableWall
 from ..game_engine.field import cell as c
 from ..game_engine.field import wall as w
 from ..game_engine.global_env.enums import Actions, Directions, TreasureTypes
@@ -60,34 +62,28 @@ def get_cell_color(cell: c.CELL):
     return 107, 98, 60
 
 
-def get_bot_cell_color(cell: BotCell):
-    if cell.type in [BotCellTypes.CellExit, BotCellTypes.PossibleExit]:
+def get_bot_cell_color(cell_type: BotCellTypes):
+    if cell_type in (BotCellTypes.CellExit, BotCellTypes.PossibleExit):
         return 55, 120, 20
-    if cell.type in [BotCellTypes.CellRiver, BotCellTypes.CellRiverMouth]:
+    if cell_type in (BotCellTypes.CellRiver, BotCellTypes.CellRiverMouth):
         return 62, 105, 75
-    if cell.type is BotCellTypes.UnknownCell:
+    if cell_type is BotCellTypes.UnknownCell:
         return 231, 129, 255
 
     return 107, 98, 60
 
 
-def get_wall_color(wall):
-    if type(wall) is w.WallOuter:
-        return 1, 1, 1
-    if type(wall) is w.WallConcrete:
-        return 170, 105, 25
-    if type(wall) in [w.WallExit, w.WallEntrance]:
-        return 54, 171, 28
-    if type(wall) is w.WallRubber:
-        return 15, 15, 15
-    if type(wall) is UnknownWall:
-        return 100, 10, 100
-    if type(wall) is UnbreakableWall:
-        return 60, 45, 15
-    if type(wall) is w.WallEmpty:
-        return 200, 200, 200
-    else:
-        return 'darkslategray'
+def get_wall_colors():
+    return {
+        w.WallOuter: (1, 1, 1),
+        w.WallConcrete: (170, 105, 25),
+        w.WallExit: (54, 171, 28),
+        w.WallEntrance: (54, 171, 28),
+        w.WallRubber: (15, 15, 15),
+        UnknownWall: (100, 10, 100),
+        UnbreakableWall: (60, 45, 15),
+        w.WallEmpty: (200, 200, 200)
+    }
 
 
 def get_player_color(player_name: str):
@@ -113,7 +109,7 @@ def get_player_color(player_name: str):
                 abs(hash(player_name)) % 255)
 
 
-def get_treasure_color(treasure_type: TreasureTypes):
+def get_treasure_color(treasure_type: TreasureTypes | None):
     match treasure_type:
         case TreasureTypes.very:
             return pygame.Color(209, 171, 0)
@@ -125,13 +121,59 @@ def get_treasure_color(treasure_type: TreasureTypes):
             return pygame.Color(189, 35, 189)
 
 
-def get_river_dir(direction: Directions):
-    match direction:
-        case Directions.top:
-            return '/\\'
-        case Directions.bottom:
-            return '\\/'
-        case Directions.right:
-            return '>'
-        case Directions.left:
-            return '<'
+def precompute_walls(cell_size: int, wall_width: int):
+    walls = {}
+    for wall_type, color in get_wall_colors().items():
+        sc = pygame.Surface((cell_size, wall_width))
+        pygame.draw.rect(sc, color,
+                         (0, 0, cell_size, wall_width))
+        walls |= {wall_type: {'x': sc, 'y': pygame.transform.rotate(sc, 90)}}
+
+    return walls
+
+
+def precompute_default_walls(cell_size: int, wall_width: int):
+    walls = {
+        'x': pygame.Surface((cell_size, wall_width)),
+        'y': pygame.Surface((wall_width, cell_size))
+    }
+    pygame.draw.rect(walls['x'], 'darkslategray', (0, 0, cell_size, wall_width))
+    pygame.draw.rect(walls['y'], 'darkslategray', (0, 0, wall_width, cell_size))
+    return walls
+
+
+def precompute_cell_text(tile_size) -> dict[Type[c.NoneCell] | str, pygame.Surface]:
+    font_full = pygame.font.Font(None, tile_size)
+    font_4_5 = pygame.font.Font(None, tile_size * 4 // 5)
+    text_color = (180, 180, 180)
+
+    return {
+        'CellRiverTop': font_full.render('/\\', True, text_color),
+        'CellRiverBottom': font_full.render('\\/', True, text_color),
+        'CellRiverRight': font_full.render('>', True, text_color),
+        'CellRiverLeft': font_full.render('<', True, text_color),
+        c.CellRiverMouth: font_full.render('y', True, text_color),
+        c.CellClinic: font_4_5.render('H', True, (155, 15, 15)),
+        c.CellArmory: font_4_5.render('A', True, text_color),
+        c.CellArmoryWeapon: font_4_5.render('AW', True, text_color),
+        c.CellArmoryExplosive: font_4_5.render('AE', True, text_color)
+    }
+
+
+def precompute_bot_cell_text(tile_size) -> dict[BotCellTypes, pygame.Surface]:
+    font_full = pygame.font.Font(None, tile_size)
+    font_4_5 = pygame.font.Font(None, tile_size * 4 // 5)
+    text_color = (180, 180, 180)
+
+    return {
+        BotCellTypes.CellRiverTop: font_full.render('/\\', True, text_color),
+        BotCellTypes.CellRiverBottom: font_full.render('\\/', True, text_color),
+        BotCellTypes.CellRiverRight: font_full.render('>', True, text_color),
+        BotCellTypes.CellRiverLeft: font_full.render('<', True, text_color),
+        BotCellTypes.CellRiverMouth: font_full.render('y', True, text_color),
+        BotCellTypes.PossibleExit: font_full.render('?E', True, text_color),
+        BotCellTypes.CellClinic: font_4_5.render('H', True, (155, 15, 15)),
+        BotCellTypes.CellArmory: font_4_5.render('A', True, text_color),
+        BotCellTypes.CellArmoryWeapon: font_4_5.render('AW', True, text_color),
+        BotCellTypes.CellArmoryExplosive: font_4_5.render('AE', True, text_color)
+    }
