@@ -120,23 +120,19 @@ def make_example_grid():
 
     pos = Position(2, 1)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(BotCell(pos, BotCellTypes.CellRiver, Directions.right), pos)
-    grid.set_walls(pos, walls)
+    grid.set_cell(pos, BotCellTypes.CellRiver, walls, Directions.right)
     grid.add_wall(pos, Directions.right, wall.WallEmpty)
 
     pos = Position(3, 1)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(BotCell(pos, BotCellTypes.CellRiver, Directions.bottom), pos)
-    grid.set_walls(pos, walls)
+    grid.set_cell(pos, BotCellTypes.CellRiver, walls, Directions.bottom)
     grid.add_wall(pos, Directions.bottom, wall.WallEmpty)
 
     pos = Position(3, 2)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(BotCell(pos, BotCellTypes.CellRiverMouth), pos)
-    grid.set_walls(pos, walls)
+    grid.set_cell(pos, BotCellTypes.CellRiverMouth, walls)
 
     pos = Position(3, 3)
     walls = grid.get_cell(pos).walls
-    grid.set_cell(BotCell(pos, BotCellTypes.Cell), pos)
-    grid.set_walls(pos, walls)
+    grid.set_cell(pos, BotCellTypes.Cell, walls)
     return grid

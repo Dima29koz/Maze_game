@@ -43,32 +43,34 @@ class Grid:
         except IndexError:
             return None
 
-    def set_cell(self, new_cell: BotCell, position: Position):
-        self._field[position.y][position.x] = new_cell
+    def set_cell(self,
+                 position: Position,
+                 cell_type: BotCellTypes,
+                 walls: dict[Directions, wall.WallEmpty] = None,
+                 direction: Directions = None):
+        self._field[position.y][position.x] = BotCell(position, cell_type, direction, walls)
 
     def copy(self) -> 'Grid':
         return Grid([copy(row) for row in self._field])
 
-    def set_walls(self, position: Position, walls: dict[Directions, WALL]):
-        self._field[position.y][position.x].walls = walls
-
     def add_wall(self, position: Position, direction: Directions, wall_type: Type[WALL],
                  neighbour_wall_type: Type[WALL] = None) -> bool:
-        cur = self.update_wall(position, direction, wall_type)
+        cur = self._update_wall(position, direction, wall_type)
         other = False
         neighbour = self.get_neighbour_cell(position, direction)
         if neighbour and neighbour.type is not BotCellTypes.NoneCell:
             if neighbour_wall_type is None:
                 neighbour_wall_type = wall_type
-            other = self.update_wall(neighbour.position, -direction, neighbour_wall_type)
+            other = self._update_wall(neighbour.position, -direction, neighbour_wall_type)
         return cur or other
 
-    def update_wall(self, position: Position, direction: Directions, wall_type: Type[WALL]) -> bool:
-        if type(self.get_cell(position).walls[direction]) is wall_type:
+    def _update_wall(self, position: Position, direction: Directions, wall_type: Type[WALL]) -> bool:
+        cell = self.get_cell(position)
+        if type(cell.walls[direction]) is wall_type:
             return False
-        self.set_cell(copy(self.get_cell(position)), position)
-        self.set_walls(position, self.get_cell(position).walls.copy())
-        self.get_cell(position).add_wall(direction, wall_type())
+        cell_walls = cell.walls.copy()
+        cell_walls[direction] = wall_type()
+        self.set_cell(cell.position, cell.type, cell_walls, cell.direction)
         return True
 
     def create_exit(self, direction: Directions, position: Position) -> None:
@@ -77,7 +79,6 @@ class Grid:
         :param direction: direction of entrance wall
         :param position: position of exit cell
         """
-        cell_exit = BotCell(position, BotCellTypes.CellExit, direction)
         for dir_ in Directions:
             if dir_ is direction:
                 continue
@@ -85,9 +86,9 @@ class Grid:
             if neighbour_cell and neighbour_cell.type is not BotCellTypes.NoneCell:
                 if neighbour_cell.type is BotCellTypes.CellExit:
                     continue
-                self.update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
+                self._update_wall(neighbour_cell.position, -dir_, wall.WallOuter)
         self.get_neighbour_cell(position, direction).add_wall(-direction, wall.WallExit())
-        self.set_cell(cell_exit, cell_exit.position)
+        self.set_cell(position, BotCellTypes.CellExit, direction=direction)
 
     def get_possible_river_directions(self,
                                       river_cell: BotCell,

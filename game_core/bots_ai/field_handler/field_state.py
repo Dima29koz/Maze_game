@@ -1,4 +1,3 @@
-from copy import copy
 from typing import Type
 
 from .common_data import CommonData
@@ -110,29 +109,29 @@ class FieldState:
         self.players_positions[player_name] = position
 
     def _update_cell_type(self, new_type: BotCellTypes, position: Position, direction: Directions = None):
-        target_cell = self.field.get_cell(position)
-        if target_cell.type is not BotCellTypes.NoneCell and new_type not in [BotCellTypes.CellRiverMouth,
+        target_cell_type = self.field.get_cell(position).type
+        if target_cell_type is not BotCellTypes.NoneCell and new_type not in [BotCellTypes.CellRiverMouth,
                                                                               BotCellTypes.CellRiver]:
-            if self.field.has_known_input_river(target_cell.position, direction, ignore_dir=True):
+            if self.field.has_known_input_river(position, direction, ignore_dir=True):
                 raise UnreachableState()
-        if target_cell.type is not BotCellTypes.NoneCell and new_type is not BotCellTypes.CellRiver:
-            if self.field.is_cause_of_isolated_mouth(target_cell.position):
+        if target_cell_type is not BotCellTypes.NoneCell and new_type is not BotCellTypes.CellRiver:
+            if self.field.is_cause_of_isolated_mouth(position):
                 raise UnreachableState()
 
         if new_type is BotCellTypes.NoneCell:
-            if target_cell.type is BotCellTypes.NoneCell or target_cell.type is BotCellTypes.CellExit:
+            if target_cell_type is BotCellTypes.NoneCell or target_cell_type is BotCellTypes.CellExit:
                 return
-            self.field.set_cell(BotCell(position, BotCellTypes.NoneCell), position)
+            self.field.set_cell(position, BotCellTypes.NoneCell)
             return
 
         if new_type is BotCellTypes.CellExit:
-            if target_cell.type not in self.common_data.exit_location:
+            if target_cell_type not in self.common_data.exit_location:
                 raise UnreachableState()
             self.field.create_exit(direction, position)
             return
 
         # todo кажется надо убедиться что я не клоун, ибо а зачем обновлять тип известной клетки
-        if target_cell.type is BotCellTypes.UnknownCell:
+        if target_cell_type is BotCellTypes.UnknownCell:
             try:
                 if self.remaining_obj_amount.get(new_type) == 0:
                     raise UnreachableState()
@@ -140,9 +139,8 @@ class FieldState:
             except KeyError:
                 pass
 
-        walls = self.field.get_cell(position).walls
-        self.field.set_cell(BotCell(position, new_type, direction), position)
-        self.field.set_walls(position, copy(walls))
+        walls = self.field.get_cell(position).walls.copy()
+        self.field.set_cell(position, new_type, walls, direction)
 
         if direction:
             self.field.add_wall(position, direction, wall.WallEmpty)
@@ -231,16 +229,17 @@ class FieldState:
             return []
 
         current_cell = self.get_player_cell(current_player)
+        affected_wall = current_cell.walls[direction]
         if is_destroyed:
-            if not current_cell.walls[direction].breakable:
+            if not affected_wall.breakable:
                 raise UnreachableState()
             new_state = self.copy()
             if new_state.field.add_wall(current_cell.position, direction, wall.WallEmpty):
                 return new_state._pass_processor(response, current_player)
         else:
-            if current_cell.walls[direction].breakable and type(current_cell.walls[direction]) is not UnknownWall:
+            if affected_wall.breakable and type(affected_wall) is not UnknownWall:
                 raise UnreachableState()
-            if type(current_cell.walls[direction]) is UnknownWall:
+            if type(affected_wall) is UnknownWall:
                 new_state = self.copy()
                 if new_state.field.add_wall(current_cell.position, direction, UnbreakableWall):
                     return new_state._pass_processor(response, current_player)
@@ -317,12 +316,13 @@ class FieldState:
     def _info_processor(self, response: dict, current_player: str) -> list['FieldState']:
         type_cell_turn_end: BotCellTypes = response.get('type_cell_at_end_of_turn')
 
-        if not self.get_player_pos(current_player):
+        player_position = self.get_player_pos(current_player)
+        if not player_position:
             return []
 
         next_states = []
         if type_cell_turn_end is not BotCellTypes.CellRiver:
-            self._update_cell_type(type_cell_turn_end, self.players_positions.get(current_player))
+            self._update_cell_type(type_cell_turn_end, player_position)
         else:
             next_states = self._calc_possible_river_trajectories(
                 self.get_player_cell(current_player), type_cell_turn_end, type_cell_turn_end, False, current_player,

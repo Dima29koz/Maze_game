@@ -26,6 +26,18 @@ class BotCellTypes(Enum):
 
 
 class BotCell:
+    """
+    Bot Cell object
+
+    :ivar position: cell position
+    :type position: Position
+    :ivar type: cell type
+    :type type: BotCellTypes
+    :ivar direction: river direction (need to be replaced with diff RiverCell types)
+    :type direction: Directions | None
+    :ivar walls: cell walls
+    :type walls: dict[Directions, wall.WallEmpty]
+    """
     def __init__(self, position: Position, cell_type: BotCellTypes,
                  direction: Directions | None = None, walls: dict[Directions, wall.WallEmpty] = None):
         self.position = position
