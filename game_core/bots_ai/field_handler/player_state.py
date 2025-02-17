@@ -23,7 +23,7 @@ class PlayerState:
             try:
                 if node.check_compatibility():
                     next_states = node.field_state.process_action(player_name, action, direction, response)
-                    [node.add_next_state(state) for state in next_states]
+                    node.add_next_states(next_states)
             except (UnreachableState, IncompatibleState, MergingError):
                 node.remove()
 

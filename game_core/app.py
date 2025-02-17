@@ -111,7 +111,8 @@ class LocalGame:
             act = (Actions.info, None) if not self.is_replay else next(self.turns)
             is_running, _ = self.process_turn(*act)
 
-        while is_running:
+        step = 0
+        while is_running and step < 500:
             act_pl_abilities = self.game.get_allowed_abilities(self.game.get_current_player())
             act, state = gui.get_action(act_pl_abilities, state)
             action = None
@@ -123,6 +124,10 @@ class LocalGame:
             gui.draw(act_pl_abilities, self.game.get_current_player().name)
             if action:
                 is_running, _ = self.process_turn(*action)
+                step += 1
+
+        if is_running:
+            print('draw')
         gui.close()
 
     def run_performance_test(self, verbose=False):
@@ -138,7 +143,7 @@ class LocalGame:
         num_shot = 0
         shot_success = 0
         leaves = {player: [] for player in self.bot.players.keys()}
-        while is_running:
+        while is_running and step < 500:
             current_player = self.game.get_current_player()
             act_pl_abilities = self.game.get_allowed_abilities(current_player)
 
@@ -156,6 +161,8 @@ class LocalGame:
                 shot_success += 1
             times.append(time_end)
             step += 1
+        if is_running:
+            print('draw')
         return times, step, tr_step, num_shot, shot_success, leaves
 
     def process_turn(self, action: Actions, direction: Directions, verbose=True):

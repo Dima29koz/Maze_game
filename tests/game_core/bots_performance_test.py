@@ -69,12 +69,12 @@ def main(args):
         pr = cProfile.Profile()
         pr.enable()
         res = performance_test(seeds=[_seed], num_players=_num_players, verbose=False)
-        # res = performance_test(seeds=_gen_seeds(_iters), num_players=_num_players, verbose=False)
         pr.disable()
         _filename = f'profile_res_{time.strftime("%m-%d-%Y_%H-%M-%S", time.localtime())}.prof'
         pr.dump_stats(_get_filename('profile_res', 'prof'))
     else:
-        res = performance_test(seeds=[_seed], num_players=_num_players, verbose=False)
+        # res = performance_test(seeds=[_seed], num_players=_num_players, verbose=False)
+        res = performance_test(seeds=_gen_seeds(_iters), num_players=_num_players, verbose=False)
 
     if save_res:
         _save_result(res)

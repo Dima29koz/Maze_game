@@ -46,6 +46,10 @@ class Node:
                 state._set_parent(self)
                 self.next_states.append(state)
 
+    def add_next_states(self, states: list[FieldState]):
+        for state in states:
+            self.add_next_state(state)
+
     def add_next_state(self, field_state: FieldState):
         if field_state is not self.field_state:
             self.next_states.append(self.copy(field_state=field_state))

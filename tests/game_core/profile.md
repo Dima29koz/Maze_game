@@ -20,4 +20,7 @@ python bots_performance_test.py --file profile_res_02-10-2025_21-50-13
 
 # after removing FieldState.current_player
 python bots_performance_test.py --file profile_res_02-14-2025_18-58-16
+
+# every turn new FieldState
+python bots_performance_test.py --file profile_res_02-18-2025_00-08-57
 ```

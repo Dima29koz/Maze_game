@@ -156,25 +156,13 @@ class FieldState:
             new_state._move_player(current_player, position)
         return new_state
 
-    def _treasure_info_processor(self, response: dict, next_states: list['FieldState'], current_player: str):
+    def _treasure_info_processor(self, response: dict, current_player: str) -> 'FieldState':
         cell_treasures_amount: int = response.get('cell_treasures_amount')
         type_out_treasure: TreasureTypes | None = response.get('type_out_treasure')
 
-        if not next_states:
-            self._check_treasures_amount(cell_treasures_amount, self.get_player_cell(current_player).position)
-            self._merge_treasures([self.get_player_cell(current_player).position for _ in range(cell_treasures_amount)])
-            return [self]
-
-        for state in next_states[::-1]:
-            try:
-                state._check_treasures_amount(cell_treasures_amount, state.get_player_cell(current_player).position)
-                state._merge_treasures(
-                    [state.get_player_cell(current_player).position for _ in range(cell_treasures_amount)])
-            except (MergingError, UnreachableState):
-                next_states.remove(state)
-        if not next_states:
-            raise UnreachableState()
-        return next_states
+        self._check_treasures_amount(cell_treasures_amount, self.get_player_cell(current_player).position)
+        self._merge_treasures([self.get_player_cell(current_player).position for _ in range(cell_treasures_amount)])
+        return self
 
     def _treasure_swap_processor(self, response: dict, current_player: str) -> list['FieldState']:
         player_position = self.get_player_pos(current_player)
@@ -193,7 +181,9 @@ class FieldState:
 
         had_treasure: bool = response.get('had_treasure')  # был ли в руках клад до смены
         if not had_treasure:
-            self.treasures_positions.remove(player_position)
+            next_state = self.copy()
+            next_state.treasures_positions.remove(player_position)
+            return [next_state]
         # else при текущем способе хранения позиций кладов ничего не изменится
         return []  # todo
 
@@ -218,7 +208,10 @@ class FieldState:
                 other_pl_pos = self.get_player_pos(player_name)
                 if other_pl_pos:
                     treasures_positions.append(other_pl_pos)
-            self._merge_treasures(treasures_positions)
+            if treasures_positions:
+                next_state: FieldState = self.copy()
+                next_state._merge_treasures(treasures_positions)
+                return next_state._pass_processor(response, current_player)
 
         return self._pass_processor(response, current_player)
 
@@ -252,28 +245,34 @@ class FieldState:
         if not self.get_player_pos(current_player):
             return []
 
-        next_states = []
-
         current_cell = self.get_player_cell(current_player)
-        if current_cell.type is BotCellTypes.CellRiver:
-            end_cell = self.field.get_neighbour_cell(current_cell.position, current_cell.direction)
-            if end_cell.type not in [type_cell_turn_end, BotCellTypes.UnknownCell]:
-                raise UnreachableState()
-            if end_cell.type is type_cell_turn_end:
-                self._move_player(current_player, end_cell.position)
-            elif type_cell_turn_end is BotCellTypes.CellRiver:
-                next_states = self._calc_possible_river_trajectories(
-                    end_cell, type_cell_turn_end, type_cell_turn_end, False, current_player, current_cell.direction)
-            elif type_cell_turn_end is BotCellTypes.CellRiverMouth:
-                self._update_cell_type(type_cell_turn_end, end_cell.position)
-                self._move_player(current_player, end_cell.position)
-            else:
-                raise UnreachableState()
+        if current_cell.type is not BotCellTypes.CellRiver:
+            return [self._treasure_info_processor(response, current_player)]
 
-        return self._treasure_info_processor(response, next_states, current_player)
+        end_cell = self.field.get_neighbour_cell(current_cell.position, current_cell.direction)
+        if end_cell.type not in [type_cell_turn_end, BotCellTypes.UnknownCell]:
+            raise UnreachableState()
 
-    def _movement_processor(self, turn_direction: Directions, response: dict, current_player: str) -> list[
-        'FieldState']:
+        if end_cell.type is type_cell_turn_end:
+            self._move_player(current_player, end_cell.position)
+            return [self._treasure_info_processor(response, current_player)]
+
+        elif type_cell_turn_end is BotCellTypes.CellRiver:
+            next_states = self._calc_possible_river_trajectories(
+                end_cell, type_cell_turn_end, type_cell_turn_end, False, current_player, current_cell.direction)
+
+            return self._multiple_treasure_info_processor(response, current_player, next_states)
+
+        elif type_cell_turn_end is BotCellTypes.CellRiverMouth:
+            next_state = self.copy()
+            next_state._update_cell_type(type_cell_turn_end, end_cell.position)
+            next_state._move_player(current_player, end_cell.position)
+            return [next_state._treasure_info_processor(response, current_player)]
+        else:
+            raise UnreachableState()
+
+    def _movement_processor(self, turn_direction: Directions,
+                            response: dict, current_player: str) -> list['FieldState']:
         is_diff_cells: bool = response.get('diff_cells')
         type_cell_turn_end: BotCellTypes = response.get('type_cell_at_end_of_turn')
         type_cell_after_wall_check: BotCellTypes = response.get('type_cell_after_wall_check')
@@ -283,8 +282,6 @@ class FieldState:
 
         if not self.get_player_pos(current_player):
             return []
-
-        next_states = []
 
         #  потрогать стену в направлении хода
         start_cell = self.get_player_cell(current_player)
@@ -303,15 +300,19 @@ class FieldState:
         #  перемещение в указанную сторону не противоречит известному полю
         if type_cell_after_wall_check is not BotCellTypes.CellRiver:
             if new_cell.type is BotCellTypes.UnknownCell:
-                self._update_cell_type(type_cell_after_wall_check, new_cell.position)
+                new_state = self.copy()
+                new_state._update_cell_type(type_cell_after_wall_check, new_cell.position)
+                new_state._move_player(current_player, new_cell.position)
+                return [new_state._treasure_info_processor(response, current_player)]
+
             self._move_player(current_player, new_cell.position)
+            return [self._treasure_info_processor(response, current_player)]
 
         # ... , река-река / река-устье / река, ...
-        else:
-            next_states = self._calc_possible_river_trajectories(
-                new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, current_player, turn_direction)
+        next_states = self._calc_possible_river_trajectories(
+            new_cell, type_cell_after_wall_check, type_cell_turn_end, is_diff_cells, current_player, turn_direction)
 
-        return self._treasure_info_processor(response, next_states, current_player)
+        return self._multiple_treasure_info_processor(response, current_player, next_states)
 
     def _info_processor(self, response: dict, current_player: str) -> list['FieldState']:
         type_cell_turn_end: BotCellTypes = response.get('type_cell_at_end_of_turn')
@@ -320,15 +321,30 @@ class FieldState:
         if not player_position:
             return []
 
-        next_states = []
         if type_cell_turn_end is not BotCellTypes.CellRiver:
-            self._update_cell_type(type_cell_turn_end, player_position)
-        else:
-            next_states = self._calc_possible_river_trajectories(
-                self.get_player_cell(current_player), type_cell_turn_end, type_cell_turn_end, False, current_player,
-                None)
+            next_state = self.copy()
+            next_state._update_cell_type(type_cell_turn_end, player_position)
+            return [next_state._treasure_info_processor(response, current_player)]
 
-        return self._treasure_info_processor(response, next_states, current_player)
+        next_states = self._calc_possible_river_trajectories(
+            self.get_player_cell(current_player), type_cell_turn_end, type_cell_turn_end, False, current_player,
+            None)
+
+        return self._multiple_treasure_info_processor(response, current_player, next_states)
+
+    @staticmethod
+    def _multiple_treasure_info_processor(response,
+                                          current_player,
+                                          next_states: list['FieldState']) -> list['FieldState']:
+        final_states = []
+        for state in next_states:
+            try:
+                final_states.append(state._treasure_info_processor(response, current_player))
+            except (MergingError, UnreachableState):
+                pass
+        if not final_states:
+            raise UnreachableState()
+        return final_states
 
     @staticmethod
     def _check_shot_possibility(current_player_pos: Position,
